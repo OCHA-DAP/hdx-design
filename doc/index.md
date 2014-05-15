@@ -1,3 +1,7 @@
+---
+title: HDX design
+---
+
 hdx-design
 ==========
 
