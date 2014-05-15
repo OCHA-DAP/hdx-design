@@ -1,7 +1,3 @@
----
-title: Document Center
----
-
 hdx-design
 ==========
 
