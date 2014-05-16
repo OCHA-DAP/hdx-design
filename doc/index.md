@@ -9,6 +9,13 @@ The [hdx design demo](http://github.io/OCHA-DAP/hdx-design) is a simulated front
 
 The goal of the simulation is to illustrate key user flows through HDX rather than to exhaustively document all functionality of the web application. 
 
+Project Links
+- 
+* [Demo site](http://ocha-dap.github.io/hdx-design/)
+* [Developer Guide](http://ocha-dap.github.io/hdx-design/doc/)
+* [GitHub Site](https://github.com/OCHA-DAP/hdx-design)
+* [Git repo](https://github.com/OCHA-DAP/hdx-design.git)
+
 CKAN front-end development recommendations
 -
 The front-end experience recommended here will either sit on top of or next to CKAN. Even though we are not creating production code we should honor [CKAN's frontend development guidelines](http://docs.ckan.org/en/latest/contributing/frontend/) where possible.  
