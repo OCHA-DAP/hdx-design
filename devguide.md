@@ -12,7 +12,7 @@ The goal of the simulation is to illustrate key user flows through HDX rather th
 Project Links
 - 
 * [Demo site](http://ocha-dap.github.io/hdx-design/)
-* [Developer Guide](http://ocha-dap.github.io/hdx-design/doc/)
+* [Developer Guide](http://ocha-dap.github.io/hdx-design/devguide)
 * [GitHub Site](https://github.com/OCHA-DAP/hdx-design)
 * [Git repo](https://github.com/OCHA-DAP/hdx-design.git)
 
