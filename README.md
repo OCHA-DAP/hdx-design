@@ -7,6 +7,6 @@ hdx-design
 Project Links
 - 
 * [Demo site](http://ocha-dap.github.io/hdx-design/)
-* [Developer Guide](http://ocha-dap.github.io/hdx-design/doc/)
+* [Developer Guide](http://ocha-dap.github.io/hdx-design/devguide)
 * [GitHub Site](https://github.com/OCHA-DAP/hdx-design)
 * [Git repo](https://github.com/OCHA-DAP/hdx-design.git)
