@@ -17,9 +17,6 @@ Project Links
 * [Git repo](https://github.com/OCHA-DAP/hdx-design.git)
 * [data for use in sim][1]
 
-dev considerations
-=
-
 CKAN front-end development guidelines
 -
 The front-end experience recommended here will either sit on top of or adjacent to CKAN. Even though we are not creating production code we should honor [CKAN's frontend development guidelines](http://docs.ckan.org/en/latest/contributing/frontend/) where possible.  
@@ -28,7 +25,7 @@ The front-end experience recommended here will either sit on top of or adjacent 
 * [HTML Coding Standards](http://docs.ckan.org/en/latest/contributing/html.html)
 * [jshint](http://www.jshint.com/) your JavaScript code
 
-dData
+data
 -
 Note that CKAN provides APIs to access both metadata and data - both raw data and curated data.  OCHA created [a subset of data from Colombia, Kenya, and Yemen][1] that should be used for the design.
 
