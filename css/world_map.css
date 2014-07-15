@@ -1,0 +1,20 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+#map {
+  width: 100%;
+  height: 360px;
+}
+.leaflet-top-pane {
+  pointer-events: none;
+}
+.leaflet-popup-pane {
+  z-index: 10;
+}
+.leaflet-popup-close-button {
+  display: none;
+}
+.leaflet-popup-content-wrapper {
+  pointer-events: none;
+}

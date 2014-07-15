@@ -27,6 +27,11 @@ module.exports = (grunt) ->
           cwd:'src/lib/js/'
           src:'**'
           dest:'build/lib/js/'
+        ,
+          expand:true
+          cwd:'src/data/'
+          src:'**'
+          dest:'build/data/'
         ]
       after:
         files:[
@@ -58,15 +63,10 @@ module.exports = (grunt) ->
         options:
           compress: false
 
-        files:
-          "build/css/style.css": "src/less/style.less"
-
-      release:
-        options:
-          compress: true
-
-        files:
-          "release/css/style.css": "src/less/style.less"
+        files: grunt.file.expandMapping(["src/less/**/*.less"], "build/css/",
+          rename: (destBase, destPath) ->
+            destBase + destPath.replace(/src\/less/, '').replace(/\.less$/, ".css")
+        )
 
 
     # lint: {
@@ -91,11 +91,11 @@ module.exports = (grunt) ->
         tasks: 'jade:build'
 
       js:
-        files: ['src/vendor/js/**/*.js']
+        files: ['src/lib/js/**/*.js']
         tasks: 'copy:build'
 
       css:
-        files: ['src/vendor/css/**/*.css']
+        files: ['src/lib/css/**/*.css']
         tasks: 'copy:build'
 
       img:
@@ -150,7 +150,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'default', ['copy:build', 'jade', 'coffee', 'less:build','copy:after']
   grunt.registerTask 'build',   'default'
 
-  grunt.registerTask 'release', ['build', 'copy:release', 'less:release', 'concat', 'uglify']
+  # grunt.registerTask 'release', ['build', 'copy:release', 'less:release', 'concat', 'uglify']
 
   connect = require 'connect'
 

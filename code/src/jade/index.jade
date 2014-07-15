@@ -1,6 +1,25 @@
 doctype html
 html(lang="en")
   head
-    title page title
+    title world map
+    //jquery
+    script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js' type='text/javascript')
+    //bootstrap
+    script(src='http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js' type='text/javascript')
+    link(href='http://maxcdn.bootstrapcdn.com/bootswatch/3.2.0/lumen/bootstrap.min.css' rel='stylesheet')
+    //mapbox
+    script(src='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js' type='text/javascript')
+    link(href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet')
+    //mapbox plugins
+    script(src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js' type='text/javascript')
+    //data
+    script(src='data/world_json.js' type='text/javascript')
+    //font
+    link(href='http://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet')
+    //custom
+    script(src='js/world_map.js' type='text/javascript')
+    link(href='css/world_map.css' rel='stylesheet')
   body
-    h1 page header
+    .container
+      .row
+        #map
