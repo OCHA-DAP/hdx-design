@@ -76,5 +76,20 @@ $(document).ready ->
   for feature in worldJSON.features
     countryName = feature.properties.name
     list = $('#country_list')
-    $('<div class="col-md-3 country-box"><a>'+countryName+'</a></div>').appendTo list
+    one = $('<div class="col-md-3 country-box"></div>').appendTo list
+    projection = d3.geo.mercator().translate([40, 30])
+    path = d3.geo.path().projection(projection)
+    svg = $('<svg></svg>').appendTo one
+    svg = d3.selectAll svg.toArray()
+    # svg = d3.select('body').append('svg')
+    svg.attr 'width', 80
+    .attr 'height', 60
+    svg.append 'path'
+    .datum feature
+    .attr 'class', (d)->
+      center = path.centroid(d)
+      projection.center(center)
+      return ''
+    .attr 'd', path
+    $('<a>'+countryName+'</a>').appendTo one
   return
