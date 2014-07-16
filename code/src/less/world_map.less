@@ -34,21 +34,41 @@ h1,h2,h3,h4,h5,h6{
     padding: 0 0 4px 0;
     position: relative;
     height: 80px;
+    &:hover {
+      svg .region-path{
+        fill: #000;
+      }
+      a{
+        color: #ef2b0d;
+      }
+    }
     svg {
       width: 80px;
       height: 60px;
-      background: #efefef;
+      background: #fff;
       position: absolute;
+      .region-path {
+        fill: #efefef;
+        stroke:#ccc;
+        stroke-width: 0.5;
+      }
     }
     a{
       display: inline-block;
       margin-left: 100px;
       color: black;
       text-decoration: none;
-      &:hover {
-        text-decoration: none;
-        border-bottom: 1px dotted #000;
-        cursor: pointer;
+    }
+    .region-flag{
+      display: block;
+      margin-left: 100px;
+      line-height: 30px;
+      .flag-icon{
+        background-size: contain;
+        background-position: 50%;
+        background-repeat: no-repeat;
+        width: 30px;
+        height: 20px;
       }
     }
   }

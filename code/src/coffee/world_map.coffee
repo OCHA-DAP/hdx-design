@@ -73,23 +73,30 @@ $(document).ready ->
 
   console.log map
 
+  global_projection = d3.geo.mercator();
+  region_path = d3.geo.path().projection(global_projection);
+  region_width = 80
+  region_height = 60
   for feature in worldJSON.features
     countryName = feature.properties.name
+    countryID = feature.id
+    countryCode = feature.code
+    if countryCode
+      countryCode = countryCode.toLowerCase()
     list = $('#country_list')
-    one = $('<div class="col-md-3 country-box"></div>').appendTo list
-    projection = d3.geo.mercator().translate([40, 30])
-    path = d3.geo.path().projection(projection)
-    svg = $('<svg></svg>').appendTo one
-    svg = d3.selectAll svg.toArray()
-    # svg = d3.select('body').append('svg')
-    svg.attr 'width', 80
-    .attr 'height', 60
+    one = $(`'<div class="col-md-3 country-box" id="region_'+ countryID +'"></div>'`).appendTo list
+    svg = d3.select "#region_#{countryID}"
+    .append 'svg'
+    .attr 'width', region_width
+    .attr 'height', region_height
+    bounds = region_path.bounds(feature)
+    scale = global_projection.scale() * d3.min([ region_width / (bounds[1][0]-bounds[0][0]), region_height / (bounds[1][1]-bounds[0][1]) ]) * 0.75;
+    center = global_projection.invert(region_path.centroid(feature))
+    region_projection = d3.geo.mercator().center(center).scale(scale).translate([region_width/2, region_height/2])
     svg.append 'path'
     .datum feature
-    .attr 'class', (d)->
-      center = path.centroid(d)
-      projection.center(center)
-      return ''
-    .attr 'd', path
+    .attr 'class', 'region-path'
+    .attr 'd', d3.geo.path().projection(region_projection)
     $('<a>'+countryName+'</a>').appendTo one
+    $(`'<label class="region-flag"><span class="flag-icon flag-icon-'+ countryCode +'"></span></label>'`).appendTo one
   return
