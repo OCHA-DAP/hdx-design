@@ -11,7 +11,6 @@
     };
     highlightFeature = function(e) {
       var countryID, layer;
-      console.log(11);
       layer = e.target;
       countryID = layer.feature.id;
       layer.setStyle({
@@ -22,10 +21,17 @@
         fillColor: '#eee'
       });
     };
-    resetFeature = function(e) {};
+    resetFeature = function(e) {
+      var layer;
+      layer = e.target;
+      layer.setStyle({
+        weigth: 0,
+        fillOpacity: 1.0,
+        fillColor: '#fff'
+      });
+    };
     featureClicked = function(e) {};
     onEachFeature = function(feature, layer) {
-      console.log(22);
       layer.on({
         mousemove: highlightFeature,
         mouseout: resetFeature,
@@ -42,7 +48,8 @@
     });
     countryLayer.addTo(map);
     topPane = map._createPane('leaflet-top-pane', map.getPanes().mapPane);
-    topLayer = L.mapbox.tileLayer(mapID).addTo(map);
+    topLayer = L.mapbox.tileLayer(mapID);
+    topLayer.addTo(map);
     topPane.appendChild(topLayer.getContainer());
     topLayer.setZIndex(7);
   });

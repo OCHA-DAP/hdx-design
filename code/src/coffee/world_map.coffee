@@ -30,6 +30,9 @@ $(document).ready ->
     return
 
   featureClicked = (e) ->
+    layer = e.target
+    countryName = layer.feature.properties.name
+    console.log countryName + ' is clicked'
     return
 
   onEachFeature = (feature, layer) ->
@@ -40,7 +43,19 @@ $(document).ready ->
     return
 
   # Code
-  map = L.mapbox.map('map').setView [20, 10], 2
+  map = L.mapbox.map 'map', mapID,
+    center: [20, 10]
+    zoom: 2
+    minZoom: 2
+    maxZoom: 4
+    tileLayer:
+       continuousWorld: false
+       noWrap: true
+
+  # hide all markers
+  map.featureLayer.setFilter ->
+    return false
+
   popup = new L.Popup
     autoPan: false
 
@@ -56,7 +71,10 @@ $(document).ready ->
   topPane.appendChild topLayer.getContainer()
   topLayer.setZIndex 7
 
-  # for feature in worldJSON.features
-  #   console.log(feature.properties.name)
+  console.log map
 
+  for feature in worldJSON.features
+    countryName = feature.properties.name
+    list = $('#country_list')
+    $('<div class="col-md-3 country-box"><a>'+countryName+'</a></div>').appendTo list
   return
