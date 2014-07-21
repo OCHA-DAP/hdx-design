@@ -59,6 +59,20 @@ body {
   border-right: 8px solid transparent;
   border-top: 8px solid #333;
 }
+#map .marker-number {
+  font-family: 'Roboto' Arial;
+  font-size: 30px;
+  font-weight: 100;
+  text-align: center;
+  padding: 5px 10px 15px 10px;
+}
+#map .marker-label {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 10px;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 10px;
+}
 #country_list {
   padding: 0 0 100px 0;
 }

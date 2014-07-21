@@ -27,7 +27,7 @@ $(document).ready ->
       fillColor: '#f5837b'
     # tooltip
     popup.setLatLng e.latlng
-    popup.setContent "<div class='marker-title'>#{layer.feature.properties.name}</div>#{layer.feature.properties.value} datasets"
+    popup.setContent "<div class='marker-number'>#{layer.feature.properties.value}</div><div class='marker-label'>indicators</div>"
     if !popup._map
       popup.openOn map
     window.clearTimeout closeTooltip
