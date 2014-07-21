@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>BROWSE</title>
+    <title>Browse</title>
     <!--jquery-->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
     <!--bootstrap-->
@@ -18,20 +18,25 @@
     <!--data-->
     <script src="data/world_json.js" type="text/javascript"></script>
     <script src="data/regional_codes.js" type="text/javascript"></script>
+    <script src="data/countries.js" type="text/javascript"></script>
     <!--font-->
-    <link href="http://fonts.googleapis.com/css?family=Oswald:400,300,700" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700" rel="stylesheet">
     <!--custom-->
     <script src="js/browse.js" type="text/javascript"></script>
     <link href="css/browse.css" rel="stylesheet">
-    <link href="css/flag-icon.min.css" rel="stylesheet">
   </head>
   <body>
     <div class="container">
-      <div id="headline" class="row">
-        <h3>LOCATION</h3>
+      <div class="row">
+        <div class="col-md-12">
+          <h5 id="title">Location</h5>
+        </div>
       </div>
       <div class="row">
-        <div id="map"></div>
+        <div class="col-md-12">
+          <div id="map"></div>
+        </div>
       </div>
       <div id="country_list" class="row"></div>
     </div>

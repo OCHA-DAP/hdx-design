@@ -1,19 +1,3 @@
-* {
-  margin: 0;
-  padding: 0;
-}
-#map {
-  width: 100%;
-  height: 360px;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: 'Oswald' Arial;
-}
 .leaflet-top-pane {
   pointer-events: none;
 }
@@ -26,50 +10,84 @@ h6 {
 .leaflet-popup-content-wrapper {
   pointer-events: none;
 }
-#headline {
-  text-align: center;
-  margin: 80px 0 40px 0;
+.header-font {
+  font-family: 'Roboto' Arial;
+}
+.text-font {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  font-family: 'Roboto' Arial;
+}
+body {
+  background: #2cbeb2;
+}
+.container {
+  background: #fff;
+  min-height: 1600px;
+}
+#title {
+  font-size: 16px;
+}
+#map {
+  width: 100%;
+  height: 578px;
+}
+#map .leaflet-popup-content-wrapper {
+  background: #333;
+  color: #fff;
+  font-size: 16px;
+  line-height: 24px;
+}
+#map .leaflet-popup-tip-container {
+  width: 16px;
+  height: 8px;
+}
+#map .leaflet-popup-tip {
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #333;
 }
 #country_list {
-  margin-top: 40px;
+  padding: 0 0 100px 0;
 }
-#country_list .country-box {
-  padding: 0 0 4px 0;
-  position: relative;
-  height: 80px;
+#country_list .char-box {
+  border-top: 1px solid #007ce0;
+  margin: 30px 0 0 0;
 }
-#country_list .country-box:hover svg .region-path {
-  fill: #000;
+#country_list .char-box .char-label {
+  font-family: 'Roboto' Arial;
+  color: #007ce0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 40px;
+  margin: 5px 0 0 0;
 }
-#country_list .country-box:hover a {
-  color: #ef2b0d;
+#country_list .char-box .country-item {
+  color: #000;
+  font-size: 14px;
+  line-height: 16px;
+  font-weight: 600;
+  font-family: 'Source Sans Pro', sans-serif;
+  cursor: pointer;
 }
-#country_list .country-box svg {
-  width: 80px;
-  height: 60px;
-  background: #fff;
-  position: absolute;
+#country_list .char-box .country-item:hover {
+  color: #007ce0;
 }
-#country_list .country-box svg .region-path {
-  fill: #efefef;
-  stroke: #ccc;
-  stroke-width: 0.5;
+#country_list .char-box .country-item.inactive {
+  color: #999999;
 }
-#country_list .country-box a {
-  display: inline-block;
-  margin-left: 100px;
-  color: black;
-  text-decoration: none;
-}
-#country_list .country-box .region-flag {
-  display: block;
-  margin-left: 100px;
-  line-height: 30px;
-}
-#country_list .country-box .region-flag .flag-icon {
-  background-size: contain;
-  background-position: 50%;
-  background-repeat: no-repeat;
-  width: 30px;
-  height: 20px;
+#country_list .char-box .country-item.inactive:hover {
+  color: #999999;
 }
