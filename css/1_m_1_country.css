@@ -1,0 +1,45 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto' sans-serif;
+  font-weight: 300;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Oswald' Arial;
+}
+body {
+  margin-bottom: 200px;
+}
+.line-break {
+  width: 100%;
+  border-bottom: 1px dotted #ccc;
+  margin: 0 0 60px 0;
+}
+.chart-title {
+  font-weight: 500;
+  color: #000;
+  font-size: 16px;
+}
+#title {
+  margin: 20px 0 20px 0;
+}
+#data_group {
+  font-weight: 300;
+  margin: 0 0 60px 0;
+}
+#data_group span {
+  color: #ccc;
+}
+.chart-group {
+  padding: 60px 0 0 0;
+}
+.chart-group .c3 {
+  width: 450px;
+  height: 320px;
+  display: inline-block;
+}

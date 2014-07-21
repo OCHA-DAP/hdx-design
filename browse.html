@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>index</title>
+    <title>world map</title>
     <!--jquery-->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
     <!--bootstrap-->
@@ -16,19 +16,24 @@
     <script src="http://d3js.org/d3.v3.min.js" type="text/javascript"></script>
     <script src="http://d3js.org/topojson.v1.min.js" type="text-javascript"></script>
     <!--data-->
-    <script src="data/index.js" type="text/javascript"></script>
+    <script src="data/world_json.js" type="text/javascript"></script>
+    <script src="data/regional_codes.js" type="text/javascript"></script>
     <!--font-->
     <link href="http://fonts.googleapis.com/css?family=Oswald:400,300,700" rel="stylesheet">
-    <link href="http://fonts.googleapis.com/css?family=Roboto:400,300,500" rel="stylesheet">
     <!--custom-->
-    <script src="js/index.js" type="text/javascript"></script>
-    <link href="css/index.css" rel="stylesheet">
+    <script src="js/world_map.js" type="text/javascript"></script>
+    <link href="css/world_map.css" rel="stylesheet">
+    <link href="css/flag-icon.min.css" rel="stylesheet">
   </head>
   <body>
     <div class="container">
-      <div id="content" class="row">
-        <h3>Chartable</h3>
+      <div id="headline" class="row">
+        <h3>World Map</h3>
       </div>
+      <div class="row">
+        <div id="map"></div>
+      </div>
+      <div id="country_list" class="row"></div>
     </div>
   </body>
 </html>
