@@ -184,7 +184,7 @@ $(document).ready ->
     .text d.recommend
     options = charts.append 'g'
     .attr 'class', 'options'
-    .style 'opacity', 0
+    .style 'opacity', 0.2
     for o, i in d.options
       options.append 'rect'
       .attr 'class', "option-box #{o}"
@@ -211,7 +211,7 @@ $(document).ready ->
       d3.select("##{d.code} .options").style 'opacity', 1
     else
       all_links.style 'stroke', '#ddd'
-      d3.selectAll(".options").style 'opacity', 0
+      d3.selectAll(".options").style 'opacity', 0.2
 
   highlightLink = (d) ->
     if d.parent

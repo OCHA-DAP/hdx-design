@@ -98,7 +98,7 @@
       charts = one_region.append('g').attr('class', 'charts');
       charts.append('rect').attr('class', "option-box " + d.recommend).attr('x', 115).attr('y', -10).attr('width', 20).attr('height', 20);
       charts.append('text').attr('class', 'option-text').attr('x', 125).attr('dy', 5).attr('text-anchor', 'middle').text(d.recommend);
-      options = charts.append('g').attr('class', 'options').style('opacity', 0);
+      options = charts.append('g').attr('class', 'options').style('opacity', 0.2);
       _ref1 = d.options;
       for (i = _k = 0, _len2 = _ref1.length; _k < _len2; i = ++_k) {
         o = _ref1[i];
@@ -119,7 +119,7 @@
         return d3.select("#" + d.code + " .options").style('opacity', 1);
       } else {
         all_links.style('stroke', '#ddd');
-        return d3.selectAll(".options").style('opacity', 0);
+        return d3.selectAll(".options").style('opacity', 0.2);
       }
     };
     highlightLink = function(d) {
