@@ -14,6 +14,43 @@ h1,h2,h3,h4,h5,h6{
   -webkit-transition-timing-function: linear;
 }
 
-.region{
+.region {
   cursor: pointer;
+}
+
+.label {
+  font-family: 'Oswald' Arial;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.options {
+  -webkit-transition-duration: 0.4s;
+  -webkit-transition-timing-function: linear;
+}
+
+.option-text{
+  font-weight: 500;
+  fill: #fff;
+}
+
+.option-box{
+  &.P {
+    fill: #d476ea;
+  }
+  &.L {
+    fill: #58e2c2;
+  }
+  &.B {
+    fill: #4d29df;
+  }
+  &.M {
+    fill: #000;
+  }
+  &.R {
+    fill: #81d135;
+  }
+  &.S {
+    fill: #f3a536;
+  }
 }

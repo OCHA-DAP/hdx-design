@@ -25,6 +25,19 @@ body {
   color: #000;
   font-size: 16px;
 }
+.c3 {
+  width: 600px;
+  height: 400px;
+  margin: 60px 0 60px 0;
+}
+.c3-tooltip {
+  opacity: 1;
+}
+.c3-tooltip th {
+  background-color: #000;
+  font-size: 8px;
+  font-weight: 500;
+}
 #title {
   margin: 20px 0 20px 0;
 }
