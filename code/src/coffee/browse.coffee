@@ -12,7 +12,7 @@ $(document).ready ->
     {
       weight: 0,
       fillOpacity: 1,
-      fillColor: '#fff'
+      fillColor: '#f2f2ef'
     }
 
   closeTooltip = window.setTimeout ()->
@@ -52,7 +52,7 @@ $(document).ready ->
     layer.setStyle
       weigth:0
       fillOpacity: 1.0
-      fillColor: '#fff'
+      fillColor: '#f2f2ef'
     closeTooltip = window.setTimeout ()->
       map.closePopup()
     , 100
@@ -62,7 +62,7 @@ $(document).ready ->
     layer = e.target
     code = layer.feature.id.toLowerCase()
     # console.log code + ' is clicked'
-    openURL("http://data.hdx.rwlabs.org/group/#{code}")
+    openURL("country.html?code=#{code}")
     return
 
   onEachFeature = (feature, layer) ->
@@ -146,6 +146,6 @@ $(document).ready ->
   $('.country-item').on 'click', (e)->
     code = $(this).data('code')
     if code
-      openURL("http://data.hdx.rwlabs.org/group/#{code}")
+      openURL("country.html?code=#{code}")
     return
   return

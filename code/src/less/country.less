@@ -1,0 +1,246 @@
+@import "../lib/retina.less";
+
+// FONTS
+@font-face {
+  font-family: 'Gotham';
+  src: url('../fonts/Gotham/Gotham-Book.otf');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Gotham';
+  src: url('../fonts/Gotham/Gotham-Bold.otf');
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Gotham';
+  src: url('../fonts/Gotham/Gotham-Light.otf');
+  font-weight: light;
+  font-style: normal;
+}
+
+.leaflet-container {
+  // set up choropleth map
+  .leaflet-top-pane {
+    pointer-events: none;
+  }
+  // setup popup
+  .leaflet-popup-pane {
+    z-index: 10;
+  }
+  .leaflet-popup-close-button {
+    display: none;
+   }
+  .leaflet-popup-content {
+    padding: 0 0 0 0 !important;
+  }
+  .leaflet-popup-content-wrapper {
+    pointer-events: none;
+    background:#333;
+    color:#fff;
+    font-size:16px;
+    line-height:24px;
+  }
+  .leaflet-popup-tip-container {
+    width: 16px;
+    height: 8px;
+  }
+  .leaflet-popup-tip {
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #333;
+  }
+  // hide copyrights
+  .leaflet-bottom.leaflet-right{
+    display: none;
+  }
+
+  // zoom control postioin
+  .leaflet-bar.leaflet-control
+  {
+    margin-left:45px;
+    &.leaflet-control-zoom{
+      margin-top: 30px;
+    }
+  }
+}
+
+.header-font {
+  font-family: 'Gotham' Arial;
+}
+
+.text-font {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+*{
+  margin:0;
+  padding:0;
+  .text-font();
+  -webkit-font-smoothing: antialiased !important;
+}
+
+h1,h2,h3,h4,h5,h6{
+  font-weight: bold;
+  .header-font();
+  letter-spacing: 1.5px;
+}
+
+@green: #2cbeb2;
+@blue: #007ce0;
+@gray: #999;
+
+body {
+  background: @green no-repeat fixed center;
+  .at2x('../img/world_map_dot.png', 1864px, 1176px);
+}
+
+.container {
+  background: #fff;
+  width: 1260px;
+  .col-md-12 {
+    padding: 0 45px 0 45px;
+  }
+}
+
+#header_img {
+  width: 1260px;
+  height: 95px;
+  background: no-repeat;
+  .at2x('../img/country_header.png', 1260px, 95px);
+}
+
+#content_img {
+  width: 1260px;
+  height: 1566px;
+  background: no-repeat #FFF;
+  .at2x('../img/country_content.png', 1260px, 1566px);
+}
+
+#footer_img {
+  width: 1260px;
+  height: 160px;
+  background: no-repeat #FFF;
+  .at2x('../img/page_footer.png', 1260px, 160px);
+}
+
+#title {
+  font-size: 16px;
+  line-height: 16px;
+  margin: 50px 0 10px 0;
+}
+
+#map_container
+{
+  width: 100%;
+  height: 322px;
+}
+#map{
+  width: 100%;
+  height: 100%;
+  .marker-container {
+    position: relative;
+    width: 140px;
+    height: 75px;
+    padding: 0 !important;
+    .line-break {
+      position: absolute;
+      background: #fff;
+      width: 1px;
+      height: 42px;
+      left: 70px;
+      top: 12px;
+    }
+    .marker-box {
+      width: 70px;
+      height: 75px;
+      float:left;
+      .marker-number {
+        .header-font();
+        font-size: 30px;
+        line-height: 30px;
+        font-weight: light;
+        text-align: center;
+        padding: 0;
+        margin: 15px auto 5px auto;
+      }
+      .marker-label {
+        .text-font();
+        font-size: 10px !important;
+        line-height: 10px !important;
+        text-transform: uppercase;
+        text-align: center;
+        color: #fff;
+      }
+    }
+  }
+}
+
+#map_row {
+  position: relative;
+}
+
+#title_bar {
+  position:absolute;
+  bottom: 0;
+  width: 100%;
+  height: 93px;
+  background: rgba(255,255,255,0.5);
+  pointer-events: none;
+  #title_label{
+    .text-font();
+    font-size: 28px;
+    line-height: 93px;
+    font-weight: bold;
+    margin: 0 0 0 45px;
+  }
+  #title_actions {
+    position: absolute;
+    left: 900px;
+    top: 28px;
+    width: 319px;
+    height: 37px;
+    .at2x('../img/country_action.png', 319px, 37px);
+  }
+}
+
+#country_list{
+  margin: 0 45px 30px 45px;
+  padding: 0;
+  .col-md-2 {
+    width: 170px;
+    margin: 0 30px 0 0;
+    padding: 0;
+  }
+  .char-box {
+    border-top: 1px solid @blue;
+    margin: 38px 0 0 0;
+    .char-label{
+      .header-font();
+      color: @blue;
+      font-size: 24px;
+      line-height: 24px;
+      font-weight: bold;
+      margin: 15px 0 15px 0;
+    }
+    .country-item{
+      color: #000;
+      .text-font();
+      font-size: 14px;
+      line-height: 16px;
+      font-weight: bold;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      &:hover {
+        color: @blue;
+      }
+      &.inactive {
+        color: @gray;
+        &:hover {
+          color: @gray;
+        }
+      }
+    }
+  }
+}

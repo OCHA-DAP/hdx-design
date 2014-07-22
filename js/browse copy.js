@@ -9,7 +9,7 @@
       return {
         weight: 0,
         fillOpacity: 1,
-        fillColor: '#f2f2ef'
+        fillColor: '#fff'
       };
     };
     closeTooltip = window.setTimeout(function() {
@@ -39,7 +39,7 @@
       layer.setStyle({
         weigth: 0,
         fillOpacity: 1.0,
-        fillColor: '#f2f2ef'
+        fillColor: '#fff'
       });
       closeTooltip = window.setTimeout(function() {
         return map.closePopup();
@@ -49,7 +49,7 @@
       var code, layer;
       layer = e.target;
       code = layer.feature.id.toLowerCase();
-      openURL("country.html?code=" + code);
+      openURL("http://data.hdx.rwlabs.org/group/" + code);
     };
     onEachFeature = function(feature, layer) {
       layer.on({
@@ -128,7 +128,7 @@
     $('.country-item').on('click', function(e) {
       code = $(this).data('code');
       if (code) {
-        openURL("country.html?code=" + code);
+        openURL("http://data.hdx.rwlabs.org/group/" + code);
       }
     });
   });
