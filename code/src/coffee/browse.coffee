@@ -1,11 +1,13 @@
-#wpx data
+#wfp data
 
 $(document).ready ->
   # Global
-  mapID = 'xyfeng.ijpo6lio'
-  # mapID = 'yumiendo.ijchbik8'
+  # mapID = 'xyfeng.ijpo6lio'
+  mapID = 'yumiendo.ijchbik8'
 
   # Functions
+  openURL = (url) ->
+    return window.open(url, '_blank').focus()
   getStyle = (feature) ->
     {
       weight: 0,
@@ -27,7 +29,19 @@ $(document).ready ->
       fillColor: '#f5837b'
     # tooltip
     popup.setLatLng e.latlng
-    popup.setContent "<div class='marker-number'>#{layer.feature.properties.value}</div><div class='marker-label'>indicators</div>"
+    popup.setContent "
+    <div class='marker-container'>
+      <div class='marker-box'>
+        <div class='marker-number'>#{layer.feature.properties.indicators}</div>
+        <div class='marker-label'>indicators</div>
+      </div>
+      <div class='line-break'></div>
+      <div class='marker-box'>
+        <div class='marker-number'>#{layer.feature.properties.datasets}</div>
+        <div class='marker-label'>datasets</div>
+      </div>
+    </div>
+    "
     if !popup._map
       popup.openOn map
     window.clearTimeout closeTooltip
@@ -46,8 +60,9 @@ $(document).ready ->
 
   featureClicked = (e) ->
     layer = e.target
-    countryName = layer.feature.properties.name
-    console.log countryName + ' is clicked'
+    code = layer.feature.id.toLowerCase()
+    # console.log code + ' is clicked'
+    openURL("http://data.hdx.rwlabs.org/group/#{code}")
     return
 
   onEachFeature = (feature, layer) ->
@@ -62,14 +77,14 @@ $(document).ready ->
   for feature in worldJSON['features']
     country_id = feature.id
     first_letter = country_id.substring(0, 1)
-    feature.properties.value = 0
-    if countries[first_letter]
-      for country in countries[first_letter]
+    feature.properties.datasets = 0
+    feature.properties.indicators = 0
+    for k, v of countries
+      for country in v
         if country[0] == country_id
-          feature.properties.value = country[2]
-          console.log country[2]
+          feature.properties.datasets = country[2]
+          feature.properties.indicators = country[3]
           break
-    # console.log feature.properties.value
 
   # create map
   map = L.mapbox.map 'map', mapID,
@@ -123,7 +138,14 @@ $(document).ready ->
       one_char_box = $("<div class='char-box'></div>").appendTo(one_column)
       one_char_labe = $("<div class='char-label'>#{char}</div>").appendTo(one_char_box)
       for country in countries[char]
-        if country[2] == 0
+        if country.length == 2
           $("<div class='country-item inactive'>#{country[1]}</div>").appendTo(one_char_box)
         else
-          $("<div class='country-item'>#{country[1]}</div>").appendTo(one_char_box)
+          code = country[0].toLowerCase()
+          $("<div class='country-item' data-code='#{code}'>#{country[1]}</div>").appendTo(one_char_box)
+  $('.country-item').on 'click', (e)->
+    code = $(this).data('code')
+    if code
+      openURL("http://data.hdx.rwlabs.org/group/#{code}")
+    return
+  return

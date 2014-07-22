@@ -24,9 +24,14 @@ module.exports = (grunt) ->
           dest:'build/img/'
         ,
           expand:true
-          cwd:'src/lib/js/'
+          cwd:'src/fonts/'
           src:'**'
-          dest:'build/lib/js/'
+          dest:'build/fonts/'
+        ,
+          expand:true
+          cwd:'src/lib/'
+          src:'**'
+          dest:'build/lib/'
         ,
           expand:true
           cwd:'src/data/'
@@ -100,6 +105,14 @@ module.exports = (grunt) ->
 
       img:
         files: ['src/img/**/*']
+        tasks: 'copy:build'
+
+      fonts:
+        files: ['src/fonts/**/*']
+        tasks: 'copy:build'
+
+      lib:
+        files: ['src/lib/**/*']
         tasks: 'copy:build'
 
     # jshint: {

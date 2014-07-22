@@ -221,6 +221,6 @@ $(document).ready ->
       highlightLink d.parent
   openURL = (url) ->
     return
-    # return window.open(url, '_blank').focus()
+    return window.open(url, '_blank').focus()
 
   return

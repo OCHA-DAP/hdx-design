@@ -131,7 +131,10 @@
         return highlightLink(d.parent);
       }
     };
-    openURL = function(url) {};
+    openURL = function(url) {
+      return;
+      return window.open(url, '_blank').focus();
+    };
   });
 
 }).call(this);
