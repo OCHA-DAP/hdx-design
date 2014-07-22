@@ -47,8 +47,7 @@ require ['http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js',
   featureClicked = (e) ->
     layer = e.target
     code = layer.feature.id.toLowerCase()
-    # console.log code + ' is clicked'
-    # openURL("http://data.hdx.rwlabs.org/group/#{code}")
+    openURL("country.html?code=#{code}")
     return
 
   onEachFeature = (feature, layer) ->
