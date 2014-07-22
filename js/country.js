@@ -1,5 +1,27 @@
 (function() {
-  require(['http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js', 'http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js', 'https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js', 'https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js', 'https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.3/Leaflet.fullscreen.min.js', 'http://d3js.org/d3.v3.min.js', 'http://d3js.org/topojson.v1.min.js', 'data/world_json.js', 'data/regional_codes.js', 'data/countries.js'], function() {
+  requirejs.config({
+    paths: {
+      jquery: 'lib/jquery.v1.11.1.min',
+      bootstrap: 'lib/bootstrap.v3.1.1.min',
+      mapbox: 'lib/mapbox.v1.6.4',
+      leaflet_omnivore: 'lib/leaflet.omnivore.v0.2.0.min',
+      leaflet_fullscreen: 'lib/Leaflet.fullscreen.v0.0.3.min',
+      d3: 'lib/d3.v3.min'
+    },
+    shim: {
+      'bootstrap': {
+        deps: ['jquery']
+      },
+      'leaflet_omnivore': {
+        deps: ['mapbox']
+      },
+      'leaflet_fullscreen': {
+        deps: ['mapbox']
+      }
+    }
+  });
+
+  require(['jquery', 'bootstrap', 'd3', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'data/world_json.js', 'data/regional_codes.js', 'data/countries.js'], function() {
     var countryLayer, country_code, featureClicked, getStyle, highlightFeature, map, mapID, onEachFeature, openURL, popup, resetFeature, topLayer, topPane;
     mapID = 'yumiendo.ijchbik8';
     openURL = function(url) {
@@ -43,6 +65,7 @@
       var code, layer;
       layer = e.target;
       code = layer.feature.id.toLowerCase();
+      openURL("country.html?code=" + code);
     };
     onEachFeature = function(feature, layer) {
       var country_name;
