@@ -109,7 +109,7 @@ require ['jquery',
     feature.properties.indicators = 0
     for k, v of countries
       for country in v
-        if country[0] == country_id
+        if country[0] == country_id && country.length == 4
           feature.properties.datasets = country[2]
           feature.properties.indicators = country[3]
           break

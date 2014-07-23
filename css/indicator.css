@@ -100,27 +100,26 @@ body {
 }
 #header_img {
   width: 1260px;
-  height: 95px;
+  height: 170px;
   background: no-repeat;
-  background-image: url('../img/country_header.png');
+  background-image: url('../img/indicator_header.png');
 }
 @media (-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx) {
   #header_img {
-    background-image: url("../img/country_header@2x.png");
-    background-size: 1260px 95px;
+    background-image: url("../img/indicator_header@2x.png");
+    background-size: 1260px 170px;
   }
 }
 #content_img {
-  position: relative;
   width: 1260px;
-  height: 1566px;
+  height: 1550px;
   background: no-repeat #ffffff;
-  background-image: url('../img/country_content.png');
+  background-image: url('../img/indicator_content.png');
 }
 @media (-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx) {
   #content_img {
-    background-image: url("../img/country_content@2x.png");
-    background-size: 1260px 1566px;
+    background-image: url("../img/indicator_content@2x.png");
+    background-size: 1260px 1550px;
   }
 }
 #footer_img {
@@ -135,130 +134,8 @@ body {
     background-size: 1260px 160px;
   }
 }
-#title {
-  font-size: 16px;
-  line-height: 16px;
-  margin: 50px 0 10px 0;
-}
-#map_container {
-  width: 100%;
-  height: 322px;
-}
-#map {
-  width: 100%;
-  height: 100%;
-}
-#map .marker-container {
-  position: relative;
-  width: 140px;
-  height: 75px;
-  padding: 0 !important;
-}
-#map .marker-container .line-break {
-  position: absolute;
-  background: #fff;
-  width: 1px;
-  height: 42px;
-  left: 70px;
-  top: 12px;
-}
-#map .marker-container .marker-box {
-  width: 70px;
-  height: 75px;
-  float: left;
-}
-#map .marker-container .marker-box .marker-number {
-  font-family: 'Gotham' Arial;
-  font-size: 30px;
-  line-height: 30px;
-  font-weight: light;
-  text-align: center;
-  padding: 0;
-  margin: 15px auto 5px auto;
-}
-#map .marker-container .marker-box .marker-label {
-  font-family: 'Source Sans Pro', sans-serif;
-  font-size: 10px !important;
-  line-height: 10px !important;
-  text-transform: uppercase;
-  text-align: center;
-  color: #fff;
-}
-#map_row {
-  position: relative;
-}
-#title_bar {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 93px;
-  background: rgba(255, 255, 255, 0.5);
-  pointer-events: none;
-}
-#title_bar #title_label {
-  font-family: 'Source Sans Pro', sans-serif;
-  font-size: 28px;
-  line-height: 93px;
-  font-weight: bold;
-  margin: 0 0 0 45px;
-}
-#title_bar #title_actions {
-  position: absolute;
-  left: 900px;
-  top: 28px;
-  width: 319px;
-  height: 37px;
-  background-image: url('../img/country_action.png');
-}
-@media (-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx) {
-  #title_bar #title_actions {
-    background-image: url("../img/country_action@2x.png");
-    background-size: 319px 37px;
-  }
-}
-#country_list {
-  margin: 0 45px 30px 45px;
-  padding: 0;
-}
-#country_list .col-md-2 {
-  width: 170px;
-  margin: 0 30px 0 0;
-  padding: 0;
-}
-#country_list .char-box {
-  border-top: 1px solid #007ce0;
-  margin: 38px 0 0 0;
-}
-#country_list .char-box .char-label {
-  font-family: 'Gotham' Arial;
-  color: #007ce0;
-  font-size: 24px;
-  line-height: 24px;
-  font-weight: bold;
-  margin: 15px 0 15px 0;
-}
-#country_list .char-box .country-item {
-  color: #000;
-  font-family: 'Source Sans Pro', sans-serif;
-  font-size: 14px;
-  line-height: 16px;
-  font-weight: bold;
-  letter-spacing: 0.2px;
-  cursor: pointer;
-}
-#country_list .char-box .country-item:hover {
-  color: #007ce0;
-}
-#country_list .char-box .country-item.inactive {
-  color: #999999;
-}
-#country_list .char-box .country-item.inactive:hover {
-  color: #999999;
-}
-#chart {
-  position: absolute;
-  left: 420px;
-  top: 150px;
-  width: 370px;
-  height: 290px;
+#chart_container {
+  width: 1050px;
+  height: 320px;
+  margin: 30px auto 30px auto;
 }

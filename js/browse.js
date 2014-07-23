@@ -91,7 +91,7 @@
         v = countries[k];
         for (_j = 0, _len1 = v.length; _j < _len1; _j++) {
           country = v[_j];
-          if (country[0] === country_id) {
+          if (country[0] === country_id && country.length === 4) {
             feature.properties.datasets = country[2];
             feature.properties.indicators = country[3];
             break;

@@ -125,3 +125,27 @@ require ['jquery',
   topLayer.addTo map
   topPane.appendChild topLayer.getContainer()
   topLayer.setZIndex 7
+
+  # Chart
+  chart_colors = ['1ebfb3','117be1', 'f2645a', '555555','ffd700']
+  chart_config =
+    bindto: '#chart'
+    color:
+      pattern: chart_colors
+
+  chartUnits = 'per 1,000 female adults'
+  chartData = {}
+  chartData['x'] = ['1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011']
+  chartData['rate'] = [113.419, 111.6132, 109.8074, 108.0016, 106.1958, 104.39, 102.307, 100.224, 98.141, 96.058, 93.975, 92.4752, 90.9754, 89.4756, 87.9758]
+
+  chart_config.data =
+    x: 'x'
+    json: chartData
+    type: 'area'
+
+  c3.generate chart_config
+
+  $('#chart').on 'click', ()->
+    openURL('/indicator.html')
+
+  return
