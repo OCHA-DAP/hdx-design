@@ -146,6 +146,6 @@ require ['jquery',
   c3.generate chart_config
 
   $('#chart').on 'click', ()->
-    openURL('/indicator.html')
+    openURL('indicator.html')
 
   return
