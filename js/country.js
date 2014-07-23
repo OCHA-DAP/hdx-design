@@ -132,7 +132,7 @@
     };
     c3.generate(chart_config);
     $('#chart').on('click', function() {
-      return openURL('/indicator.html');
+      return openURL('indicator.html');
     });
   });
 
