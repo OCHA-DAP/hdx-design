@@ -22,7 +22,7 @@
   });
 
   require(['jquery', 'bootstrap', 'd3', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'data/world_json.js', 'data/regional_codes.js', 'data/mortality.js'], function() {
-    var another, chartData, chartUnits, chart_colors, chart_config, countryLayer, country_code, country_name, featureClicked, getStyle, globalRate, highlightFeature, index, map, mapID, mortalityData, onEachFeature, one, openURL, popup, resetFeature, topLayer, topPane, _i, _j, _len, _len1, _ref, _ref1;
+    var another, chartData, chartUnits, chart_colors, chart_config, countryLayer, country_code, country_name, data_length, featureClicked, getStyle, globalRate, highlightFeature, index, map, mapID, mortalityData, onEachFeature, one, openURL, popup, resetFeature, topLayer, topPane, _i, _j, _len, _len1, _ref, _ref1;
     mapID = 'yumiendo.ijchbik8';
     openURL = function(url) {
       return window.open(url, '_blank').focus();
@@ -146,6 +146,8 @@
     } else {
       mortalityData = mortality_rates['default'];
     }
+    data_length = mortalityData['year'].length;
+    $('#latest_data').html("" + (mortalityData['rate'][data_length - 1].toFixed(1)) + " <span>/" + mortalityData['year'][data_length - 1] + "</span>");
     chartData['year'] = mortalityData['year'];
     globalRate = [];
     _ref = chartData['year'];

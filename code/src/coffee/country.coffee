@@ -151,6 +151,9 @@ require ['jquery',
     mortalityData = mortality_rates[country_code]
   else
     mortalityData = mortality_rates['default']
+  # set latest data
+  data_length = mortalityData['year'].length
+  $('#latest_data').html("#{mortalityData['rate'][data_length-1].toFixed(1)} <span>/#{mortalityData['year'][data_length-1]}</span>")
   chartData['year'] = mortalityData['year']
   globalRate = []
   for one in chartData['year']

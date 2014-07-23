@@ -262,3 +262,13 @@ body {
   width: 370px;
   height: 290px;
 }
+#latest_data {
+  position: absolute;
+  left: 446px;
+  top: 115px;
+  font-family: 'Gotham' Arial;
+  font-size: 24px;
+}
+#latest_data span {
+  font-size: 10px;
+}
