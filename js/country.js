@@ -21,8 +21,8 @@
     }
   });
 
-  require(['jquery', 'bootstrap', 'd3', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'data/world_json.js', 'data/regional_codes.js', 'data/countries.js'], function() {
-    var chartData, chartUnits, chart_colors, chart_config, countryLayer, country_code, featureClicked, getStyle, highlightFeature, map, mapID, onEachFeature, openURL, popup, resetFeature, topLayer, topPane;
+  require(['jquery', 'bootstrap', 'd3', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'data/world_json.js', 'data/regional_codes.js', 'data/mortality.js'], function() {
+    var another, chartData, chartUnits, chart_colors, chart_config, countryLayer, country_code, country_name, featureClicked, getStyle, globalRate, highlightFeature, index, map, mapID, mortalityData, onEachFeature, one, openURL, popup, resetFeature, topLayer, topPane, _i, _j, _len, _len1, _ref, _ref1;
     mapID = 'yumiendo.ijchbik8';
     openURL = function(url) {
       return window.open(url, '_blank').focus();
@@ -86,6 +86,14 @@
     } else {
       country_code = country_code.toUpperCase();
     }
+    country_name = '';
+    for (_i = 0, _len = regional_codes.length; _i < _len; _i++) {
+      one = regional_codes[_i];
+      if (one['alpha-3'] === country_code) {
+        country_name = one['name'];
+        break;
+      }
+    }
     map = L.mapbox.map('map', mapID, {
       center: [20, 0],
       zoom: 2,
@@ -114,25 +122,54 @@
     topLayer.addTo(map);
     topPane.appendChild(topLayer.getContainer());
     topLayer.setZIndex(7);
-    chart_colors = ['1ebfb3', '117be1', 'f2645a', '555555', 'ffd700'];
+    chart_colors = ['555555', '1ebfb3'];
     chart_config = {
       bindto: '#chart',
       color: {
         pattern: chart_colors
+      },
+      axis: {
+        x: {
+          tick: {
+            culling: {
+              max: 4
+            }
+          }
+        }
       }
     };
     chartUnits = 'per 1,000 female adults';
     chartData = {};
-    chartData['x'] = ['1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011'];
-    chartData['rate'] = [113.419, 111.6132, 109.8074, 108.0016, 106.1958, 104.39, 102.307, 100.224, 98.141, 96.058, 93.975, 92.4752, 90.9754, 89.4756, 87.9758];
+    mortalityData = [];
+    if (mortality_rates[country_code]) {
+      mortalityData = mortality_rates[country_code];
+    } else {
+      mortalityData = mortality_rates['default'];
+    }
+    chartData['year'] = mortalityData['year'];
+    globalRate = [];
+    _ref = chartData['year'];
+    for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+      one = _ref[_j];
+      _ref1 = mortality_rates['global']['year'];
+      for (index in _ref1) {
+        another = _ref1[index];
+        if (one === another) {
+          globalRate.push(mortality_rates['global']['rate'][index]);
+          break;
+        }
+      }
+    }
+    chartData['Global'] = globalRate;
+    chartData[country_name] = mortalityData['rate'];
     chart_config.data = {
-      x: 'x',
+      x: 'year',
       json: chartData,
       type: 'area'
     };
     c3.generate(chart_config);
     $('#chart').on('click', function() {
-      return openURL('indicator.html');
+      return openURL('indicator.html?code=' + country_code.toLowerCase());
     });
   });
 

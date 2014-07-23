@@ -27,7 +27,7 @@ require ['jquery',
 'leaflet_fullscreen',
 'data/world_json.js',
 'data/regional_codes.js',
-'data/countries.js'
+'data/mortality.js'
 ], ()->
   # Global
   # mapID = 'xyfeng.ijpo6lio'
@@ -90,6 +90,12 @@ require ['jquery',
   else
     country_code = country_code.toUpperCase()
 
+  country_name = ''
+  for one in regional_codes
+    if one['alpha-3'] == country_code
+      country_name = one['name']
+      break
+
   # create map
   map = L.mapbox.map 'map', mapID,
     center: [20, 0]
@@ -127,25 +133,41 @@ require ['jquery',
   topLayer.setZIndex 7
 
   # Chart
-  chart_colors = ['1ebfb3','117be1', 'f2645a', '555555','ffd700']
+  chart_colors = ['555555', '1ebfb3']
   chart_config =
     bindto: '#chart'
     color:
       pattern: chart_colors
+    axis:
+      x:
+        tick:
+          culling:
+            max: 4
 
   chartUnits = 'per 1,000 female adults'
   chartData = {}
-  chartData['x'] = ['1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011']
-  chartData['rate'] = [113.419, 111.6132, 109.8074, 108.0016, 106.1958, 104.39, 102.307, 100.224, 98.141, 96.058, 93.975, 92.4752, 90.9754, 89.4756, 87.9758]
-
+  mortalityData = []
+  if mortality_rates[country_code]
+    mortalityData = mortality_rates[country_code]
+  else
+    mortalityData = mortality_rates['default']
+  chartData['year'] = mortalityData['year']
+  globalRate = []
+  for one in chartData['year']
+    for index, another of mortality_rates['global']['year']
+      if one == another
+        globalRate.push(mortality_rates['global']['rate'][index])
+        break
+  chartData['Global'] = globalRate
+  chartData[country_name] = mortalityData['rate']
   chart_config.data =
-    x: 'x'
+    x: 'year'
     json: chartData
     type: 'area'
 
   c3.generate chart_config
 
   $('#chart').on 'click', ()->
-    openURL('indicator.html')
+    openURL('indicator.html?code='+country_code.toLowerCase())
 
   return
