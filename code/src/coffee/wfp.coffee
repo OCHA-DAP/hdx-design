@@ -7,7 +7,8 @@ requirejs.config({
       leaflet_fullscreen: 'lib/Leaflet.fullscreen.v0.0.3.min',
       chroma: 'lib/chroma.min',
       d3: 'lib/d3.v3.min',
-      c3: 'lib/c3.v0.2.4'
+      c3: 'lib/c3.v0.2.4',
+      multiselect: 'lib/bootstrap-multiselect'
   },
   shim: {
     'bootstrap': {
@@ -21,6 +22,9 @@ requirejs.config({
     },
     'c3': {
       deps: ['d3']
+    },
+    'multiselect': {
+      deps: ['bootstrap', 'jquery']
     }
   }
 });
@@ -31,7 +35,8 @@ require ['jquery',
 'leaflet_fullscreen',
 'd3',
 'c3',
-'chroma'
+'chroma',
+'multiselect'
 ], ($, b, m, o, f, d3, c3, chroma)->
   # Global
   # mapID = 'xyfeng.ijpo6lio'
@@ -190,5 +195,8 @@ require ['jquery',
   topLayer.addTo map
   topPane.appendChild topLayer.getContainer()
   topLayer.setZIndex 7
+
+  # selections
+  $('.multiselect').multiselect()
 
   return
