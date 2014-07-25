@@ -6,6 +6,7 @@
       mapbox: 'lib/mapbox.v1.6.4',
       leaflet_omnivore: 'lib/leaflet.omnivore.v0.2.0.min',
       leaflet_fullscreen: 'lib/Leaflet.fullscreen.v0.0.3.min',
+      chroma: 'lib/chroma.min',
       d3: 'lib/d3.v3.min',
       c3: 'lib/c3.v0.2.4'
     },
@@ -25,27 +26,25 @@
     }
   });
 
-  require(['d3', 'c3', 'jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen'], function(d3, c3) {
-    var another, chartData, chartUnits, chart_colors, chart_config, countryLayer, country_code, country_name, data_length, featureClicked, getStyle, globalRate, highlightFeature, index, map, mapID, mortalityData, onEachFeature, one, openURL, popup, resetFeature, topLayer, topPane, _i, _j, _len, _len1, _ref, _ref1;
+  require(['d3', 'c3', 'jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'chroma'], function(d3, c3) {
+    var COLOR_LEVELS, FILE_LINK, MAP_JSON, color_map, color_scale, featureClicked, getMapFilePath, getStyle, highlightFeature, i, map, mapID, onEachFeature, openURL, popup, resetFeature, topLayer, topPane, _i;
     mapID = 'yumiendo.j1majbom';
+    COLOR_LEVELS = 5.0;
+    color_scale = chroma.scale(['yellow', 'red']).mode('lab');
+    color_map = [];
+    for (i = _i = 0; _i <= COLOR_LEVELS; i = _i += 1) {
+      color_map.push(color_scale(i / COLOR_LEVELS).hex());
+    }
+    console.log(color_map);
     openURL = function(url) {
       return window.open(url, '_blank').focus();
     };
     getStyle = function(feature) {
-      if (feature.id === country_code) {
-        return {
-          weight: 1,
-          opacity: 0.2,
-          fillOpacity: 1,
-          fillColor: '#f5837b'
-        };
-      } else {
-        return {
-          weight: 0,
-          fillOpacity: 1,
-          fillColor: '#f2f2ef'
-        };
-      }
+      return {
+        weight: 0,
+        fillOpacity: 1,
+        fillColor: '#000'
+      };
     };
     highlightFeature = function(e) {
       var countryID, layer;
@@ -72,32 +71,56 @@
       openURL("country.html?code=" + code);
     };
     onEachFeature = function(feature, layer) {
-      var country_name;
-      if (feature.id === country_code) {
-        country_name = feature.properties.name;
-        $('#title_label').html(country_name);
-        map.fitBounds(layer.getBounds());
-      }
       layer.on({
         mousemove: highlightFeature,
         mouseout: resetFeature,
         click: featureClicked
       });
     };
-    country_code = location.search.split('code=')[1];
-    if (!country_code) {
-      country_code = 'COL';
-    } else {
-      country_code = country_code.toUpperCase();
-    }
-    country_name = '';
-    for (_i = 0, _len = regional_codes.length; _i < _len; _i++) {
-      one = regional_codes[_i];
-      if (one['alpha-3'] === country_code) {
-        country_name = one['name'];
-        break;
+    FILE_LINK = 'data/fao/country';
+    getMapFilePath = function(dic) {
+      if (dic['admin2'] !== 'NA') {
+        return "" + FILE_LINK + "/" + dic['region'] + "/" + dic['admin1'] + "/" + dic['admin2'] + ".json";
       }
-    }
+      if (dic['admin1'] !== 'NA') {
+        return "" + FILE_LINK + "/" + dic['region'] + "/" + dic['admin1'] + ".json";
+      } else {
+        return "" + FILE_LINK + "/" + dic['region'] + ".json";
+      }
+    };
+    MAP_JSON = {
+      "type": "FeatureCollection",
+      "features": []
+    };
+    $.getJSON('http://ocha.parseapp.com/getmapdata?period=2009&indid=CHD.B.FOS.04.T6', function(data) {
+      var file, jsonQueue, one, _j, _len;
+      jsonQueue = [];
+      for (_j = 0, _len = data.length; _j < _len; _j++) {
+        one = data[_j];
+        file = getMapFilePath(one);
+        jsonQueue.push($.getJSON(file, function(map_json) {
+          var _k, _len1;
+          for (_k = 0, _len1 = data.length; _k < _len1; _k++) {
+            one = data[_k];
+            if (one['region_name'] === map_json['properties']['ADM0_NAME']) {
+              map_json['properties']['value'] = parseInt(one['value']);
+              break;
+            }
+          }
+          return MAP_JSON['features'].push(map_json);
+        }));
+      }
+      return $.when.apply($, jsonQueue).done(function() {
+        var countryLayer;
+        console.log(MAP_JSON);
+        countryLayer = L.geoJson(MAP_JSON, {
+          style: getStyle,
+          onEachFeature: onEachFeature
+        });
+        countryLayer.addTo(map);
+        return map.fitBounds(countryLayer.getBounds());
+      });
+    });
     map = L.mapbox.map('map', mapID, {
       center: [20, 0],
       zoom: 2,
@@ -116,67 +139,11 @@
     popup = new L.Popup({
       autoPan: false
     });
-    countryLayer = L.geoJson(worldJSON, {
-      style: getStyle,
-      onEachFeature: onEachFeature
-    });
-    countryLayer.addTo(map);
     topPane = map._createPane('leaflet-top-pane', map.getPanes().mapPane);
     topLayer = L.mapbox.tileLayer(mapID);
     topLayer.addTo(map);
     topPane.appendChild(topLayer.getContainer());
     topLayer.setZIndex(7);
-    chart_colors = ['555555', '1ebfb3'];
-    chart_config = {
-      bindto: '#chart',
-      color: {
-        pattern: chart_colors
-      },
-      axis: {
-        x: {
-          tick: {
-            culling: {
-              max: 4
-            }
-          }
-        }
-      }
-    };
-    chartUnits = 'per 1,000 female adults';
-    chartData = {};
-    mortalityData = [];
-    if (mortality_rates[country_code]) {
-      mortalityData = mortality_rates[country_code];
-    } else {
-      mortalityData = mortality_rates['default'];
-    }
-    data_length = mortalityData['year'].length;
-    $('#latest_data').html("" + (mortalityData['rate'][data_length - 1].toFixed(1)) + " <span>/" + mortalityData['year'][data_length - 1] + "</span>");
-    chartData['year'] = mortalityData['year'];
-    globalRate = [];
-    _ref = chartData['year'];
-    for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-      one = _ref[_j];
-      _ref1 = mortality_rates['global']['year'];
-      for (index in _ref1) {
-        another = _ref1[index];
-        if (one === another) {
-          globalRate.push(mortality_rates['global']['rate'][index]);
-          break;
-        }
-      }
-    }
-    chartData['Global'] = globalRate;
-    chartData[country_name] = mortalityData['rate'];
-    chart_config.data = {
-      x: 'year',
-      json: chartData,
-      type: 'area'
-    };
-    c3.generate(chart_config);
-    $('#chart').on('click', function() {
-      return openURL('indicator.html?code=' + country_code.toLowerCase());
-    });
   });
 
 }).call(this);

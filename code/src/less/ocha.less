@@ -36,6 +36,9 @@
   .text-font();
   -webkit-font-smoothing: antialiased !important;
 }
+li {
+  list-style: none;
+}
 h1,h2,h3,h4,h5,h6{
   font-weight: bold;
   .header-font();
@@ -92,7 +95,17 @@ body {
   }
   // hide copyrights
   .leaflet-bottom.leaflet-right{
-    display: none;
+    .map-legend {
+      .swatch{
+        width:20px;
+        height:20px;
+        float:left;
+        margin-right:10px;
+      }
+    }
+    .leaflet-control-attribution.leaflet-control {
+      display: none;
+    }
   }
 
   // zoom control postioin

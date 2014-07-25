@@ -5,6 +5,7 @@ requirejs.config({
       mapbox: 'lib/mapbox.v1.6.4',
       leaflet_omnivore: 'lib/leaflet.omnivore.v0.2.0.min',
       leaflet_fullscreen: 'lib/Leaflet.fullscreen.v0.0.3.min',
+      chroma: 'lib/chroma.min',
       d3: 'lib/d3.v3.min',
       c3: 'lib/c3.v0.2.4'
   },
@@ -23,41 +24,69 @@ requirejs.config({
     }
   }
 });
-require ['d3','c3',
-'jquery',
+require ['jquery',
 'bootstrap',
 'mapbox',
 'leaflet_omnivore',
-'leaflet_fullscreen'
-], (d3, c3)->
+'leaflet_fullscreen',
+'d3',
+'c3',
+'chroma'
+], ($, b, m, o, f, d3, c3, chroma)->
   # Global
   # mapID = 'xyfeng.ijpo6lio'
   # mapID = 'yumiendo.ijchbik8'
   mapID = 'yumiendo.j1majbom'
+  MAP_UNITS = 'percent'
+
+  # colors
+  COLOR_LEVELS = 5
+  # color_map = [
+  #   '#feebe2',
+  #   '#fbb4b9',
+  #   '#f768a1',
+  #   '#c51b8a',
+  #   '#7a0177',
+  # ]
+  color_scale = chroma.scale(['#fcbba1','#67000d']).mode('hsl').correctLightness(true).out('hex')
+  color_map = []
+  for i in [0..COLOR_LEVELS] by 1
+    color_map.push color_scale(i / parseFloat(COLOR_LEVELS))
+  console.log color_map
+
 
   # Functions
   openURL = (url) ->
     return window.open(url, '_blank').focus()
+
+  getColor = (v) ->
+    index = Math.floor(v / (100 / COLOR_LEVELS))
+    color_map[index]
+
   getStyle = (feature) ->
-    if feature.id == country_code
-      weight: 1,
-      opacity: 0.2
-      fillOpacity: 1,
-      fillColor: '#f5837b'
-    else
-      weight: 0,
-      fillOpacity: 1,
-      fillColor: '#f2f2ef'
+    weight: 0,
+    fillOpacity: 1,
+    fillColor: getColor(feature.properties.value)
+
+  getLegendHTML = ()->
+    labels = []
+    label_range = 100 / COLOR_LEVELS
+    for i in [0..COLOR_LEVELS-1] by 1
+      from = i * label_range
+      to = (i+1) * label_range
+      labels.push "<li><span class='swatch' style='background:#{getColor(from)}'></span>#{from}-#{to}</li>"
+    "<span>#{MAP_UNITS}</span><ul>#{labels.join('')}</ul"
 
   highlightFeature = (e) ->
     layer = e.target
+    feature = layer.feature
     countryID = layer.feature.id
     layer.setStyle
       weigth:1
       opacity: 0.2
       color: '#ccc'
       fillOpacity: 1.0
-      fillColor: '#f5837b'
+      fillColor: '#000'
     return
 
   resetFeature = (e) ->
@@ -73,12 +102,6 @@ require ['d3','c3',
     return
 
   onEachFeature = (feature, layer) ->
-    #zoom to feature
-    if feature.id == country_code
-      country_name = feature.properties.name
-      $('#title_label').html country_name
-      map.fitBounds(layer.getBounds())
-    #layer events
     layer.on
       mousemove: highlightFeature,
       mouseout: resetFeature,
@@ -86,25 +109,46 @@ require ['d3','c3',
     return
 
   # Code
+  FILE_LINK = 'data/fao/country'
   getMapFilePath = (dic) ->
     if dic['admin2'] != 'NA'
-      return "#{dic['region']}/#{dic['admin1']}/#{dic['admin2']}.json"
+      return "#{FILE_LINK}/#{dic['region']}/#{dic['admin1']}/#{dic['admin2']}.json"
     if dic['admin1'] != 'NA'
-      return "#{dic['region']}/#{dic['admin1']}.json"
+      return "#{FILE_LINK}/#{dic['region']}/#{dic['admin1']}.json"
     else
-      return "#{dic['region']}.json"
-  $.getJSON 'http://ocha.parseapp.com/getmapdata?period=2009&indid=CHD.B.FOS.04.T6', (data)->
+      return "#{FILE_LINK}/#{dic['region']}.json"
+  MAP_JSON =
+    "type": "FeatureCollection",
+    "features": []
+  $.getJSON 'http://ocha.parseapp.com/getmapdata?period=2009&indid=CHD.B.FOS.06.T6', (data)->
+    jsonQueue = []
     for one in data
-      console.log one
+      MAP_UNITS = one['units']
       file = getMapFilePath(one)
-      console.log file
+      jsonQueue.push(
+        $.getJSON file, (map_json)->
+          for one in data
+            if one['region_name'] == map_json['properties']['ADM0_NAME']
+              map_json['properties']['value'] = parseInt one['value']
+              break
+          MAP_JSON['features'].push map_json
+      )
+    map.legendControl.addLegend getLegendHTML()
+    $.when.apply($, jsonQueue).done ()->
+      console.log MAP_JSON
+      countryLayer = L.geoJson MAP_JSON,
+        style: getStyle,
+        onEachFeature: onEachFeature
+      countryLayer.addTo map
+      map.fitBounds(countryLayer.getBounds());
+
 
   # create map
   map = L.mapbox.map 'map', mapID,
     center: [20, 0]
     zoom: 2
     minZoom: 2
-    maxZoom: 4
+    maxZoom: 8
     tileLayer:
        continuousWorld: false
        noWrap: false
@@ -122,11 +166,6 @@ require ['d3','c3',
 
   popup = new L.Popup
     autoPan: false
-
-  # countryLayer = L.geoJson worldJSON,
-  #   style: getStyle,
-  #   onEachFeature: onEachFeature
-  # countryLayer.addTo map
 
   # re-order layers
   topPane = map._createPane 'leaflet-top-pane', map.getPanes().mapPane

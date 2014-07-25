@@ -103,9 +103,12 @@ body {
   line-height: 16px;
   margin: 50px 0 10px 0;
 }
+.container {
+  margin-top: 100px;
+}
 #map_container {
   width: 100%;
-  height: 322px;
+  height: 600px;
 }
 #map {
   width: 100%;
