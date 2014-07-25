@@ -1,0 +1,685 @@
+[{
+    "code": 609,
+    "name": "Alibori"
+}, {
+    "code": 610,
+    "name": "Atakora"
+}, {
+    "code": 611,
+    "name": "Atlantique"
+}, {
+    "code": 612,
+    "name": "Borgou"
+}, {
+    "code": 613,
+    "name": "Collines"
+}, {
+    "code": 614,
+    "name": "Couffo"
+}, {
+    "code": 615,
+    "name": "Donga"
+}, {
+    "code": 616,
+    "name": "Littoral"
+}, {
+    "code": 617,
+    "name": "Mono"
+}, {
+    "code": 618,
+    "name": "Oueme"
+}, {
+    "code": 619,
+    "name": "Plateau"
+}, {
+    "code": 620,
+    "name": "Zou"
+}, {
+    "code": 815,
+    "name": "Adamaoua"
+}, {
+    "code": 816,
+    "name": "Centre"
+}, {
+    "code": 817,
+    "name": "Est"
+}, {
+    "code": 818,
+    "name": "Extr\u00eame - Nord"
+}, {
+    "code": 819,
+    "name": "Littoral"
+}, {
+    "code": 820,
+    "name": "Nord"
+}, {
+    "code": 821,
+    "name": "Nord - Ouest"
+}, {
+    "code": 822,
+    "name": "Ouest"
+}, {
+    "code": 823,
+    "name": "Sud"
+}, {
+    "code": 824,
+    "name": "Sud - Ouest"
+}, {
+    "code": 870,
+    "name": "Biltine"
+}, {
+    "code": 873,
+    "name": "Guera"
+}, {
+    "code": 875,
+    "name": "Lac"
+}, {
+    "code": 876,
+    "name": "Logone Occidental"
+}, {
+    "code": 881,
+    "name": "Salamat"
+}, {
+    "code": 1066,
+    "name": "Bandundu"
+}, {
+    "code": 1067,
+    "name": "Bas-Congo"
+}, {
+    "code": 1068,
+    "name": "Equateur"
+}, {
+    "code": 1069,
+    "name": "Kasai Occidental"
+}, {
+    "code": 1070,
+    "name": "Kasai Oriental"
+}, {
+    "code": 1071,
+    "name": "Katanga"
+}, {
+    "code": 1072,
+    "name": "Kinshasa"
+}, {
+    "code": 1073,
+    "name": "Maniema"
+}, {
+    "code": 1074,
+    "name": "Nord-Kivu"
+}, {
+    "code": 1075,
+    "name": "Orientale"
+}, {
+    "code": 1076,
+    "name": "Sud-Kivu"
+}, {
+    "code": 1198,
+    "name": "Annobon"
+}, {
+    "code": 1199,
+    "name": "Bioko Norte"
+}, {
+    "code": 1200,
+    "name": "Bioko Sur"
+}, {
+    "code": 1201,
+    "name": "Centro Sur"
+}, {
+    "code": 1202,
+    "name": "Kientem"
+}, {
+    "code": 1203,
+    "name": "Litoral"
+}, {
+    "code": 1204,
+    "name": "Welenzas"
+}, {
+    "code": 1227,
+    "name": "Addis Ababa"
+}, {
+    "code": 1228,
+    "name": "Afar"
+}, {
+    "code": 1229,
+    "name": "Amhara"
+}, {
+    "code": 1230,
+    "name": "Beneshangul Gumu"
+}, {
+    "code": 1231,
+    "name": "Dire Dawa"
+}, {
+    "code": 1232,
+    "name": "Gambela"
+}, {
+    "code": 1233,
+    "name": "Hareri"
+}, {
+    "code": 1236,
+    "name": "SNNPR"
+}, {
+    "code": 1237,
+    "name": "Tigray"
+}, {
+    "code": 1324,
+    "name": "Ashanti"
+}, {
+    "code": 1325,
+    "name": "Brong Ahafo"
+}, {
+    "code": 1326,
+    "name": "Central"
+}, {
+    "code": 1327,
+    "name": "Eastern"
+}, {
+    "code": 1328,
+    "name": "Greater Accra"
+}, {
+    "code": 1329,
+    "name": "Northern"
+}, {
+    "code": 1330,
+    "name": "Upper East"
+}, {
+    "code": 1331,
+    "name": "Upper West"
+}, {
+    "code": 1332,
+    "name": "Volta"
+}, {
+    "code": 1333,
+    "name": "Western"
+}, {
+    "code": 1409,
+    "name": "Artibonite"
+}, {
+    "code": 1410,
+    "name": "Centre"
+}, {
+    "code": 1412,
+    "name": "Nord"
+}, {
+    "code": 1413,
+    "name": "Nord Est"
+}, {
+    "code": 1414,
+    "name": "Nord Ouest"
+}, {
+    "code": 1415,
+    "name": "Ouest"
+}, {
+    "code": 1416,
+    "name": "Sud"
+}, {
+    "code": 1417,
+    "name": "Sud Est"
+}, {
+    "code": 1753,
+    "name": "Attapu"
+}, {
+    "code": 1754,
+    "name": "Bokeo"
+}, {
+    "code": 1755,
+    "name": "Bolikhamxai"
+}, {
+    "code": 1756,
+    "name": "Champasak"
+}, {
+    "code": 1757,
+    "name": "Houaphan"
+}, {
+    "code": 1758,
+    "name": "Khammouan"
+}, {
+    "code": 1759,
+    "name": "Louangphabang"
+}, {
+    "code": 1760,
+    "name": "Louang-Namtha"
+}, {
+    "code": 1761,
+    "name": "Oudomxai"
+}, {
+    "code": 1762,
+    "name": "Phongsali"
+}, {
+    "code": 1763,
+    "name": "Salavan"
+}, {
+    "code": 1764,
+    "name": "Savannakhet"
+}, {
+    "code": 1765,
+    "name": "Xaignabouli"
+}, {
+    "code": 1766,
+    "name": "Xekong"
+}, {
+    "code": 1768,
+    "name": "Vientiane capital"
+}, {
+    "code": 2112,
+    "name": "Cabo Delgado"
+}, {
+    "code": 2113,
+    "name": "Gaza"
+}, {
+    "code": 2114,
+    "name": "Inhambane"
+}, {
+    "code": 2115,
+    "name": "Manica"
+}, {
+    "code": 2118,
+    "name": "Nampula"
+}, {
+    "code": 2119,
+    "name": "Niassa"
+}, {
+    "code": 2120,
+    "name": "Sofala"
+}, {
+    "code": 2121,
+    "name": "Tete"
+}, {
+    "code": 2122,
+    "name": "Zambezia"
+}, {
+    "code": 2620,
+    "name": "Principe"
+}, {
+    "code": 2621,
+    "name": "Sao Tome"
+}, {
+    "code": 2654,
+    "name": "Eastern"
+}, {
+    "code": 2655,
+    "name": "Northern"
+}, {
+    "code": 2656,
+    "name": "Southern"
+}, {
+    "code": 2657,
+    "name": "Western Area"
+}, {
+    "code": 3407,
+    "name": "Abyan"
+}, {
+    "code": 3408,
+    "name": "Al Dhale'e"
+}, {
+    "code": 3410,
+    "name": "Al Bayda"
+}, {
+    "code": 3411,
+    "name": "Al Hudaydah"
+}, {
+    "code": 3412,
+    "name": "Al Jawf"
+}, {
+    "code": 3413,
+    "name": "Al Maharah"
+}, {
+    "code": 3414,
+    "name": "Al Mahwit"
+}, {
+    "code": 3415,
+    "name": "Amran"
+}, {
+    "code": 3416,
+    "name": "Dhamar"
+}, {
+    "code": 3418,
+    "name": "Hajjah"
+}, {
+    "code": 3419,
+    "name": "Ibb"
+}, {
+    "code": 3420,
+    "name": "Lahj"
+}, {
+    "code": 3421,
+    "name": "Marib"
+}, {
+    "code": 3422,
+    "name": "Sa'ada"
+}, {
+    "code": 3424,
+    "name": "Shabwah"
+}, {
+    "code": 3425,
+    "name": "Taizz"
+}, {
+    "code": 12904,
+    "name": "Batha Est"
+}, {
+    "code": 12905,
+    "name": "Batha Ouest"
+}, {
+    "code": 12907,
+    "name": "Borkou"
+}, {
+    "code": 12908,
+    "name": "Ennedi"
+}, {
+    "code": 12909,
+    "name": "Tibesti"
+}, {
+    "code": 12910,
+    "name": "Baguirmi"
+}, {
+    "code": 12911,
+    "name": "Daraba"
+}, {
+    "code": 12912,
+    "name": "Hadjer Lamis"
+}, {
+    "code": 12914,
+    "name": "Barl El Gazal"
+}, {
+    "code": 12915,
+    "name": "Kanem"
+}, {
+    "code": 12918,
+    "name": "Logone Oriental"
+}, {
+    "code": 12919,
+    "name": "Mont De Lam"
+}, {
+    "code": 12920,
+    "name": "Kabia"
+}, {
+    "code": 12921,
+    "name": "Mayo-Boneye"
+}, {
+    "code": 12922,
+    "name": "Mayo-Dala"
+}, {
+    "code": 12923,
+    "name": "Barh Koh"
+}, {
+    "code": 12924,
+    "name": "Lac Iro"
+}, {
+    "code": 12925,
+    "name": "Mandoul"
+}, {
+    "code": 12926,
+    "name": "Assongha"
+}, {
+    "code": 12927,
+    "name": "Ouaddai"
+}, {
+    "code": 12928,
+    "name": "Sila"
+}, {
+    "code": 12930,
+    "name": "Tandjile Est"
+}, {
+    "code": 12931,
+    "name": "Tandjile Ouest"
+}, {
+    "code": 21969,
+    "name": "East/Iburasirazuba"
+}, {
+    "code": 21970,
+    "name": "Kigali City/Umujyi wa Kigali"
+}, {
+    "code": 21971,
+    "name": "North/Amajyaruguru"
+}, {
+    "code": 21972,
+    "name": "South/Amajyepfo"
+}, {
+    "code": 21973,
+    "name": "West/Iburengerazuba"
+}, {
+    "code": 40542,
+    "name": "Bubanza"
+}, {
+    "code": 40543,
+    "name": "Bujumbura Mairie"
+}, {
+    "code": 40544,
+    "name": "Bujumbura Rural"
+}, {
+    "code": 40545,
+    "name": "Bururi"
+}, {
+    "code": 40546,
+    "name": "Cankuzo"
+}, {
+    "code": 40547,
+    "name": "Cibitoke"
+}, {
+    "code": 40548,
+    "name": "Gitega"
+}, {
+    "code": 40549,
+    "name": "Karuzi"
+}, {
+    "code": 40550,
+    "name": "Kayanza"
+}, {
+    "code": 40551,
+    "name": "Kirundo"
+}, {
+    "code": 40552,
+    "name": "Makamba"
+}, {
+    "code": 40553,
+    "name": "Muramvya"
+}, {
+    "code": 40554,
+    "name": "Muyinga"
+}, {
+    "code": 40555,
+    "name": "Mwaro"
+}, {
+    "code": 40556,
+    "name": "Ngozi"
+}, {
+    "code": 40557,
+    "name": "Rutana"
+}, {
+    "code": 40558,
+    "name": "Ruyigi"
+}, {
+    "code": 41373,
+    "name": "Maputo"
+}, {
+    "code": 41750,
+    "name": "Alaotra Mangoro"
+}, {
+    "code": 41751,
+    "name": "Amoron I Mania"
+}, {
+    "code": 41752,
+    "name": "Analamanga"
+}, {
+    "code": 41753,
+    "name": "Analanjirofo"
+}, {
+    "code": 41754,
+    "name": "Androy"
+}, {
+    "code": 41755,
+    "name": "Anosy"
+}, {
+    "code": 41756,
+    "name": "Atsimo Andrefana"
+}, {
+    "code": 41757,
+    "name": "Atsimo Atsinanana"
+}, {
+    "code": 41758,
+    "name": "Atsinanana"
+}, {
+    "code": 41759,
+    "name": "Betsiboka"
+}, {
+    "code": 41760,
+    "name": "Boeny"
+}, {
+    "code": 41761,
+    "name": "Bongolava"
+}, {
+    "code": 41762,
+    "name": "Diana"
+}, {
+    "code": 41763,
+    "name": "Haute Matsiatra"
+}, {
+    "code": 41764,
+    "name": "Ihorombe"
+}, {
+    "code": 41765,
+    "name": "Itasy"
+}, {
+    "code": 41766,
+    "name": "Melaky"
+}, {
+    "code": 41767,
+    "name": "Menabe"
+}, {
+    "code": 41768,
+    "name": "Sava"
+}, {
+    "code": 41769,
+    "name": "Sofia"
+}, {
+    "code": 41770,
+    "name": "Vakinankaratra"
+}, {
+    "code": 41771,
+    "name": "Vatovavy Fitovinany"
+}, {
+    "code": 47678,
+    "name": "Oromia"
+}, {
+    "code": 47679,
+    "name": "Somali"
+}, {
+    "code": 48357,
+    "name": "Arusha"
+}, {
+    "code": 48358,
+    "name": "Dar es salaam"
+}, {
+    "code": 48359,
+    "name": "Dodoma"
+}, {
+    "code": 48362,
+    "name": "Kigoma"
+}, {
+    "code": 48363,
+    "name": "Kilimanjaro"
+}, {
+    "code": 48364,
+    "name": "Lindi"
+}, {
+    "code": 48365,
+    "name": "Manyara"
+}, {
+    "code": 48366,
+    "name": "Mara"
+}, {
+    "code": 48367,
+    "name": "Mbeya"
+}, {
+    "code": 48368,
+    "name": "Morogoro"
+}, {
+    "code": 48369,
+    "name": "Mtwara"
+}, {
+    "code": 48371,
+    "name": "Kaskazini Pemba"
+}, {
+    "code": 48372,
+    "name": "Kaskazini Unguja"
+}, {
+    "code": 48373,
+    "name": "Pwani"
+}, {
+    "code": 48375,
+    "name": "Ruvuma"
+}, {
+    "code": 48377,
+    "name": "Singida"
+}, {
+    "code": 48378,
+    "name": "Kusini Pemba"
+}, {
+    "code": 48379,
+    "name": "Kusini Unguja"
+}, {
+    "code": 48380,
+    "name": "Tabora"
+}, {
+    "code": 48381,
+    "name": "Tanga"
+}, {
+    "code": 48382,
+    "name": "Mjini Magharibi"
+}, {
+    "code": 65246,
+    "name": "Lago niassa"
+}, {
+    "code": 72911,
+    "name": "Grande Anse"
+}, {
+    "code": 72912,
+    "name": "Nippes"
+}, {
+    "code": 74346,
+    "name": "Vientiane"
+}, {
+    "code": 74347,
+    "name": "Xiangkhouang"
+}, {
+    "code": 115002,
+    "name": "Geita"
+}, {
+    "code": 115003,
+    "name": "Iringa"
+}, {
+    "code": 115004,
+    "name": "Kagera"
+}, {
+    "code": 115005,
+    "name": "Katavi"
+}, {
+    "code": 115006,
+    "name": "Mwanza"
+}, {
+    "code": 115007,
+    "name": "Njombe"
+}, {
+    "code": 115008,
+    "name": "Rukwa"
+}, {
+    "code": 115009,
+    "name": "Shinyanga"
+}, {
+    "code": 115010,
+    "name": "Simiyu"
+}, {
+    "code": 144969,
+    "name": "Amanat Al Asimah"
+}, {
+    "code": 144970,
+    "name": "Hadramaut"
+}, {
+    "code": 144971,
+    "name": "Raymah"
+}, {
+    "code": 144972,
+    "name": "Sana'a"
+}, {
+    "code": 144973,
+    "name": "Aden"
+}]

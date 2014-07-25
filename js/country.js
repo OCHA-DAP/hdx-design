@@ -6,7 +6,8 @@
       mapbox: 'lib/mapbox.v1.6.4',
       leaflet_omnivore: 'lib/leaflet.omnivore.v0.2.0.min',
       leaflet_fullscreen: 'lib/Leaflet.fullscreen.v0.0.3.min',
-      d3: 'lib/d3.v3.min'
+      d3: 'lib/d3.v3.min',
+      c3: 'lib/c3.v0.2.4'
     },
     shim: {
       'bootstrap': {
@@ -17,11 +18,14 @@
       },
       'leaflet_fullscreen': {
         deps: ['mapbox']
+      },
+      'c3': {
+        deps: ['d3']
       }
     }
   });
 
-  require(['jquery', 'bootstrap', 'd3', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'data/world_json.js', 'data/regional_codes.js', 'data/mortality.js'], function() {
+  require(['d3', 'c3', 'jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'data/world_json.js', 'data/regional_codes.js', 'data/mortality.js'], function(d3, c3) {
     var another, chartData, chartUnits, chart_colors, chart_config, countryLayer, country_code, country_name, data_length, featureClicked, getStyle, globalRate, highlightFeature, index, map, mapID, mortalityData, onEachFeature, one, openURL, popup, resetFeature, topLayer, topPane, _i, _j, _len, _len1, _ref, _ref1;
     mapID = 'yumiendo.ijchbik8';
     openURL = function(url) {

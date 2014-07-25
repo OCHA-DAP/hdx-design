@@ -34,7 +34,7 @@ module.exports = (grunt) ->
           dest:'build/js/lib/'
         ,
           expand:true
-          cwd:'src/data/'
+          cwd:'../data/'
           src:'**'
           dest:'build/data/'
         ]
