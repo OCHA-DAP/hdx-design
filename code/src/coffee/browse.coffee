@@ -5,6 +5,7 @@ requirejs.config({
       mapbox: 'lib/mapbox.v1.6.4',
       leaflet_omnivore: 'lib/leaflet.omnivore.v0.2.0.min',
       leaflet_fullscreen: 'lib/Leaflet.fullscreen.v0.0.3.min',
+      chroma: 'lib/chroma.min',
       d3: 'lib/d3.v3.min',
       c3: 'lib/c3.v0.2.4'
   },
@@ -23,16 +24,18 @@ requirejs.config({
     }
   }
 });
-require ['d3','c3',
-'jquery',
+require ['jquery',
 'bootstrap',
 'mapbox',
 'leaflet_omnivore',
 'leaflet_fullscreen',
+'d3',
+'c3',
+'chroma',
 'data/world_json.js',
 'data/regional_codes.js',
-'data/mortality.js'
-], (d3, c3)->
+'data/countries.js',
+], ($, b, m, o, f, d3, c3, chroma)->
   # Global
   # mapID = 'xyfeng.ijpo6lio'
   mapID = 'yumiendo.ijchbik8'

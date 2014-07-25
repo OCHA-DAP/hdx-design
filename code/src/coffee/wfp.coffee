@@ -77,6 +77,9 @@ require ['jquery',
       labels.push "<li><span class='swatch' style='background:#{getColor(from)}'></span>#{from}-#{to}</li>"
     "<span>#{MAP_UNITS}</span><ul>#{labels.join('')}</ul"
 
+  closeTooltip = window.setTimeout ()->
+    map.closePopup()
+  , 100
   highlightFeature = (e) ->
     layer = e.target
     feature = layer.feature
@@ -87,12 +90,26 @@ require ['jquery',
       color: '#ccc'
       fillOpacity: 1.0
       fillColor: '#000'
+    # tooltip
+    popup.setLatLng e.latlng
+    popup.setContent "
+    <div class='marker-container'>
+    <div class='marker-number'>#{feature.properties.value}</div>
+      <div class='marker-label'>#{MAP_UNITS}</div>
+    </div>
+    "
+    if !popup._map
+      popup.openOn map
+    window.clearTimeout closeTooltip
     return
 
   resetFeature = (e) ->
     layer = e.target
     layer_style = getStyle layer.feature
     layer.setStyle layer_style
+    closeTooltip = window.setTimeout ()->
+      map.closePopup()
+    , 100
     return
 
   featureClicked = (e) ->
