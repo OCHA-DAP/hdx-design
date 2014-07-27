@@ -3,7 +3,7 @@
     paths: {
       jquery: 'lib/jquery.v1.11.1.min',
       bootstrap: 'lib/bootstrap.v3.1.1.min',
-      mapbox: 'lib/mapbox.v1.6.4',
+      mapbox: 'https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox',
       leaflet_omnivore: 'lib/leaflet.omnivore.v0.2.0.min',
       leaflet_fullscreen: 'lib/Leaflet.fullscreen.v0.0.3.min',
       chroma: 'lib/chroma.min',
@@ -31,11 +31,88 @@
   });
 
   require(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'chosen'], function($, b, m, o, f, d3, c3, chroma) {
-    var COLOR_LEVELS, FILE_LINK, MAP_JSON, MAP_UNITS, closeTooltip, color_map, color_scale, featureClicked, getColor, getLegendHTML, getMapFilePath, getStyle, highlightFeature, i, map, mapID, onEachFeature, openURL, popup, resetFeature, topLayer, topPane, _i;
+    var COLOR_LEVELS, FILE_LINK, MAP_JSON, MAP_UNITS, closeTooltip, color_map, color_scale, featureClicked, getColor, getLegendHTML, getMapFilePath, getStyle, highlightFeature, i, indicator_selector, indid_str, map, mapID, onEachFeature, openURL, period_str, peroid_selector, popup, region_selector, resetFeature, topLayer, topPane, _i;
+    $(document).on('click', '.group-result', function() {
+      var $this, unselected;
+      $this = $(this);
+      unselected = $this.nextUntil('.group-result').not('.result-selected');
+      if (unselected.length) {
+        return unselected.trigger('mouseup');
+      } else {
+        return $this.nextUntil('.group-result').each(function() {
+          return $("a.search-choice-close[data-option-array-index='" + ($this.data('option-array-index')) + "']").trigger('click');
+        });
+      }
+    });
     $('.chosen-select').chosen({
       no_results_text: "Oops, nothing found!"
     });
-    return;
+    indicator_selector = $('#chosen_indicators');
+    peroid_selector = $('#chosen_peroids');
+    region_selector = $('#chosen_regions');
+    indid_str = '';
+    indicator_selector.change(function() {
+      var indids;
+      indids = $(this).val();
+      if (indids) {
+        indid_str = indids.join(',');
+        return $.getJSON("https://ocha.parseapp.com/getwfpperiods?indid=" + indid_str, function(data) {
+          var group_selector, one, _i, _len;
+          console.log(data);
+          peroid_selector.empty();
+          group_selector = $("<optgroup label='All'></optgroup>").appendTo(peroid_selector);
+          for (_i = 0, _len = data.length; _i < _len; _i++) {
+            one = data[_i];
+            $("<option value='" + one + "' selected>" + one + "</option>").appendTo(group_selector);
+          }
+          return peroid_selector.trigger("chosen:updated");
+        });
+      } else {
+        indid_str = '';
+        peroid_selector.empty();
+        return peroid_selector.trigger("chosen:updated");
+      }
+    });
+    period_str = '';
+    peroid_selector.change(function() {
+      var periods;
+      periods = $(this).val();
+      if (periods) {
+        period_str = periods.join(',');
+        return $.getJSON("https://ocha.parseapp.com/getwfpdata?period=" + period_str + "&indid=" + indid_str, function(data) {
+          var MAP_UNITS, file, jsonQueue, one, _i, _len;
+          jsonQueue = [];
+          for (_i = 0, _len = data.length; _i < _len; _i++) {
+            one = data[_i];
+            console.log(one);
+            MAP_UNITS = one['units'];
+            file = getMapFilePath(one);
+            jsonQueue.push($.getJSON(file, function(map_json) {
+              var _j, _len1;
+              for (_j = 0, _len1 = data.length; _j < _len1; _j++) {
+                one = data[_j];
+                if (one['region'] === map_json['properties']['alpha-3']) {
+                  map_json['properties']['value'] = parseInt(one['value']);
+                  break;
+                }
+              }
+              return MAP_JSON['features'].push(map_json);
+            }));
+          }
+          map.legendControl.addLegend(getLegendHTML());
+          return $.when.apply($, jsonQueue).done(function() {
+            var countryLayer;
+            console.log(MAP_JSON);
+            countryLayer = L.geoJson(MAP_JSON, {
+              style: getStyle,
+              onEachFeature: onEachFeature
+            });
+            countryLayer.addTo(map);
+            return map.fitBounds(countryLayer.getBounds());
+          });
+        });
+      }
+    });
     mapID = 'yumiendo.j1majbom';
     MAP_UNITS = 'percent';
     COLOR_LEVELS = 5;
@@ -130,37 +207,6 @@
       "type": "FeatureCollection",
       "features": []
     };
-    $.getJSON('http://ocha.parseapp.com/getmapdata?period=2009&indid=CHD.B.FOS.06.T6', function(data) {
-      var file, jsonQueue, one, _j, _len;
-      jsonQueue = [];
-      for (_j = 0, _len = data.length; _j < _len; _j++) {
-        one = data[_j];
-        MAP_UNITS = one['units'];
-        file = getMapFilePath(one);
-        jsonQueue.push($.getJSON(file, function(map_json) {
-          var _k, _len1;
-          for (_k = 0, _len1 = data.length; _k < _len1; _k++) {
-            one = data[_k];
-            if (one['region_name'] === map_json['properties']['ADM0_NAME']) {
-              map_json['properties']['value'] = parseInt(one['value']);
-              break;
-            }
-          }
-          return MAP_JSON['features'].push(map_json);
-        }));
-      }
-      map.legendControl.addLegend(getLegendHTML());
-      return $.when.apply($, jsonQueue).done(function() {
-        var countryLayer;
-        console.log(MAP_JSON);
-        countryLayer = L.geoJson(MAP_JSON, {
-          style: getStyle,
-          onEachFeature: onEachFeature
-        });
-        countryLayer.addTo(map);
-        return map.fitBounds(countryLayer.getBounds());
-      });
-    });
     map = L.mapbox.map('map', mapID, {
       center: [20, 0],
       zoom: 2,

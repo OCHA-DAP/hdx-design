@@ -2,7 +2,7 @@ requirejs.config({
   paths: {
       jquery: 'lib/jquery.v1.11.1.min',
       bootstrap: 'lib/bootstrap.v3.1.1.min',
-      mapbox: 'lib/mapbox.v1.6.4',
+      mapbox: 'https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox',
       leaflet_omnivore: 'lib/leaflet.omnivore.v0.2.0.min',
       leaflet_fullscreen: 'lib/Leaflet.fullscreen.v0.0.3.min',
       chroma: 'lib/chroma.min',
@@ -39,20 +39,75 @@ require ['jquery',
 'chosen'
 ], ($, b, m, o, f, d3, c3, chroma)->
 
+  # Chosen js optgroup select
+  $(document).on 'click', '.group-result', ()->
+    $this = $(this)
+    unselected = $this.nextUntil('.group-result').not('.result-selected')
+    if unselected.length
+      unselected.trigger 'mouseup'
+    else
+      $this.nextUntil('.group-result').each ()->
+        $("a.search-choice-close[data-option-array-index='#{$this.data('option-array-index')}']").trigger 'click'
+
   # selections
   $('.chosen-select').chosen
     no_results_text: "Oops, nothing found!"
 
+  indicator_selector = $('#chosen_indicators')
+  peroid_selector = $('#chosen_peroids')
+  region_selector = $('#chosen_regions')
+
   # indicators
-  $('#chosen_indicators').change ()->
-    console.log $(this).val()
+  indid_str = ''
+  indicator_selector.change ()->
+    indids = $(this).val()
+    if indids
+      indid_str = indids.join(',')
+      $.getJSON "https://ocha.parseapp.com/getwfpperiods?indid=#{indid_str}", (data)->
+        console.log data
+        peroid_selector.empty()
+        group_selector = $("<optgroup label='All'></optgroup>").appendTo peroid_selector
+        for one in data
+          $("<option value='#{one}' selected>#{one}</option>").appendTo group_selector
+        peroid_selector.trigger "chosen:updated"
+    else
+      indid_str = ''
+      peroid_selector.empty()
+      peroid_selector.trigger "chosen:updated"
 
   # peroids
-  $('#chosen_peroids').trigger "chosen:updated"
-  .change ()->
-    console.log $(this).val()
+  period_str = ''
+  peroid_selector.change ()->
+    periods = $(this).val()
+    if periods
+      period_str = periods.join(',')
 
-  return
+  $('#run').on 'click', ()->
+    loadMapData()
+
+  loadMapData = ()->
+    $.getJSON "https://ocha.parseapp.com/getwfpdata?period=#{period_str}&indid=#{indid_str}", (data)->
+      jsonQueue = []
+      for one in data
+        console.log one
+        MAP_UNITS = one['units']
+        file = getMapFilePath(one)
+        jsonQueue.push(
+          $.getJSON file, (map_json)->
+            for one in data
+              if one['region'] == map_json['properties']['alpha-3']
+                map_json['properties']['value'] = parseInt one['value']
+                break
+            MAP_JSON['features'].push map_json
+        )
+      map.legendControl.addLegend getLegendHTML()
+      $.when.apply($, jsonQueue).done ()->
+        console.log MAP_JSON
+        countryLayer = L.geoJson MAP_JSON,
+          style: getStyle,
+          onEachFeature: onEachFeature
+        countryLayer.addTo map
+        map.fitBounds(countryLayer.getBounds());
 
   # Global
   # mapID = 'xyfeng.ijpo6lio'
@@ -158,27 +213,6 @@ require ['jquery',
   MAP_JSON =
     "type": "FeatureCollection",
     "features": []
-  $.getJSON 'http://ocha.parseapp.com/getmapdata?period=2009&indid=CHD.B.FOS.06.T6', (data)->
-    jsonQueue = []
-    for one in data
-      MAP_UNITS = one['units']
-      file = getMapFilePath(one)
-      jsonQueue.push(
-        $.getJSON file, (map_json)->
-          for one in data
-            if one['region_name'] == map_json['properties']['ADM0_NAME']
-              map_json['properties']['value'] = parseInt one['value']
-              break
-          MAP_JSON['features'].push map_json
-      )
-    map.legendControl.addLegend getLegendHTML()
-    $.when.apply($, jsonQueue).done ()->
-      console.log MAP_JSON
-      countryLayer = L.geoJson MAP_JSON,
-        style: getStyle,
-        onEachFeature: onEachFeature
-      countryLayer.addTo map
-      map.fitBounds(countryLayer.getBounds());
 
 
   # create map

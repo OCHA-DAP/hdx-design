@@ -7,8 +7,8 @@
     <!--style-->
     <link href="css/lib/c3.css" rel="stylesheet">
     <link href="css/lib/bootstrap.min.css" rel="stylesheet">
-    <link href="css/lib/mapbox.css" rel="stylesheet">
-    <link href="css/lib/leaflet.fullscreen.css" rel="stylesheet">
+    <link href="https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css" rel="stylesheet">
+    <link href="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.3/leaflet.fullscreen.css" rel="stylesheet">
     <link href="css/lib/chosen/chosen.min.css" rel="stylesheet">
     <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700" rel="stylesheet">
     <link href="css/wfp.css" rel="stylesheet">
@@ -16,13 +16,27 @@
   <body>
     <div class="container">
       <div id="options" class="row">
-        <select multiple data-placeholder="Choose a indicator" class="chosen-select">
-          <optgroup label="WFP">
-            <option value="CHD.B.FOS.04.T6">Percentage of households with poor food consumption</option>
-            <option value="CHD.B.FOS.05.T6">Percentage of households with borderline food consumption</option>
-            <option value="CHD.B.FOS.06.T6">Percentage of households with acceptable food consumption</option>
-          </optgroup>
-        </select>
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+          <h5>Select Indicators</h5>
+          <select id="chosen_indicators" multiple data-placeholder="Choose an indicator" class="chosen-select">
+            <optgroup label="WFP">
+              <option value="CHD.B.FOS.04.T6">Percentage of households with poor food consumption</option>
+              <option value="CHD.B.FOS.05.T6">Percentage of households with borderline food consumption</option>
+              <option value="CHD.B.FOS.06.T6">Percentage of households with acceptable food consumption</option>
+            </optgroup>
+          </select>
+          <h5>Select Periods</h5>
+          <select id="chosen_peroids" multiple data-placeholder="Choose a period" class="chosen-select"></select>
+          <h5>Select Regions</h5>
+          <select id="chosen_regions" multiple data-placeholder="Choose a region" class="chosen-select"></select>
+        </div>
+        <div class="col-md-1"></div>
+      </div>
+      <div id="map_row" class="row">
+        <div id="map_container">
+          <div id="map"></div>
+        </div>
       </div>
     </div>
   </body>
