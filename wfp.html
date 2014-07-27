@@ -5,19 +5,24 @@
     <!--js-->
     <script src="js/lib/require.v1.0.8.js" data-main="js/wfp.js"></script>
     <!--style-->
-    <link href="https://rawgit.com/masayuki0812/c3/master/c3.css" rel="stylesheet">
-    <link href="http://maxcdn.bootstrapcdn.com/bootswatch/3.2.0/lumen/bootstrap.min.css" rel="stylesheet">
-    <link href="https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css" rel="stylesheet">
-    <link href="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.3/leaflet.fullscreen.css" rel="stylesheet">
+    <link href="css/lib/c3.css" rel="stylesheet">
+    <link href="css/lib/bootstrap.min.css" rel="stylesheet">
+    <link href="css/lib/mapbox.css" rel="stylesheet">
+    <link href="css/lib/leaflet.fullscreen.css" rel="stylesheet">
+    <link href="css/lib/chosen/chosen.min.css" rel="stylesheet">
     <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700" rel="stylesheet">
     <link href="css/wfp.css" rel="stylesheet">
   </head>
   <body>
     <div class="container">
-      <div id="map_row" class="row">
-        <div id="map_container">
-          <div id="map"></div>
-        </div>
+      <div id="options" class="row">
+        <select multiple data-placeholder="Choose a indicator" class="chosen-select">
+          <optgroup label="WFP">
+            <option value="CHD.B.FOS.04.T6">Percentage of households with poor food consumption</option>
+            <option value="CHD.B.FOS.05.T6">Percentage of households with borderline food consumption</option>
+            <option value="CHD.B.FOS.06.T6">Percentage of households with acceptable food consumption</option>
+          </optgroup>
+        </select>
       </div>
     </div>
   </body>

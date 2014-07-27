@@ -16,6 +16,48 @@
   font-weight: light;
   font-style: normal;
 }
+.header-font {
+  font-family: 'Gotham' Arial;
+}
+.text-font {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Source Sans Pro', sans-serif;
+  -webkit-font-smoothing: antialiased !important;
+}
+li {
+  list-style: none;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: bold;
+  font-family: 'Gotham' Arial;
+  letter-spacing: 1.5px;
+}
+body {
+  background: #2cbeb2 no-repeat fixed center;
+  background-image: url('../img/world_map_dot.png');
+}
+@media (-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx) {
+  body {
+    background-image: url("../img/world_map_dot@2x.png");
+    background-size: 1864px 1176px;
+  }
+}
+.container {
+  background: #fff;
+  width: 1260px;
+}
+.container .col-md-12 {
+  padding: 0 45px 0 45px;
+}
 .leaflet-container .leaflet-top-pane {
   pointer-events: none;
 }
@@ -44,48 +86,26 @@
   border-right: 8px solid transparent;
   border-top: 8px solid #333;
 }
-.leaflet-container .leaflet-bottom.leaflet-right {
+.leaflet-container .leaflet-bottom.leaflet-right .map-legend .swatch {
+  width: 20px;
+  height: 20px;
+  float: left;
+  margin-right: 10px;
+}
+.leaflet-container .leaflet-bottom.leaflet-right .leaflet-control-attribution.leaflet-control {
   display: none;
 }
-.header-font {
-  font-family: 'Gotham' Arial;
+.leaflet-container .leaflet-bar.leaflet-control {
+  margin-left: 45px;
 }
-.text-font {
-  font-family: 'Source Sans Pro', sans-serif;
+.leaflet-container .leaflet-bar.leaflet-control.leaflet-control-zoom {
+  margin-top: 30px;
 }
-* {
-  margin: 0;
-  padding: 0;
-  font-family: 'Source Sans Pro', sans-serif;
-  -webkit-font-smoothing: antialiased !important;
+.c3-tooltip {
+  opacity: 1;
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: bold;
-  font-family: 'Gotham' Arial;
-  letter-spacing: 1.5px;
-}
-body {
-  background: #2cbeb2 no-repeat fixed center;
-  background-image: url('../img/world_map_dot.png');
-}
-@media (-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx) {
-  body {
-    background-image: url("../img/world_map_dot@2x.png");
-    background-size: 1864px 1176px;
-  }
-}
-.container {
-  background: #fff;
-  width: 1260px;
-  min-height: 1600px;
-}
-.container .col-md-12 {
-  padding: 0 45px 0 45px;
+.c3-tooltip th {
+  background-color: #000;
 }
 #header_img {
   width: 1260px;

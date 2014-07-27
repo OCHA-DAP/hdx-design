@@ -5,22 +5,29 @@ html(lang="en")
     //js
     script(src='js/lib/require.v1.0.8.js' data-main='js/wfp.js')
     //style
-    link(href='https://rawgit.com/masayuki0812/c3/master/c3.css' rel='stylesheet')
-    link(href='http://maxcdn.bootstrapcdn.com/bootswatch/3.2.0/lumen/bootstrap.min.css' rel='stylesheet')
-    link(href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet')
-    link(href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.3/leaflet.fullscreen.css' rel='stylesheet')
+    link(href='css/lib/c3.css' rel='stylesheet')
+    link(href='css/lib/bootstrap.min.css' rel='stylesheet')
+    link(href='css/lib/mapbox.css' rel='stylesheet')
+    link(href='css/lib/leaflet.fullscreen.css' rel='stylesheet')
+    link(href='css/lib/chosen/chosen.min.css' rel='stylesheet')
     link(href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700' rel='stylesheet')
     link(href='css/wfp.css' rel='stylesheet')
 
   body
     .container
-      .row#map_row
-        #map_container
-          #map
-      .row
-        select.multiselect(multiple='multiple')
-          option(value='aaa') aaa
-          option(value='bbb') aaa
-          option(value='ccc') aaa
-          option(value='ddd') aaa
-          option(value='eee') aaa
+      .row#options
+        .col-md-1
+        .col-md-10
+          h5 Select Indicators
+          select#chosen_indicators.chosen-select(multiple data-placeholder='Choose an indicator')
+            optgroup(label="WFP")
+              option(value='CHD.B.FOS.04.T6') Percentage of households with poor food consumption
+              option(value='CHD.B.FOS.05.T6') Percentage of households with borderline food consumption
+              option(value='CHD.B.FOS.06.T6') Percentage of households with acceptable food consumption
+
+          h5 Select Periods
+          select#chosen_peroids.chosen-select(multiple data-placeholder='Choose a period')
+        .col-md-1
+      //- .row#map_row
+      //-   #map_container
+      //-     #map

@@ -34,6 +34,16 @@ module.exports = (grunt) ->
           dest:'build/js/lib/'
         ,
           expand:true
+          cwd:'src/lib/css/'
+          src:'**'
+          dest:'build/css/lib/'
+        ,
+          expand:true
+          cwd:'src/lib/css/'
+          src:'**'
+          dest:'build/css/lib/'
+        ,
+          expand:true
           cwd:'../data/'
           src:'**'
           dest:'build/data/'
@@ -100,7 +110,7 @@ module.exports = (grunt) ->
         tasks: 'copy:build'
 
       css:
-        files: ['src/lib/less/**/*.less']
+        files: ['src/lib/css/**/*']
         tasks: 'copy:build'
 
       img:

@@ -8,7 +8,7 @@ requirejs.config({
       chroma: 'lib/chroma.min',
       d3: 'lib/d3.v3.min',
       c3: 'lib/c3.v0.2.4',
-      multiselect: 'lib/bootstrap-multiselect'
+      chosen: 'lib/chosen.v1.1.min'
   },
   shim: {
     'bootstrap': {
@@ -23,7 +23,7 @@ requirejs.config({
     'c3': {
       deps: ['d3']
     },
-    'multiselect': {
+    'chosen': {
       deps: ['bootstrap', 'jquery']
     }
   }
@@ -36,8 +36,24 @@ require ['jquery',
 'd3',
 'c3',
 'chroma',
-'multiselect'
+'chosen'
 ], ($, b, m, o, f, d3, c3, chroma)->
+
+  # selections
+  $('.chosen-select').chosen
+    no_results_text: "Oops, nothing found!"
+
+  # indicators
+  $('#chosen_indicators').change ()->
+    console.log $(this).val()
+
+  # peroids
+  $('#chosen_peroids').trigger "chosen:updated"
+  .change ()->
+    console.log $(this).val()
+
+  return
+
   # Global
   # mapID = 'xyfeng.ijpo6lio'
   # mapID = 'yumiendo.ijchbik8'
@@ -195,8 +211,5 @@ require ['jquery',
   topLayer.addTo map
   topPane.appendChild topLayer.getContainer()
   topLayer.setZIndex 7
-
-  # selections
-  $('.multiselect').multiselect()
 
   return

@@ -28,6 +28,9 @@
   font-family: 'Source Sans Pro', sans-serif;
   -webkit-font-smoothing: antialiased !important;
 }
+li {
+  list-style: none;
+}
 h1,
 h2,
 h3,
@@ -83,7 +86,13 @@ body {
   border-right: 8px solid transparent;
   border-top: 8px solid #333;
 }
-.leaflet-container .leaflet-bottom.leaflet-right {
+.leaflet-container .leaflet-bottom.leaflet-right .map-legend .swatch {
+  width: 20px;
+  height: 20px;
+  float: left;
+  margin-right: 10px;
+}
+.leaflet-container .leaflet-bottom.leaflet-right .leaflet-control-attribution.leaflet-control {
   display: none;
 }
 .leaflet-container .leaflet-bar.leaflet-control {

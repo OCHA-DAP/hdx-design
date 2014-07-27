@@ -8,7 +8,8 @@
       leaflet_fullscreen: 'lib/Leaflet.fullscreen.v0.0.3.min',
       chroma: 'lib/chroma.min',
       d3: 'lib/d3.v3.min',
-      c3: 'lib/c3.v0.2.4'
+      c3: 'lib/c3.v0.2.4',
+      chosen: 'lib/chosen.v1.1.min'
     },
     shim: {
       'bootstrap': {
@@ -22,47 +23,84 @@
       },
       'c3': {
         deps: ['d3']
+      },
+      'chosen': {
+        deps: ['bootstrap', 'jquery']
       }
     }
   });
 
-  require(['d3', 'c3', 'jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'chroma'], function(d3, c3) {
-    var COLOR_LEVELS, FILE_LINK, MAP_JSON, color_map, color_scale, featureClicked, getMapFilePath, getStyle, highlightFeature, i, map, mapID, onEachFeature, openURL, popup, resetFeature, topLayer, topPane, _i;
+  require(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'chosen'], function($, b, m, o, f, d3, c3, chroma) {
+    var COLOR_LEVELS, FILE_LINK, MAP_JSON, MAP_UNITS, closeTooltip, color_map, color_scale, featureClicked, getColor, getLegendHTML, getMapFilePath, getStyle, highlightFeature, i, map, mapID, onEachFeature, openURL, popup, resetFeature, topLayer, topPane, _i;
+    $('.chosen-select').chosen({
+      no_results_text: "Oops, nothing found!"
+    });
+    return;
     mapID = 'yumiendo.j1majbom';
-    COLOR_LEVELS = 5.0;
-    color_scale = chroma.scale(['yellow', 'red']).mode('lab');
+    MAP_UNITS = 'percent';
+    COLOR_LEVELS = 5;
+    color_scale = chroma.scale(['#fcbba1', '#67000d']).mode('hsl').correctLightness(true).out('hex');
     color_map = [];
     for (i = _i = 0; _i <= COLOR_LEVELS; i = _i += 1) {
-      color_map.push(color_scale(i / COLOR_LEVELS).hex());
+      color_map.push(color_scale(i / parseFloat(COLOR_LEVELS)));
     }
     console.log(color_map);
     openURL = function(url) {
       return window.open(url, '_blank').focus();
     };
+    getColor = function(v) {
+      var index;
+      index = Math.floor(v / (100 / COLOR_LEVELS));
+      return color_map[index];
+    };
     getStyle = function(feature) {
       return {
         weight: 0,
         fillOpacity: 1,
-        fillColor: '#000'
+        fillColor: getColor(feature.properties.value)
       };
     };
+    getLegendHTML = function() {
+      var from, label_range, labels, to, _j, _ref;
+      labels = [];
+      label_range = 100 / COLOR_LEVELS;
+      for (i = _j = 0, _ref = COLOR_LEVELS - 1; _j <= _ref; i = _j += 1) {
+        from = i * label_range;
+        to = (i + 1) * label_range;
+        labels.push("<li><span class='swatch' style='background:" + (getColor(from)) + "'></span>" + from + "-" + to + "</li>");
+      }
+      return "<span>" + MAP_UNITS + "</span><ul>" + (labels.join('')) + "</ul";
+    };
+    closeTooltip = window.setTimeout(function() {
+      return map.closePopup();
+    }, 100);
     highlightFeature = function(e) {
-      var countryID, layer;
+      var countryID, feature, layer;
       layer = e.target;
+      feature = layer.feature;
       countryID = layer.feature.id;
       layer.setStyle({
         weigth: 1,
         opacity: 0.2,
         color: '#ccc',
         fillOpacity: 1.0,
-        fillColor: '#f5837b'
+        fillColor: '#000'
       });
+      popup.setLatLng(e.latlng);
+      popup.setContent("<div class='marker-container'> <div class='marker-number'>" + feature.properties.value + "</div> <div class='marker-label'>" + MAP_UNITS + "</div> </div>");
+      if (!popup._map) {
+        popup.openOn(map);
+      }
+      window.clearTimeout(closeTooltip);
     };
     resetFeature = function(e) {
       var layer, layer_style;
       layer = e.target;
       layer_style = getStyle(layer.feature);
       layer.setStyle(layer_style);
+      closeTooltip = window.setTimeout(function() {
+        return map.closePopup();
+      }, 100);
     };
     featureClicked = function(e) {
       var code, layer;
@@ -92,11 +130,12 @@
       "type": "FeatureCollection",
       "features": []
     };
-    $.getJSON('http://ocha.parseapp.com/getmapdata?period=2009&indid=CHD.B.FOS.04.T6', function(data) {
+    $.getJSON('http://ocha.parseapp.com/getmapdata?period=2009&indid=CHD.B.FOS.06.T6', function(data) {
       var file, jsonQueue, one, _j, _len;
       jsonQueue = [];
       for (_j = 0, _len = data.length; _j < _len; _j++) {
         one = data[_j];
+        MAP_UNITS = one['units'];
         file = getMapFilePath(one);
         jsonQueue.push($.getJSON(file, function(map_json) {
           var _k, _len1;
@@ -110,6 +149,7 @@
           return MAP_JSON['features'].push(map_json);
         }));
       }
+      map.legendControl.addLegend(getLegendHTML());
       return $.when.apply($, jsonQueue).done(function() {
         var countryLayer;
         console.log(MAP_JSON);
@@ -125,7 +165,7 @@
       center: [20, 0],
       zoom: 2,
       minZoom: 2,
-      maxZoom: 4,
+      maxZoom: 8,
       tileLayer: {
         continuousWorld: false,
         noWrap: false
