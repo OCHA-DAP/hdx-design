@@ -31,7 +31,7 @@
   });
 
   require(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'chosen'], function($, b, m, o, f, d3, c3, chroma) {
-    var COLOR_LEVELS, FILE_LINK, MAP_JSON, MAP_UNITS, closeTooltip, color_map, color_scale, featureClicked, getColor, getLegendHTML, getMapFilePath, getStyle, highlightFeature, i, indicator_selector, indid_str, map, mapID, onEachFeature, openURL, period_str, peroid_selector, popup, region_selector, resetFeature, topLayer, topPane, _i;
+    var COLOR_LEVELS, FILE_LINK, MAP_JSON, MAP_SHAPE_DATA, MAP_UNITS, addMapFeature, closeTooltip, color_map, color_scale, featureClicked, getColor, getLegendHTML, getStyle, highlightFeature, i, indicator_selector, indid_str, jsonQueue, map, mapID, onEachFeature, openURL, period_str, peroid_selector, popup, region_selector, resetFeature, topLayer, topPane, _i;
     $(document).on('click', '.group-result', function() {
       var $this, unselected;
       $this = $(this);
@@ -63,7 +63,7 @@
           group_selector = $("<optgroup label='All'></optgroup>").appendTo(peroid_selector);
           for (_i = 0, _len = data.length; _i < _len; _i++) {
             one = data[_i];
-            $("<option value='" + one + "' selected>" + one + "</option>").appendTo(group_selector);
+            $("<option value='" + one + "'>" + one + "</option>").appendTo(group_selector);
           }
           return peroid_selector.trigger("chosen:updated");
         });
@@ -75,44 +75,96 @@
     });
     period_str = '';
     peroid_selector.change(function() {
-      var periods;
+      var jsonQueue, periods;
       periods = $(this).val();
       if (periods) {
         period_str = periods.join(',');
+        jsonQueue = [];
         return $.getJSON("https://ocha.parseapp.com/getwfpdata?period=" + period_str + "&indid=" + indid_str, function(data) {
-          var MAP_UNITS, file, jsonQueue, one, _i, _len;
-          jsonQueue = [];
+          var MAP_UNITS, ad1_k, ad1_v, admin1_code, admin1_name, admin2_code, admin2_name, download_event, one, one_value, r_k, r_v, region_code, region_group_selector, region_name, regions_select_list, _i, _len, _ref;
+          console.log("https://ocha.parseapp.com/getwfpdata?period=" + period_str + "&indid=" + indid_str);
+          region_selector.empty();
+          regions_select_list = {};
           for (_i = 0, _len = data.length; _i < _len; _i++) {
             one = data[_i];
-            console.log(one);
             MAP_UNITS = one['units'];
-            file = getMapFilePath(one);
-            jsonQueue.push($.getJSON(file, function(map_json) {
-              var _j, _len1;
-              for (_j = 0, _len1 = data.length; _j < _len1; _j++) {
-                one = data[_j];
-                if (one['region'] === map_json['properties']['alpha-3']) {
-                  map_json['properties']['value'] = parseInt(one['value']);
-                  break;
-                }
-              }
-              return MAP_JSON['features'].push(map_json);
-            }));
+            region_code = one['region'];
+            region_name = one['region_name'];
+            admin1_code = one['admin1'];
+            admin1_name = one['admin1_name'];
+            admin2_code = one['admin2'];
+            admin2_name = one['admin2_name'];
+            one_value = parseFloat(one['value']).toFixed(1);
+            download_event = addMapFeature(region_code, admin1_code, admin2_code, one_value);
+            if (download_event) {
+              jsonQueue.push(download_event);
+            }
+            if (!regions_select_list[region_code]) {
+              regions_select_list[region_code] = {
+                name: region_name,
+                sub_regions: {}
+              };
+            }
+            if (admin1_code !== 'NA') {
+              regions_select_list[region_code]['sub_regions'][admin1_code] = {
+                name: admin1_name,
+                sub_regions: {}
+              };
+            }
+            if (admin2_code !== 'NA') {
+              regions_select_list[region_code]['sub_regions'][admin1_code]['sub_regions'][admin2_code] = {
+                name: admin2_name
+              };
+            }
           }
-          map.legendControl.addLegend(getLegendHTML());
-          return $.when.apply($, jsonQueue).done(function() {
-            var countryLayer;
-            console.log(MAP_JSON);
-            countryLayer = L.geoJson(MAP_JSON, {
-              style: getStyle,
-              onEachFeature: onEachFeature
-            });
-            countryLayer.addTo(map);
-            return map.fitBounds(countryLayer.getBounds());
-          });
+          for (r_k in regions_select_list) {
+            r_v = regions_select_list[r_k];
+            if (Object.keys(r_v['sub_regions']).length) {
+              region_group_selector = $("<optgroup label='" + r_v['name'] + "'></optgroup>").appendTo(region_selector);
+              _ref = r_v['sub_regions'];
+              for (ad1_k in _ref) {
+                ad1_v = _ref[ad1_k];
+                $("<option value='" + ad1_k + "'>" + ad1_v['name'] + "</option>").appendTo(region_group_selector);
+              }
+            } else {
+              $("<option value='" + r_k + "'>" + r_v['name'] + "</option>").appendTo(region_selector);
+            }
+          }
+          return region_selector.trigger("chosen:updated");
         });
       }
     });
+    region_selector.change(function() {
+      var regions;
+      regions = $(this).val();
+      if (regions) {
+        MAP_JSON['features'] = [];
+        return $.when.apply($, jsonQueue).done(function() {
+          var one, _i, _len;
+          for (_i = 0, _len = regions.length; _i < _len; _i++) {
+            one = regions[_i];
+            MAP_JSON['features'].push(MAP_SHAPE_DATA[one]);
+          }
+          return console.log(MAP_JSON);
+        });
+      }
+    });
+    $('#run').on('click', function() {
+      var countryLayer;
+      map.legendControl.addLegend(getLegendHTML());
+      countryLayer = L.geoJson(MAP_JSON, {
+        style: getStyle,
+        onEachFeature: onEachFeature
+      });
+      countryLayer.addTo(map);
+      return map.fitBounds(countryLayer.getBounds());
+    });
+    jsonQueue = [];
+    MAP_SHAPE_DATA = {};
+    MAP_JSON = {
+      "type": "FeatureCollection",
+      "features": []
+    };
     mapID = 'yumiendo.j1majbom';
     MAP_UNITS = 'percent';
     COLOR_LEVELS = 5;
@@ -152,7 +204,7 @@
       return map.closePopup();
     }, 100);
     highlightFeature = function(e) {
-      var countryID, feature, layer;
+      var countryID, feature, feature_name, layer;
       layer = e.target;
       feature = layer.feature;
       countryID = layer.feature.id;
@@ -163,8 +215,15 @@
         fillOpacity: 1.0,
         fillColor: '#000'
       });
+      feature_name = feature.properties.ADM0_NAME;
+      if (feature.properties.ADM1_NAME) {
+        feature_name = feature.properties.ADM1_NAME;
+        if (feature.properties.ADM2_NAME) {
+          feature_name = feature.properties.ADM2_NAME;
+        }
+      }
       popup.setLatLng(e.latlng);
-      popup.setContent("<div class='marker-container'> <div class='marker-number'>" + feature.properties.value + "</div> <div class='marker-label'>" + MAP_UNITS + "</div> </div>");
+      popup.setContent("<div class='marker-container'> <div class='marker-number'>" + feature.properties.value + "</div> <div class='marker-label'>" + feature_name + "</div> </div>");
       if (!popup._map) {
         popup.openOn(map);
       }
@@ -193,19 +252,27 @@
       });
     };
     FILE_LINK = 'data/fao/country';
-    getMapFilePath = function(dic) {
-      if (dic['admin2'] !== 'NA') {
-        return "" + FILE_LINK + "/" + dic['region'] + "/" + dic['admin1'] + "/" + dic['admin2'] + ".json";
+    addMapFeature = function(r, ad1, ad2, v) {
+      var file_key, file_path, one_feature;
+      file_key = r;
+      file_path = "" + FILE_LINK + "/" + r + ".json";
+      if (ad2 !== 'NA') {
+        file_key = ad2;
+        file_path = "" + FILE_LINK + "/" + r + "/" + ad1 + "/" + ad2 + ".json";
+      } else if (ad1 !== 'NA') {
+        file_key = ad1;
+        file_path = "" + FILE_LINK + "/" + r + "/" + ad1 + ".json";
       }
-      if (dic['admin1'] !== 'NA') {
-        return "" + FILE_LINK + "/" + dic['region'] + "/" + dic['admin1'] + ".json";
+      if (MAP_SHAPE_DATA[file_key]) {
+        one_feature = MAP_SHAPE_DATA[file_key];
+        one_feature['properties']['value'] = v;
+        return null;
       } else {
-        return "" + FILE_LINK + "/" + dic['region'] + ".json";
+        return $.getJSON(file_path, function(map_json) {
+          map_json['properties']['value'] = v;
+          return MAP_SHAPE_DATA[file_key] = map_json;
+        });
       }
-    };
-    MAP_JSON = {
-      "type": "FeatureCollection",
-      "features": []
     };
     map = L.mapbox.map('map', mapID, {
       center: [20, 0],

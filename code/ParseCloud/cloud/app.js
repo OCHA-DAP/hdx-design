@@ -105,7 +105,6 @@ app.get('/getwfpdata', function(req, res) {
     var query = new Parse.Query("wfp");
     query.containedIn('indID', ids);
     query.containedIn('period', periods);
-    query.equalTo("admin1", 'NA');
     query.limit(1000);
     query.find({
       success: function(results) {

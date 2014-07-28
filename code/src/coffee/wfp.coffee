@@ -68,7 +68,7 @@ require ['jquery',
         peroid_selector.empty()
         group_selector = $("<optgroup label='All'></optgroup>").appendTo peroid_selector
         for one in data
-          $("<option value='#{one}' selected>#{one}</option>").appendTo group_selector
+          $("<option value='#{one}'>#{one}</option>").appendTo group_selector
         peroid_selector.trigger "chosen:updated"
     else
       indid_str = ''
@@ -81,33 +81,74 @@ require ['jquery',
     periods = $(this).val()
     if periods
       period_str = periods.join(',')
-
-  $('#run').on 'click', ()->
-    loadMapData()
-
-  loadMapData = ()->
-    $.getJSON "https://ocha.parseapp.com/getwfpdata?period=#{period_str}&indid=#{indid_str}", (data)->
+      # load map shape data
       jsonQueue = []
-      for one in data
-        console.log one
-        MAP_UNITS = one['units']
-        file = getMapFilePath(one)
-        jsonQueue.push(
-          $.getJSON file, (map_json)->
-            for one in data
-              if one['region'] == map_json['properties']['alpha-3']
-                map_json['properties']['value'] = parseInt one['value']
-                break
-            MAP_JSON['features'].push map_json
-        )
-      map.legendControl.addLegend getLegendHTML()
+      $.getJSON "https://ocha.parseapp.com/getwfpdata?period=#{period_str}&indid=#{indid_str}", (data)->
+        console.log "https://ocha.parseapp.com/getwfpdata?period=#{period_str}&indid=#{indid_str}"
+        region_selector.empty()
+        regions_select_list = {}
+        for one in data
+          # get map unit
+          MAP_UNITS = one['units']
+          # console.log one
+          region_code = one['region']
+          region_name = one['region_name']
+          admin1_code = one['admin1']
+          admin1_name = one['admin1_name']
+          admin2_code = one['admin2']
+          admin2_name = one['admin2_name']
+          one_value = parseFloat(one['value']).toFixed(1)
+          # get map shape path
+          download_event = addMapFeature region_code, admin1_code, admin2_code, one_value
+          if download_event
+            jsonQueue.push download_event
+
+          # create region selection list
+          if not regions_select_list[region_code]
+            regions_select_list[region_code] =
+              name: region_name
+              sub_regions: {}
+          if admin1_code != 'NA'
+            regions_select_list[region_code]['sub_regions'][admin1_code] =
+              name: admin1_name
+              sub_regions: {}
+          if admin2_code != 'NA'
+            regions_select_list[region_code]['sub_regions'][admin1_code]['sub_regions'][admin2_code] =
+              name:admin2_name
+        # create region selection list
+        for r_k,r_v of regions_select_list
+          if Object.keys(r_v['sub_regions']).length
+            region_group_selector = $("<optgroup label='#{r_v['name']}'></optgroup>").appendTo region_selector
+            for ad1_k,ad1_v of r_v['sub_regions']
+              $("<option value='#{ad1_k}'>#{ad1_v['name']}</option>").appendTo region_group_selector
+          else
+            $("<option value='#{r_k}'>#{r_v['name']}</option>").appendTo region_selector
+        region_selector.trigger "chosen:updated"
+
+  region_selector.change ()->
+    regions = $(this).val()
+    if regions
+      MAP_JSON['features'] = []
       $.when.apply($, jsonQueue).done ()->
+        for one in regions
+          MAP_JSON['features'].push MAP_SHAPE_DATA[one]
         console.log MAP_JSON
-        countryLayer = L.geoJson MAP_JSON,
-          style: getStyle,
-          onEachFeature: onEachFeature
-        countryLayer.addTo map
-        map.fitBounds(countryLayer.getBounds());
+
+  #
+  $('#run').on 'click', ()->
+    map.legendControl.addLegend getLegendHTML()
+    countryLayer = L.geoJson MAP_JSON,
+      style: getStyle,
+      onEachFeature: onEachFeature
+    countryLayer.addTo map
+    map.fitBounds(countryLayer.getBounds());
+
+  # Map Datastore
+  jsonQueue = []
+  MAP_SHAPE_DATA = {}
+  MAP_JSON =
+  "type": "FeatureCollection",
+  "features": []
 
   # Global
   # mapID = 'xyfeng.ijpo6lio'
@@ -167,11 +208,16 @@ require ['jquery',
       fillOpacity: 1.0
       fillColor: '#000'
     # tooltip
+    feature_name = feature.properties.ADM0_NAME
+    if feature.properties.ADM1_NAME
+      feature_name = feature.properties.ADM1_NAME
+      if feature.properties.ADM2_NAME
+        feature_name = feature.properties.ADM2_NAME
     popup.setLatLng e.latlng
     popup.setContent "
     <div class='marker-container'>
     <div class='marker-number'>#{feature.properties.value}</div>
-      <div class='marker-label'>#{MAP_UNITS}</div>
+      <div class='marker-label'>#{feature_name}</div>
     </div>
     "
     if !popup._map
@@ -203,17 +249,25 @@ require ['jquery',
 
   # Code
   FILE_LINK = 'data/fao/country'
-  getMapFilePath = (dic) ->
-    if dic['admin2'] != 'NA'
-      return "#{FILE_LINK}/#{dic['region']}/#{dic['admin1']}/#{dic['admin2']}.json"
-    if dic['admin1'] != 'NA'
-      return "#{FILE_LINK}/#{dic['region']}/#{dic['admin1']}.json"
+  addMapFeature = (r, ad1, ad2, v) ->
+    file_key = r
+    file_path = "#{FILE_LINK}/#{r}.json"
+    if ad2 != 'NA'
+      file_key = ad2
+      file_path = "#{FILE_LINK}/#{r}/#{ad1}/#{ad2}.json"
+    else if ad1 != 'NA'
+      file_key = ad1
+      file_path = "#{FILE_LINK}/#{r}/#{ad1}.json"
+    if MAP_SHAPE_DATA[file_key]
+      one_feature = MAP_SHAPE_DATA[file_key]
+      one_feature['properties']['value'] = v
+      # MAP_JSON['features'].push one_feature
+      return null
     else
-      return "#{FILE_LINK}/#{dic['region']}.json"
-  MAP_JSON =
-    "type": "FeatureCollection",
-    "features": []
-
+      return $.getJSON file_path, (map_json)->
+        map_json['properties']['value'] = v
+        MAP_SHAPE_DATA[file_key] = map_json
+        # MAP_JSON['features'].push map_json
 
   # create map
   map = L.mapbox.map 'map', mapID,
