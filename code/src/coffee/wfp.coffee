@@ -121,6 +121,10 @@ require ['jquery',
             region_group_selector = $("<optgroup label='#{r_v['name']}'></optgroup>").appendTo region_selector
             for ad1_k,ad1_v of r_v['sub_regions']
               $("<option value='#{ad1_k}'>#{ad1_v['name']}</option>").appendTo region_group_selector
+              if Object.keys(ad1_v['sub_regions']).length
+                ad1_group_selector = $("<optgroup label='#{ad1_v['name']}'></optgroup>").appendTo region_group_selector
+                for ad2_k,ad2_v of ad1_v['sub_regions']
+                  $("<option value='#{ad2_k}'>#{ad2_v['name']}</option>").appendTo ad1_group_selector
           else
             $("<option value='#{r_k}'>#{r_v['name']}</option>").appendTo region_selector
         region_selector.trigger "chosen:updated"
