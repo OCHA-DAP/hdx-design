@@ -10,6 +10,7 @@
     <link href="https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css" rel="stylesheet">
     <link href="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.3/leaflet.fullscreen.css" rel="stylesheet">
     <link href="css/lib/chosen/chosen.min.css" rel="stylesheet">
+    <link href="css/lib/tree/jquery.bonsai.css" rel="stylesheet">
     <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700" rel="stylesheet">
     <link href="css/wfp.css" rel="stylesheet">
   </head>
@@ -27,17 +28,27 @@
             </optgroup>
           </select>
           <h5>Select Periods</h5>
-          <select id="chosen_peroids" multiple data-placeholder="Choose a period" class="chosen-select"></select>
-          <h5>Select Regions</h5>
-          <select id="chosen_regions" multiple data-placeholder="Choose a region" class="chosen-select"></select>
-          <button id="run" class="btn">RUN</button>
+          <div id="chosen_periods"></div>
         </div>
         <div class="col-md-1"></div>
       </div>
       <div id="map_row" class="row">
-        <div id="map_container">
-          <div id="map"></div>
+        <div class="col-md-1"></div>
+        <div class="col-md-2">
+          <h5>Select Regions</h5>
+          <ol id="chosen_regions">
+            <li>
+              <input type="checkbox">All Regions
+            </li>
+          </ol>
         </div>
+        <div class="col-md-8">
+          <h5>Graph</h5>
+          <div id="map_container">
+            <div id="map"></div>
+          </div>
+        </div>
+        <div class="col-md-1"></div>
       </div>
     </div>
   </body>

@@ -107,6 +107,11 @@ body {
 .c3-tooltip th {
   background-color: #000;
 }
+#chosen_regions {
+  background: #efefef;
+  height: 600px;
+  overflow-y: scroll;
+}
 #options .chosen-select {
   width: 100%;
 }
@@ -153,10 +158,6 @@ body {
   text-transform: uppercase;
   text-align: center;
   color: #000;
-}
-#map_row {
-  position: relative;
-  margin-top: 60px;
 }
 .leaflet-container .leaflet-popup-content-wrapper {
   background: #efefef !important;

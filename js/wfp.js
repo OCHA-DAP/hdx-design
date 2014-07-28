@@ -1,4 +1,6 @@
 (function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
   requirejs.config({
     paths: {
       jquery: 'lib/jquery.v1.11.1.min',
@@ -9,7 +11,9 @@
       chroma: 'lib/chroma.min',
       d3: 'lib/d3.v3.min',
       c3: 'lib/c3.v0.2.4',
-      chosen: 'lib/chosen.v1.1.min'
+      chosen: 'lib/chosen.v1.1.min',
+      bonsai: 'lib/tree/jquery.bonsai',
+      qubit: 'lib/tree/jquery.qubit'
     },
     shim: {
       'bootstrap': {
@@ -26,12 +30,18 @@
       },
       'chosen': {
         deps: ['bootstrap', 'jquery']
+      },
+      'qubit': {
+        deps: ['jquery']
+      },
+      'bonsai': {
+        deps: ['jquery', 'qubit']
       }
     }
   });
 
-  require(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'chosen'], function($, b, m, o, f, d3, c3, chroma) {
-    var COLOR_LEVELS, FILE_LINK, MAP_JSON, MAP_SHAPE_DATA, MAP_UNITS, addMapFeature, closeTooltip, color_map, color_scale, featureClicked, getColor, getLegendHTML, getStyle, highlightFeature, i, indicator_selector, indid_str, jsonQueue, map, mapID, onEachFeature, openURL, period_str, peroid_selector, popup, region_selector, resetFeature, topLayer, topPane, _i;
+  require(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'chosen', 'bonsai', 'qubit'], function($, b, m, o, f, d3, c3, chroma) {
+    var COLOR_LEVELS, MAP_FILE_LINK, MAP_JSON, MAP_SHAPE_DATA, MAP_UNITS, RAW_DATA, addMapFeature, checked_regions, clearRegions, closeTooltip, color_map, color_scale, dataDownloadQueue, displayMap, downloadData, featureClicked, getColor, getLegendHTML, getPeriods, getRegions, getStyle, highlightFeature, i, indicator_selector, indids, map, mapDownloadQueue, mapID, onEachFeature, openURL, period_selector, periods, popup, region_selector, regions, resetFeature, topLayer, topPane, updatePeriods, _i;
     $(document).on('click', '.group-result', function() {
       var $this, unselected;
       $this = $(this);
@@ -47,135 +57,225 @@
     $('.chosen-select').chosen({
       no_results_text: "Oops, nothing found!"
     });
-    indicator_selector = $('#chosen_indicators');
-    peroid_selector = $('#chosen_peroids');
-    region_selector = $('#chosen_regions');
-    indid_str = '';
-    indicator_selector.change(function() {
-      var indids;
-      indids = $(this).val();
-      if (indids) {
-        indid_str = indids.join(',');
-        return $.getJSON("https://ocha.parseapp.com/getwfpperiods?indid=" + indid_str, function(data) {
-          var group_selector, one, _i, _len;
-          console.log(data);
-          peroid_selector.empty();
-          group_selector = $("<optgroup label='All'></optgroup>").appendTo(peroid_selector);
-          for (_i = 0, _len = data.length; _i < _len; _i++) {
-            one = data[_i];
-            $("<option value='" + one + "'>" + one + "</option>").appendTo(group_selector);
-          }
-          return peroid_selector.trigger("chosen:updated");
-        });
-      } else {
-        indid_str = '';
-        peroid_selector.empty();
-        return peroid_selector.trigger("chosen:updated");
-      }
-    });
-    period_str = '';
-    peroid_selector.change(function() {
-      var jsonQueue, periods;
-      periods = $(this).val();
-      if (periods) {
-        period_str = periods.join(',');
-        jsonQueue = [];
-        return $.getJSON("https://ocha.parseapp.com/getwfpdata?period=" + period_str + "&indid=" + indid_str, function(data) {
-          var MAP_UNITS, ad1_k, ad1_v, admin1_code, admin1_name, admin2_code, admin2_name, download_event, one, one_value, r_k, r_v, region_code, region_group_selector, region_name, regions_select_list, _i, _len, _ref;
-          console.log("https://ocha.parseapp.com/getwfpdata?period=" + period_str + "&indid=" + indid_str);
-          region_selector.empty();
-          regions_select_list = {};
-          for (_i = 0, _len = data.length; _i < _len; _i++) {
-            one = data[_i];
-            MAP_UNITS = one['units'];
-            region_code = one['region'];
-            region_name = one['region_name'];
-            admin1_code = one['admin1'];
-            admin1_name = one['admin1_name'];
-            admin2_code = one['admin2'];
-            admin2_name = one['admin2_name'];
-            one_value = parseFloat(one['value']).toFixed(1);
-            download_event = addMapFeature(region_code, admin1_code, admin2_code, one_value);
-            if (download_event) {
-              jsonQueue.push(download_event);
-            }
-            if (!regions_select_list[region_code]) {
-              regions_select_list[region_code] = {
-                name: region_name,
-                sub_regions: {}
-              };
-            }
-            if (admin1_code !== 'NA') {
-              regions_select_list[region_code]['sub_regions'][admin1_code] = {
-                name: admin1_name,
-                sub_regions: {}
-              };
-            }
-            if (admin2_code !== 'NA') {
-              regions_select_list[region_code]['sub_regions'][admin1_code]['sub_regions'][admin2_code] = {
-                name: admin2_name
-              };
-            }
-          }
-          for (r_k in regions_select_list) {
-            r_v = regions_select_list[r_k];
-            if (Object.keys(r_v['sub_regions']).length) {
-              region_group_selector = $("<optgroup label='" + r_v['name'] + "'></optgroup>").appendTo(region_selector);
-              _ref = r_v['sub_regions'];
-              for (ad1_k in _ref) {
-                ad1_v = _ref[ad1_k];
-                $("<option value='" + ad1_k + "'>" + ad1_v['name'] + "</option>").appendTo(region_group_selector);
-              }
-            } else {
-              $("<option value='" + r_k + "'>" + r_v['name'] + "</option>").appendTo(region_selector);
-            }
-          }
-          return region_selector.trigger("chosen:updated");
-        });
-      }
-    });
-    region_selector.change(function() {
-      var regions;
-      regions = $(this).val();
-      if (regions) {
-        MAP_JSON['features'] = [];
-        return $.when.apply($, jsonQueue).done(function() {
-          var one, _i, _len;
-          for (_i = 0, _len = regions.length; _i < _len; _i++) {
-            one = regions[_i];
-            MAP_JSON['features'].push(MAP_SHAPE_DATA[one]);
-          }
-          return console.log(MAP_JSON);
-        });
-      }
-    });
-    $('#run').on('click', function() {
-      var countryLayer;
-      map.legendControl.addLegend(getLegendHTML());
-      countryLayer = L.geoJson(MAP_JSON, {
-        style: getStyle,
-        onEachFeature: onEachFeature
-      });
-      countryLayer.addTo(map);
-      return map.fitBounds(countryLayer.getBounds());
-    });
-    jsonQueue = [];
+    dataDownloadQueue = [];
+    RAW_DATA = {};
+    mapDownloadQueue = [];
+    mapID = 'yumiendo.j1majbom';
+    MAP_UNITS = 'percent';
     MAP_SHAPE_DATA = {};
     MAP_JSON = {
       "type": "FeatureCollection",
       "features": []
     };
-    mapID = 'yumiendo.j1majbom';
-    MAP_UNITS = 'percent';
+    MAP_FILE_LINK = 'data/fao/country';
     COLOR_LEVELS = 5;
     color_scale = chroma.scale(['#fcbba1', '#67000d']).mode('hsl').correctLightness(true).out('hex');
     color_map = [];
     for (i = _i = 0; _i <= COLOR_LEVELS; i = _i += 1) {
       color_map.push(color_scale(i / parseFloat(COLOR_LEVELS)));
     }
-    console.log(color_map);
+    indicator_selector = $('#chosen_indicators');
+    period_selector = $('#chosen_periods');
+    region_selector = $('#chosen_regions');
+    indids = [];
+    periods = [];
+    regions = {};
+    checked_regions = [];
+    indicator_selector.change(function() {
+      indids = $(this).val();
+      if (!indids) {
+        indids = [];
+      }
+      downloadData();
+    });
+    $(document).on('click', '#chosen_periods .checkbox-inline input', function() {
+      var one, _j, _len, _ref;
+      periods = [];
+      _ref = $('#chosen_periods .checkbox-inline input:checked');
+      for (_j = 0, _len = _ref.length; _j < _len; _j++) {
+        one = _ref[_j];
+        periods.push(one.value);
+      }
+      getRegions();
+    });
+    $('#chosen_regions').bonsai({
+      checkboxes: true
+    });
+    $(document).on('click', '#chosen_regions input', function() {
+      var map_download_event, one, one_path, one_value, _j, _len, _ref;
+      checked_regions = [];
+      mapDownloadQueue = [];
+      MAP_JSON['features'] = [];
+      _ref = $('#chosen_regions input:checked');
+      for (_j = 0, _len = _ref.length; _j < _len; _j++) {
+        one = _ref[_j];
+        one_value = $(one).data('value');
+        one_path = $(one).data('path');
+        if (one_path) {
+          checked_regions.push(one_path);
+          map_download_event = addMapFeature(one_path, one_value);
+          if (map_download_event) {
+            mapDownloadQueue.push(map_download_event);
+          }
+        }
+      }
+      return $.when.apply($, mapDownloadQueue).done(function() {
+        var _k, _len1, _ref1;
+        _ref1 = checked_regions.sort();
+        for (_k = 0, _len1 = _ref1.length; _k < _len1; _k++) {
+          one = _ref1[_k];
+          MAP_JSON['features'].push(MAP_SHAPE_DATA[one]);
+        }
+        return displayMap();
+      });
+    });
+    map = L.mapbox.map('map', mapID, {
+      center: [20, 0],
+      zoom: 2,
+      minZoom: 2,
+      maxZoom: 8,
+      tileLayer: {
+        continuousWorld: false,
+        noWrap: false
+      }
+    });
+    map.scrollWheelZoom.disable();
+    L.control.fullscreen().addTo(map);
+    map.featureLayer.setFilter(function() {
+      return false;
+    });
+    popup = new L.Popup({
+      autoPan: false
+    });
+    topPane = map._createPane('leaflet-top-pane', map.getPanes().mapPane);
+    topLayer = L.mapbox.tileLayer(mapID);
+    topLayer.addTo(map);
+    topPane.appendChild(topLayer.getContainer());
+    topLayer.setZIndex(7);
     openURL = function(url) {
       return window.open(url, '_blank').focus();
+    };
+    downloadData = function() {
+      var download_event, one, _j, _len;
+      dataDownloadQueue = [];
+      for (_j = 0, _len = indids.length; _j < _len; _j++) {
+        one = indids[_j];
+        if (!RAW_DATA[one]) {
+          download_event = $.getJSON("https://ocha.parseapp.com/getdata?indid=" + one, function(data) {
+            return RAW_DATA[one] = data;
+          });
+          dataDownloadQueue.push(download_event);
+        }
+      }
+      updatePeriods(indids);
+    };
+    updatePeriods = function() {
+      period_selector.empty();
+      clearRegions();
+      $.when.apply($, dataDownloadQueue).done(function() {
+        var period, _j, _len, _results;
+        periods = getPeriods();
+        _results = [];
+        for (_j = 0, _len = periods.length; _j < _len; _j++) {
+          period = periods[_j];
+          _results.push($("<label class='checkbox-inline'><input type='checkbox' id='period_" + period + "' value='" + period + "'>" + period + "</label>").appendTo(period_selector));
+        }
+        return _results;
+      });
+    };
+    getPeriods = function() {
+      var indid, one, one_period, result, _j, _k, _len, _len1, _ref;
+      result = [];
+      for (_j = 0, _len = indids.length; _j < _len; _j++) {
+        indid = indids[_j];
+        _ref = RAW_DATA[indid];
+        for (_k = 0, _len1 = _ref.length; _k < _len1; _k++) {
+          one = _ref[_k];
+          one_period = one['period'];
+          if (__indexOf.call(result, one_period) < 0) {
+            result.push(one_period);
+          }
+        }
+      }
+      return result.sort();
+    };
+    clearRegions = function() {
+      region_selector.empty();
+      return $("<li class='expanded'><input type='checkbox'/>All Regions</li>").appendTo(region_selector);
+    };
+    getRegions = function() {
+      var admin1_key, admin2_key, all_admin1_list, all_admin2_list, all_regions, all_regions_list, indid, one, one_admin1_code, one_admin1_data, one_admin1_element, one_admin1_name, one_admin2_code, one_admin2_data, one_admin2_element, one_admin2_name, one_period, one_region_code, one_region_data, one_region_element, one_region_name, one_value, region_key, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _n, _ref, _ref1, _ref2, _ref3;
+      regions = {};
+      for (_j = 0, _len = indids.length; _j < _len; _j++) {
+        indid = indids[_j];
+        _ref = RAW_DATA[indid];
+        for (_k = 0, _len1 = _ref.length; _k < _len1; _k++) {
+          one = _ref[_k];
+          one_period = one['period'];
+          one_value = parseFloat(one['value']).toFixed(1);
+          one_region_code = one['region'];
+          one_region_name = one['region_name'];
+          one_admin1_code = one['admin1'];
+          one_admin1_name = one['admin1_name'];
+          one_admin2_code = one['admin2'];
+          one_admin2_name = one['admin2_name'];
+          if (__indexOf.call(periods, one_period) >= 0) {
+            if (!regions[one_region_code]) {
+              regions[one_region_code] = {
+                name: one_region_name,
+                sub_regions: {}
+              };
+            }
+            if (one_admin1_code !== 'NA') {
+              regions[one_region_code]['sub_regions'][one_admin1_code] = {
+                name: one_admin1_name,
+                sub_regions: {}
+              };
+            }
+            if (one_admin2_code !== 'NA') {
+              regions[one_region_code]['sub_regions'][one_admin1_code]['sub_regions'][one_admin2_code] = {
+                name: one_admin2_name,
+                value: one_value
+              };
+            } else if (one_admin1_code !== 'NA') {
+              regions[one_region_code]['sub_regions'][one_admin1_code]['value'] = one_value;
+            } else {
+              regions[one_region_code]['value'] = one_value;
+            }
+          }
+        }
+      }
+      all_regions = clearRegions();
+      if (Object.keys(regions).length) {
+        all_regions_list = $("<ol></ol>").appendTo(all_regions);
+        _ref1 = Object.keys(regions).sort();
+        for (_l = 0, _len2 = _ref1.length; _l < _len2; _l++) {
+          region_key = _ref1[_l];
+          one_region_data = regions[region_key];
+          one_region_element = $("<li><input type='checkbox' data-key='" + region_key + "' data-path='" + region_key + "' data-value='" + one_region_data['value'] + "'/>" + one_region_data['name'] + "</li>").appendTo(all_regions_list);
+          if (Object.keys(one_region_data['sub_regions']).length) {
+            all_admin1_list = $("<ol></ol>").appendTo($("<li><input type='checkbox' data-key=''/>Subregions of " + one_region_data['name'] + "</li>").appendTo(all_regions_list));
+            _ref2 = Object.keys(one_region_data['sub_regions']).sort();
+            for (_m = 0, _len3 = _ref2.length; _m < _len3; _m++) {
+              admin1_key = _ref2[_m];
+              one_admin1_data = one_region_data['sub_regions'][admin1_key];
+              one_admin1_element = $("<li><input type='checkbox' data-key='" + admin1_key + "' data-path='" + region_key + "/" + admin1_key + "' data-value='" + one_admin1_data['value'] + "'/>" + one_admin1_data['name'] + "</li>").appendTo(all_admin1_list);
+              if (Object.keys(one_admin1_data['sub_regions']).length) {
+                all_admin2_list = $("<ol></ol>").appendTo($("<li><input type='checkbox' data-key=''/>Subregions of " + one_admin1_data['name'] + "</li>").appendTo(all_admin1_list));
+                _ref3 = Object.keys(one_admin1_data['sub_regions']).sort();
+                for (_n = 0, _len4 = _ref3.length; _n < _len4; _n++) {
+                  admin2_key = _ref3[_n];
+                  one_admin2_data = one_admin1_data['sub_regions'][admin2_key];
+                  one_admin2_element = $("<li><input type='checkbox' data-key='" + admin2_key + "' data-path='" + region_key + "/" + admin1_key + "/" + admin2_key + "' data-value='" + one_admin2_data['value'] + "'/>" + one_admin2_data['name'] + "</li>").appendTo(all_admin2_list);
+                }
+              }
+            }
+          }
+        }
+      }
+      $('#chosen_regions').bonsai({
+        checkboxes: true
+      });
     };
     getColor = function(v) {
       var index;
@@ -251,52 +351,30 @@
         click: featureClicked
       });
     };
-    FILE_LINK = 'data/fao/country';
-    addMapFeature = function(r, ad1, ad2, v) {
-      var file_key, file_path, one_feature;
-      file_key = r;
-      file_path = "" + FILE_LINK + "/" + r + ".json";
-      if (ad2 !== 'NA') {
-        file_key = ad2;
-        file_path = "" + FILE_LINK + "/" + r + "/" + ad1 + "/" + ad2 + ".json";
-      } else if (ad1 !== 'NA') {
-        file_key = ad1;
-        file_path = "" + FILE_LINK + "/" + r + "/" + ad1 + ".json";
-      }
-      if (MAP_SHAPE_DATA[file_key]) {
-        one_feature = MAP_SHAPE_DATA[file_key];
+    addMapFeature = function(path, v) {
+      var file_path, one_feature;
+      file_path = "" + MAP_FILE_LINK + "/" + path + ".json";
+      if (MAP_SHAPE_DATA[path]) {
+        one_feature = MAP_SHAPE_DATA[path];
         one_feature['properties']['value'] = v;
         return null;
       } else {
         return $.getJSON(file_path, function(map_json) {
           map_json['properties']['value'] = v;
-          return MAP_SHAPE_DATA[file_key] = map_json;
+          return MAP_SHAPE_DATA[path] = map_json;
         });
       }
     };
-    map = L.mapbox.map('map', mapID, {
-      center: [20, 0],
-      zoom: 2,
-      minZoom: 2,
-      maxZoom: 8,
-      tileLayer: {
-        continuousWorld: false,
-        noWrap: false
-      }
-    });
-    map.scrollWheelZoom.disable();
-    L.control.fullscreen().addTo(map);
-    map.featureLayer.setFilter(function() {
-      return false;
-    });
-    popup = new L.Popup({
-      autoPan: false
-    });
-    topPane = map._createPane('leaflet-top-pane', map.getPanes().mapPane);
-    topLayer = L.mapbox.tileLayer(mapID);
-    topLayer.addTo(map);
-    topPane.appendChild(topLayer.getContainer());
-    topLayer.setZIndex(7);
+    displayMap = function() {
+      var countryLayer;
+      map.legendControl.addLegend(getLegendHTML());
+      countryLayer = L.geoJson(MAP_JSON, {
+        style: getStyle,
+        onEachFeature: onEachFeature
+      });
+      countryLayer.addTo(map);
+      return map.fitBounds(countryLayer.getBounds());
+    };
   });
 
 }).call(this);

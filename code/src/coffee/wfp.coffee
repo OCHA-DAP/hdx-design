@@ -8,7 +8,9 @@ requirejs.config({
       chroma: 'lib/chroma.min',
       d3: 'lib/d3.v3.min',
       c3: 'lib/c3.v0.2.4',
-      chosen: 'lib/chosen.v1.1.min'
+      chosen: 'lib/chosen.v1.1.min',
+      bonsai: 'lib/tree/jquery.bonsai',
+      qubit: 'lib/tree/jquery.qubit'
   },
   shim: {
     'bootstrap': {
@@ -25,6 +27,12 @@ requirejs.config({
     },
     'chosen': {
       deps: ['bootstrap', 'jquery']
+    },
+    'qubit': {
+      deps: ['jquery']
+    },
+    'bonsai': {
+      deps: ['jquery', 'qubit']
     }
   }
 });
@@ -36,7 +44,9 @@ require ['jquery',
 'd3',
 'c3',
 'chroma',
-'chosen'
+'chosen',
+'bonsai',
+'qubit'
 ], ($, b, m, o, f, d3, c3, chroma)->
 
   # Chosen js optgroup select
@@ -53,142 +63,189 @@ require ['jquery',
   $('.chosen-select').chosen
     no_results_text: "Oops, nothing found!"
 
-  indicator_selector = $('#chosen_indicators')
-  peroid_selector = $('#chosen_peroids')
-  region_selector = $('#chosen_regions')
-
-  # indicators
-  indid_str = ''
-  indicator_selector.change ()->
-    indids = $(this).val()
-    if indids
-      indid_str = indids.join(',')
-      $.getJSON "https://ocha.parseapp.com/getwfpperiods?indid=#{indid_str}", (data)->
-        console.log data
-        peroid_selector.empty()
-        group_selector = $("<optgroup label='All'></optgroup>").appendTo peroid_selector
-        for one in data
-          $("<option value='#{one}'>#{one}</option>").appendTo group_selector
-        peroid_selector.trigger "chosen:updated"
-    else
-      indid_str = ''
-      peroid_selector.empty()
-      peroid_selector.trigger "chosen:updated"
-
-  # peroids
-  period_str = ''
-  peroid_selector.change ()->
-    periods = $(this).val()
-    if periods
-      period_str = periods.join(',')
-      # load map shape data
-      jsonQueue = []
-      $.getJSON "https://ocha.parseapp.com/getwfpdata?period=#{period_str}&indid=#{indid_str}", (data)->
-        console.log "https://ocha.parseapp.com/getwfpdata?period=#{period_str}&indid=#{indid_str}"
-        region_selector.empty()
-        regions_select_list = {}
-        for one in data
-          # get map unit
-          MAP_UNITS = one['units']
-          # console.log one
-          region_code = one['region']
-          region_name = one['region_name']
-          admin1_code = one['admin1']
-          admin1_name = one['admin1_name']
-          admin2_code = one['admin2']
-          admin2_name = one['admin2_name']
-          one_value = parseFloat(one['value']).toFixed(1)
-          # get map shape path
-          download_event = addMapFeature region_code, admin1_code, admin2_code, one_value
-          if download_event
-            jsonQueue.push download_event
-
-          # create region selection list
-          if not regions_select_list[region_code]
-            regions_select_list[region_code] =
-              name: region_name
-              sub_regions: {}
-          if admin1_code != 'NA'
-            regions_select_list[region_code]['sub_regions'][admin1_code] =
-              name: admin1_name
-              sub_regions: {}
-          if admin2_code != 'NA'
-            regions_select_list[region_code]['sub_regions'][admin1_code]['sub_regions'][admin2_code] =
-              name:admin2_name
-        # create region selection list
-        for r_k,r_v of regions_select_list
-          if Object.keys(r_v['sub_regions']).length
-            region_group_selector = $("<optgroup label='#{r_v['name']}'></optgroup>").appendTo region_selector
-            for ad1_k,ad1_v of r_v['sub_regions']
-              $("<option value='#{ad1_k}'>#{ad1_v['name']}</option>").appendTo region_group_selector
-              if Object.keys(ad1_v['sub_regions']).length
-                ad1_group_selector = $("<optgroup label='#{ad1_v['name']}'></optgroup>").appendTo region_group_selector
-                for ad2_k,ad2_v of ad1_v['sub_regions']
-                  $("<option value='#{ad2_k}'>#{ad2_v['name']}</option>").appendTo ad1_group_selector
-          else
-            $("<option value='#{r_k}'>#{r_v['name']}</option>").appendTo region_selector
-        region_selector.trigger "chosen:updated"
-
-  region_selector.change ()->
-    regions = $(this).val()
-    if regions
-      MAP_JSON['features'] = []
-      $.when.apply($, jsonQueue).done ()->
-        for one in regions
-          MAP_JSON['features'].push MAP_SHAPE_DATA[one]
-        console.log MAP_JSON
-
-  #
-  $('#run').on 'click', ()->
-    map.legendControl.addLegend getLegendHTML()
-    countryLayer = L.geoJson MAP_JSON,
-      style: getStyle,
-      onEachFeature: onEachFeature
-    countryLayer.addTo map
-    map.fitBounds(countryLayer.getBounds());
-
-  # Map Datastore
-  jsonQueue = []
+  # GLOBAL
+  # data
+  dataDownloadQueue = []
+  RAW_DATA = {}
+  # map
+  mapDownloadQueue = []
+  mapID = 'yumiendo.j1majbom'#'yumiendo.ijchbik8''xyfeng.ijpo6lio'
+  MAP_UNITS = 'percent'
   MAP_SHAPE_DATA = {}
   MAP_JSON =
   "type": "FeatureCollection",
   "features": []
-
-  # Global
-  # mapID = 'xyfeng.ijpo6lio'
-  # mapID = 'yumiendo.ijchbik8'
-  mapID = 'yumiendo.j1majbom'
-  MAP_UNITS = 'percent'
-
+  MAP_FILE_LINK = 'data/fao/country'
   # colors
   COLOR_LEVELS = 5
-  # color_map = [
-  #   '#feebe2',
-  #   '#fbb4b9',
-  #   '#f768a1',
-  #   '#c51b8a',
-  #   '#7a0177',
-  # ]
   color_scale = chroma.scale(['#fcbba1','#67000d']).mode('hsl').correctLightness(true).out('hex')
   color_map = []
   for i in [0..COLOR_LEVELS] by 1
     color_map.push color_scale(i / parseFloat(COLOR_LEVELS))
-  console.log color_map
 
+  # logics
+  indicator_selector = $('#chosen_indicators')
+  period_selector = $('#chosen_periods')
+  region_selector = $('#chosen_regions')
+  # indicators
+  indids = []
+  periods = []
+  regions = {}
+  checked_regions = []
+  indicator_selector.change ()->
+    indids = $(this).val()
+    if not indids
+      indids = []
+    downloadData()
+    return
+  # periods
+  $(document).on 'click','#chosen_periods .checkbox-inline input',()->
+    periods = []
+    for one in $('#chosen_periods .checkbox-inline input:checked')
+      periods.push one.value
+    getRegions()
+    return
+  # region
+  $('#chosen_regions').bonsai
+    checkboxes: true
+  $(document).on 'click','#chosen_regions input',()->
+    # console.log $('#chosen_regions input:checked').data('value')
+    checked_regions = []
+    mapDownloadQueue = []
+    MAP_JSON['features'] = []
+    for one in $('#chosen_regions input:checked')
+      one_value = $(one).data('value')
+      one_path = $(one).data('path')
+      if one_path
+        checked_regions.push one_path
+        map_download_event = addMapFeature one_path, one_value
+        if map_download_event
+          mapDownloadQueue.push map_download_event
+    $.when.apply($, mapDownloadQueue).done ()->
+      for one in checked_regions.sort()
+        MAP_JSON['features'].push MAP_SHAPE_DATA[one]
+      displayMap()
 
-  # Functions
+  # create map
+  map = L.mapbox.map 'map', mapID,
+    center: [20, 0]
+    zoom: 2
+    minZoom: 2
+    maxZoom: 8
+    tileLayer:
+       continuousWorld: false
+       noWrap: false
+
+  map.scrollWheelZoom.disable()
+  # add full screen
+  L.control.fullscreen().addTo(map);
+
+  # hide all markers
+  map.featureLayer.setFilter ->
+    return false
+
+  popup = new L.Popup
+    autoPan: false
+
+  # re-order layers
+  topPane = map._createPane 'leaflet-top-pane', map.getPanes().mapPane
+  topLayer = L.mapbox.tileLayer mapID
+  topLayer.addTo map
+  topPane.appendChild topLayer.getContainer()
+  topLayer.setZIndex 7
+
+  # FUNCTIONS
+  # global
   openURL = (url) ->
     return window.open(url, '_blank').focus()
+  # data
+  downloadData = ()->
+    dataDownloadQueue = []
+    for one in indids
+      if not RAW_DATA[one]
+        download_event = $.getJSON "https://ocha.parseapp.com/getdata?indid=#{one}", (data)->
+          # console.log data
+          RAW_DATA[one] = data
+        dataDownloadQueue.push download_event
+    updatePeriods indids
+    return
+  updatePeriods = ()->
+    period_selector.empty()
+    clearRegions()
+    $.when.apply($, dataDownloadQueue).done ()->
+      periods = getPeriods()
+      for period in periods
+        $("<label class='checkbox-inline'><input type='checkbox' id='period_#{period}' value='#{period}'>#{period}</label>").appendTo period_selector
+    return
+  getPeriods = ()->
+    result = []
+    for indid in indids
+      for one in RAW_DATA[indid]
+        one_period = one['period']
+        if one_period not in result
+          result.push one_period
+    result.sort()
+  clearRegions = ()->
+    region_selector.empty()
+    return $("<li class='expanded'><input type='checkbox'/>All Regions</li>").appendTo region_selector
+  getRegions = ()->
+    regions = {}
+    for indid in indids
+      for one in RAW_DATA[indid]
+        one_period = one['period']
+        one_value = parseFloat(one['value']).toFixed(1)
+        one_region_code = one['region']
+        one_region_name = one['region_name']
+        one_admin1_code = one['admin1']
+        one_admin1_name = one['admin1_name']
+        one_admin2_code = one['admin2']
+        one_admin2_name = one['admin2_name']
+        if one_period in periods
+          if not regions[one_region_code]
+            regions[one_region_code] =
+              name: one_region_name
+              sub_regions: {}
+          if one_admin1_code != 'NA'
+            regions[one_region_code]['sub_regions'][one_admin1_code] =
+              name: one_admin1_name
+              sub_regions: {}
+          if one_admin2_code != 'NA'
+            regions[one_region_code]['sub_regions'][one_admin1_code]['sub_regions'][one_admin2_code] =
+              name:one_admin2_name
+              value: one_value
+          else if one_admin1_code != 'NA'
+            regions[one_region_code]['sub_regions'][one_admin1_code]['value'] = one_value
+          else
+            regions[one_region_code]['value'] = one_value
+    # create nav tree
+    all_regions = clearRegions()
+    if Object.keys(regions).length
+      all_regions_list = $("<ol></ol>").appendTo all_regions
+      for region_key in Object.keys(regions).sort()
+        one_region_data = regions[region_key]
+        one_region_element = $("<li><input type='checkbox' data-key='#{region_key}' data-path='#{region_key}' data-value='#{one_region_data['value']}'/>#{one_region_data['name']}</li>").appendTo all_regions_list
+        if Object.keys(one_region_data['sub_regions']).length
+          all_admin1_list = $("<ol></ol>").appendTo $("<li><input type='checkbox' data-key=''/>Subregions of #{one_region_data['name']}</li>").appendTo all_regions_list
+          for admin1_key in Object.keys(one_region_data['sub_regions']).sort()
+            one_admin1_data = one_region_data['sub_regions'][admin1_key]
+            one_admin1_element = $("<li><input type='checkbox' data-key='#{admin1_key}' data-path='#{region_key}/#{admin1_key}' data-value='#{one_admin1_data['value']}'/>#{one_admin1_data['name']}</li>").appendTo all_admin1_list
+            if Object.keys(one_admin1_data['sub_regions']).length
+              all_admin2_list = $("<ol></ol>").appendTo $("<li><input type='checkbox' data-key=''/>Subregions of #{one_admin1_data['name']}</li>").appendTo all_admin1_list
+              for admin2_key in Object.keys(one_admin1_data['sub_regions']).sort()
+                one_admin2_data = one_admin1_data['sub_regions'][admin2_key]
+                one_admin2_element = $("<li><input type='checkbox' data-key='#{admin2_key}' data-path='#{region_key}/#{admin1_key}/#{admin2_key}' data-value='#{one_admin2_data['value']}'/>#{one_admin2_data['name']}</li>").appendTo all_admin2_list
+    $('#chosen_regions').bonsai
+      checkboxes: true
+    return
 
+  # map
   getColor = (v) ->
     index = Math.floor(v / (100 / COLOR_LEVELS))
     color_map[index]
-
   getStyle = (feature) ->
     weight: 0,
     fillOpacity: 1,
     fillColor: getColor(feature.properties.value)
-
   getLegendHTML = ()->
     labels = []
     label_range = 100 / COLOR_LEVELS
@@ -197,7 +254,6 @@ require ['jquery',
       to = (i+1) * label_range
       labels.push "<li><span class='swatch' style='background:#{getColor(from)}'></span>#{from}-#{to}</li>"
     "<span>#{MAP_UNITS}</span><ul>#{labels.join('')}</ul"
-
   closeTooltip = window.setTimeout ()->
     map.closePopup()
   , 100
@@ -228,7 +284,6 @@ require ['jquery',
       popup.openOn map
     window.clearTimeout closeTooltip
     return
-
   resetFeature = (e) ->
     layer = e.target
     layer_style = getStyle layer.feature
@@ -237,71 +292,33 @@ require ['jquery',
       map.closePopup()
     , 100
     return
-
   featureClicked = (e) ->
     layer = e.target
     code = layer.feature.id.toLowerCase()
     openURL("country.html?code=#{code}")
     return
-
   onEachFeature = (feature, layer) ->
     layer.on
       mousemove: highlightFeature,
       mouseout: resetFeature,
       click: featureClicked
     return
-
-  # Code
-  FILE_LINK = 'data/fao/country'
-  addMapFeature = (r, ad1, ad2, v) ->
-    file_key = r
-    file_path = "#{FILE_LINK}/#{r}.json"
-    if ad2 != 'NA'
-      file_key = ad2
-      file_path = "#{FILE_LINK}/#{r}/#{ad1}/#{ad2}.json"
-    else if ad1 != 'NA'
-      file_key = ad1
-      file_path = "#{FILE_LINK}/#{r}/#{ad1}.json"
-    if MAP_SHAPE_DATA[file_key]
-      one_feature = MAP_SHAPE_DATA[file_key]
+  addMapFeature = (path, v) ->
+    file_path = "#{MAP_FILE_LINK}/#{path}.json"
+    if MAP_SHAPE_DATA[path]
+      one_feature = MAP_SHAPE_DATA[path]
       one_feature['properties']['value'] = v
-      # MAP_JSON['features'].push one_feature
       return null
     else
       return $.getJSON file_path, (map_json)->
         map_json['properties']['value'] = v
-        MAP_SHAPE_DATA[file_key] = map_json
-        # MAP_JSON['features'].push map_json
-
-  # create map
-  map = L.mapbox.map 'map', mapID,
-    center: [20, 0]
-    zoom: 2
-    minZoom: 2
-    maxZoom: 8
-    tileLayer:
-       continuousWorld: false
-       noWrap: false
-
-  # map.dragging.disable()
-  # map.touchZoom.disable()
-  # map.doubleClickZoom.disable()
-  map.scrollWheelZoom.disable()
-  # add full screen
-  L.control.fullscreen().addTo(map);
-
-  # hide all markers
-  map.featureLayer.setFilter ->
-    return false
-
-  popup = new L.Popup
-    autoPan: false
-
-  # re-order layers
-  topPane = map._createPane 'leaflet-top-pane', map.getPanes().mapPane
-  topLayer = L.mapbox.tileLayer mapID
-  topLayer.addTo map
-  topPane.appendChild topLayer.getContainer()
-  topLayer.setZIndex 7
+        MAP_SHAPE_DATA[path] = map_json
+  displayMap = ()->
+    map.legendControl.addLegend getLegendHTML()
+    countryLayer = L.geoJson MAP_JSON,
+      style: getStyle,
+      onEachFeature: onEachFeature
+    countryLayer.addTo map
+    map.fitBounds(countryLayer.getBounds());
 
   return

@@ -152,5 +152,29 @@ app.get('/getwfpperiods', function(req, res) {
     });
 });
 
+app.get('/getdata', function(req, res) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    var indid = req.query.indid;
+    if(indid){
+      var query = new Parse.Query("wfp");
+      query.equalTo('indID', indid);
+      query.limit(1000);
+      query.find({
+        success: function(results) {
+            res.send(results);
+        },
+        error: function() {
+            res.send('Whoops, API is not available right now.');
+        }
+      });
+    }
+    else{
+      res.send([]);
+      return;
+    }
+});
+
+
 // Attach the Express app to Cloud Code.
 app.listen();

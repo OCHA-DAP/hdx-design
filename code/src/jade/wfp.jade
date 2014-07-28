@@ -10,6 +10,7 @@ html(lang="en")
     link(href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet')
     link(href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.3/leaflet.fullscreen.css' rel='stylesheet')
     link(href='css/lib/chosen/chosen.min.css' rel='stylesheet')
+    link(href='css/lib/tree/jquery.bonsai.css' rel='stylesheet')
     link(href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700' rel='stylesheet')
     link(href='css/wfp.css' rel='stylesheet')
 
@@ -27,13 +28,18 @@ html(lang="en")
               option(value='CHD.B.FOS.06.T6') Percentage of households with acceptable food consumption
 
           h5 Select Periods
-          select#chosen_peroids.chosen-select(multiple data-placeholder='Choose a period')
-          //-
-          //- h5 Select Regions
-          //- select#chosen_regions.chosen-select(multiple data-placeholder='Choose a region')
-
-          button#run.btn RUN
+          #chosen_periods
         .col-md-1
       .row#map_row
-        #map_container
-          #map
+        .col-md-1
+        .col-md-2
+          h5 Select Regions
+          ol#chosen_regions
+            li
+              input(type='checkbox')
+              | All Regions
+        .col-md-8
+          h5 Graph
+          #map_container
+            #map
+        .col-md-1
