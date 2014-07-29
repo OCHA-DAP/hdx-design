@@ -189,10 +189,12 @@ require ['jquery',
     return
   createLineChart = ()->
     chart_data = {}
-    chart_data['period'] = periods.sort()
+    chart_data['categories'] = periods.sort()
+    chart_data['columns'] = []
     for one in checked_regions
-      chart_data[one['name']] = getValuesForPath one['path']
-    console.log chart_data
+      one_values = getValuesForPath(one['path'])
+      chart_data['columns'].push [one['name']].concat(one_values)
+    # console.log chart_data
     if c3_chart
       c3_chart.destroy()
     $('#chart').removeClass 'pie'
@@ -205,9 +207,12 @@ require ['jquery',
         bottom: 20
         padding: 60
       data:
-        x: 'period'
-        json: chart_data
+        columns: chart_data['columns']
         type: 'line'
+      axis:
+        x:
+          type: 'category'
+          categories:chart_data['categories']
     c3_chart = c3.generate chart_config
     return
   updateState STATE_NONE
