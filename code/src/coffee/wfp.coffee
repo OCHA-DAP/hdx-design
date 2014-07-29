@@ -70,6 +70,8 @@ require ['jquery',
   # map
   mapDownloadQueue = []
   mapID = 'yumiendo.j1majbom'#'yumiendo.ijchbik8''xyfeng.ijpo6lio'
+  featureLayer = null
+  mapLegend = null
   MAP_UNITS = 'percent'
   MAP_SHAPE_DATA = {}
   MAP_JSON =
@@ -187,6 +189,7 @@ require ['jquery',
     result.sort()
   clearRegions = ()->
     region_selector.empty()
+    resetMap()
     return $("<li class='expanded'><input type='checkbox'/>All Regions</li>").appendTo region_selector
   getRegions = ()->
     regions = {}
@@ -205,18 +208,20 @@ require ['jquery',
             regions[one_region_code] =
               name: one_region_name
               sub_regions: {}
-          if one_admin1_code != 'NA'
+          if one_admin1_code != 'NA' and not regions[one_region_code]['sub_regions'][one_admin1_code]
             regions[one_region_code]['sub_regions'][one_admin1_code] =
               name: one_admin1_name
               sub_regions: {}
-          if one_admin2_code != 'NA'
+          if one_admin2_code != 'NA' and not regions[one_region_code]['sub_regions'][one_admin1_code]['sub_regions'][one_admin2_code]
             regions[one_region_code]['sub_regions'][one_admin1_code]['sub_regions'][one_admin2_code] =
               name:one_admin2_name
               value: one_value
           else if one_admin1_code != 'NA'
             regions[one_region_code]['sub_regions'][one_admin1_code]['value'] = one_value
+            console.log regions[one_region_code]['sub_regions'][one_admin1_code]
           else
             regions[one_region_code]['value'] = one_value
+    console.log regions
     # create nav tree
     all_regions = clearRegions()
     if Object.keys(regions).length
@@ -243,7 +248,9 @@ require ['jquery',
     index = Math.floor(v / (100 / COLOR_LEVELS))
     color_map[index]
   getStyle = (feature) ->
-    weight: 0,
+    weight: 4
+    opacity: 0
+    color: '#000'
     fillOpacity: 1,
     fillColor: getColor(feature.properties.value)
   getLegendHTML = ()->
@@ -262,11 +269,9 @@ require ['jquery',
     feature = layer.feature
     countryID = layer.feature.id
     layer.setStyle
-      weigth:1
-      opacity: 0.2
-      color: '#ccc'
-      fillOpacity: 1.0
-      fillColor: '#000'
+      weight: 4
+      opacity: 1
+      color: '#007ce0'
     # tooltip
     feature_name = feature.properties.ADM0_NAME
     if feature.properties.ADM1_NAME
@@ -313,12 +318,25 @@ require ['jquery',
       return $.getJSON file_path, (map_json)->
         map_json['properties']['value'] = v
         MAP_SHAPE_DATA[path] = map_json
+  resetMap = ()->
+    if featureLayer
+      featureLayer.clearLayers()
+    if mapLegend
+      map.legendControl.removeLegend mapLegend
+      mapLegend = null
+
   displayMap = ()->
-    map.legendControl.addLegend getLegendHTML()
-    countryLayer = L.geoJson MAP_JSON,
-      style: getStyle,
-      onEachFeature: onEachFeature
-    countryLayer.addTo map
-    map.fitBounds(countryLayer.getBounds());
+    resetMap()
+    if not mapLegend
+      mapLegend = getLegendHTML()
+      map.legendControl.addLegend mapLegend
+    if not featureLayer
+      featureLayer = L.geoJson MAP_JSON,
+        style: getStyle,
+        onEachFeature: onEachFeature
+      featureLayer.addTo map
+    else
+      featureLayer.addData MAP_JSON
+    map.fitBounds(featureLayer.getBounds());
 
   return

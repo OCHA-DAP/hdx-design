@@ -25,6 +25,9 @@
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   font-family: 'Source Sans Pro', sans-serif;
   -webkit-font-smoothing: antialiased !important;
 }
@@ -101,6 +104,10 @@ body {
 .leaflet-container .leaflet-bar.leaflet-control.leaflet-control-zoom {
   margin-top: 30px;
 }
+.leaflet-container path {
+  -webkit-transition: fill 200ms;
+  transition: fill 200ms;
+}
 .c3-tooltip {
   opacity: 1;
 }
@@ -139,7 +146,7 @@ body {
 #map .marker-container {
   position: relative;
   width: 60px;
-  height: 40px;
+  height: 60px;
   padding: 0 !important;
 }
 #map .marker-container .marker-number {

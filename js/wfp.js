@@ -41,7 +41,7 @@
   });
 
   require(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'chosen', 'bonsai', 'qubit'], function($, b, m, o, f, d3, c3, chroma) {
-    var COLOR_LEVELS, MAP_FILE_LINK, MAP_JSON, MAP_SHAPE_DATA, MAP_UNITS, RAW_DATA, addMapFeature, checked_regions, clearRegions, closeTooltip, color_map, color_scale, dataDownloadQueue, displayMap, downloadData, featureClicked, getColor, getLegendHTML, getPeriods, getRegions, getStyle, highlightFeature, i, indicator_selector, indids, map, mapDownloadQueue, mapID, onEachFeature, openURL, period_selector, periods, popup, region_selector, regions, resetFeature, topLayer, topPane, updatePeriods, _i;
+    var COLOR_LEVELS, MAP_FILE_LINK, MAP_JSON, MAP_SHAPE_DATA, MAP_UNITS, RAW_DATA, addMapFeature, checked_regions, clearRegions, closeTooltip, color_map, color_scale, dataDownloadQueue, displayMap, downloadData, featureClicked, featureLayer, getColor, getLegendHTML, getPeriods, getRegions, getStyle, highlightFeature, i, indicator_selector, indids, map, mapDownloadQueue, mapID, mapLegend, onEachFeature, openURL, period_selector, periods, popup, region_selector, regions, resetFeature, resetMap, topLayer, topPane, updatePeriods, _i;
     $(document).on('click', '.group-result', function() {
       var $this, unselected;
       $this = $(this);
@@ -61,6 +61,8 @@
     RAW_DATA = {};
     mapDownloadQueue = [];
     mapID = 'yumiendo.j1majbom';
+    featureLayer = null;
+    mapLegend = null;
     MAP_UNITS = 'percent';
     MAP_SHAPE_DATA = {};
     MAP_JSON = {
@@ -201,6 +203,7 @@
     };
     clearRegions = function() {
       region_selector.empty();
+      resetMap();
       return $("<li class='expanded'><input type='checkbox'/>All Regions</li>").appendTo(region_selector);
     };
     getRegions = function() {
@@ -226,25 +229,27 @@
                 sub_regions: {}
               };
             }
-            if (one_admin1_code !== 'NA') {
+            if (one_admin1_code !== 'NA' && !regions[one_region_code]['sub_regions'][one_admin1_code]) {
               regions[one_region_code]['sub_regions'][one_admin1_code] = {
                 name: one_admin1_name,
                 sub_regions: {}
               };
             }
-            if (one_admin2_code !== 'NA') {
+            if (one_admin2_code !== 'NA' && !regions[one_region_code]['sub_regions'][one_admin1_code]['sub_regions'][one_admin2_code]) {
               regions[one_region_code]['sub_regions'][one_admin1_code]['sub_regions'][one_admin2_code] = {
                 name: one_admin2_name,
                 value: one_value
               };
             } else if (one_admin1_code !== 'NA') {
               regions[one_region_code]['sub_regions'][one_admin1_code]['value'] = one_value;
+              console.log(regions[one_region_code]['sub_regions'][one_admin1_code]);
             } else {
               regions[one_region_code]['value'] = one_value;
             }
           }
         }
       }
+      console.log(regions);
       all_regions = clearRegions();
       if (Object.keys(regions).length) {
         all_regions_list = $("<ol></ol>").appendTo(all_regions);
@@ -284,7 +289,9 @@
     };
     getStyle = function(feature) {
       return {
-        weight: 0,
+        weight: 4,
+        opacity: 0,
+        color: '#000',
         fillOpacity: 1,
         fillColor: getColor(feature.properties.value)
       };
@@ -309,11 +316,9 @@
       feature = layer.feature;
       countryID = layer.feature.id;
       layer.setStyle({
-        weigth: 1,
-        opacity: 0.2,
-        color: '#ccc',
-        fillOpacity: 1.0,
-        fillColor: '#000'
+        weight: 4,
+        opacity: 1,
+        color: '#007ce0'
       });
       feature_name = feature.properties.ADM0_NAME;
       if (feature.properties.ADM1_NAME) {
@@ -365,15 +370,31 @@
         });
       }
     };
+    resetMap = function() {
+      if (featureLayer) {
+        featureLayer.clearLayers();
+      }
+      if (mapLegend) {
+        map.legendControl.removeLegend(mapLegend);
+        return mapLegend = null;
+      }
+    };
     displayMap = function() {
-      var countryLayer;
-      map.legendControl.addLegend(getLegendHTML());
-      countryLayer = L.geoJson(MAP_JSON, {
-        style: getStyle,
-        onEachFeature: onEachFeature
-      });
-      countryLayer.addTo(map);
-      return map.fitBounds(countryLayer.getBounds());
+      resetMap();
+      if (!mapLegend) {
+        mapLegend = getLegendHTML();
+        map.legendControl.addLegend(mapLegend);
+      }
+      if (!featureLayer) {
+        featureLayer = L.geoJson(MAP_JSON, {
+          style: getStyle,
+          onEachFeature: onEachFeature
+        });
+        featureLayer.addTo(map);
+      } else {
+        featureLayer.addData(MAP_JSON);
+      }
+      return map.fitBounds(featureLayer.getBounds());
     };
   });
 

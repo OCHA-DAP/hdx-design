@@ -33,6 +33,9 @@
 *{
   margin:0;
   padding:0;
+  box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  -webkit-box-sizing:border-box;
   .text-font();
   -webkit-font-smoothing: antialiased !important;
 }
@@ -115,6 +118,11 @@ body {
     &.leaflet-control-zoom{
       margin-top: 30px;
     }
+  }
+
+  path {
+    -webkit-transition: fill 200ms;
+    transition: fill 200ms;
   }
 }
 
