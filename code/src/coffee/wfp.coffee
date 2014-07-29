@@ -221,7 +221,7 @@ require ['jquery',
             console.log regions[one_region_code]['sub_regions'][one_admin1_code]
           else
             regions[one_region_code]['value'] = one_value
-    console.log regions
+    # console.log regions
     # create nav tree
     all_regions = clearRegions()
     if Object.keys(regions).length
