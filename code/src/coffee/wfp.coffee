@@ -367,17 +367,17 @@ require ['jquery',
       the_region = keys[0]
     else if keys.length == 2
       the_region = keys[0]
-      the_admin1 = kyes[1]
+      the_admin1 = keys[1]
     else if keys.length == 3
       the_region = keys[0]
-      the_admin1 = kyes[1]
-      the_admin2 = kyes[2]
+      the_admin1 = keys[1]
+      the_admin2 = keys[2]
     result = []
     for one_period in periods.sort()
       FOUND_VALUE = false
       for one_line in RAW_DATA[indids[0]]
         if one_line['region'] == the_region and one_line['admin1'] == the_admin1 and one_line['admin2'] == the_admin2 and one_line['period'] == one_period
-          result.push one_line['value']
+          result.push one_line['value'].toFixed(1)
           FOUND_VALUE = true
           break
       if not FOUND_VALUE
