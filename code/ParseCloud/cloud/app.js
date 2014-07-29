@@ -159,6 +159,7 @@ app.get('/getdata', function(req, res) {
     if(indid){
       var query = new Parse.Query("wfp");
       query.equalTo('indID', indid);
+      query.ascending("period");
       query.limit(1000);
       query.find({
         success: function(results) {

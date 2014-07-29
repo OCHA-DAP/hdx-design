@@ -136,6 +136,7 @@ body {
   min-height: 1500px;
 }
 #map_container {
+  position: absolute;
   width: 100%;
   height: 600px;
 }
@@ -174,4 +175,43 @@ body {
 }
 .marker-container {
   margin: 20px;
+}
+#chart_container {
+  position: absolute;
+  width: 100%;
+  height: 600px;
+}
+#chart {
+  margin: 40px;
+}
+#chart.pie.c3 {
+  pointer-events: none;
+}
+#chart.pie.c3 .c3-chart-arc text {
+  display: none;
+}
+#chart.pie.c3 .chart-title {
+  font-family: 'Gotham' Arial;
+  font-size: 15px;
+  font-weight: bold;
+}
+#chart.pie.c3 .chart-value,
+#chart.pie.c3 .chart-unit {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 12px;
+}
+.bonsai {
+  padding: 10px 10px 0 0;
+}
+.bonsai li > input {
+  margin-right: 5px;
+}
+.bonsai li > span {
+  display: inline-block;
+  background: #ccc;
+  color: #fff;
+  padding: 0 6px 0px 6px;
+  margin: 0px 0 0 10px;
+  border-radius: 4px;
+  font-size: 11px;
 }

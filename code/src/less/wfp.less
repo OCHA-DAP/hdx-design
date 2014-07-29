@@ -30,8 +30,10 @@
 
 #map_container
 {
+  position:absolute;
   width: 100%;
   height: 600px;
+  // display: none;
 }
 #map{
   width: 100%;
@@ -60,7 +62,6 @@
     }
   }
 }
-
 .leaflet-container {
   .leaflet-popup-content-wrapper{
     background: #efefef !important;
@@ -69,7 +70,48 @@
     border-top: 8px solid #efefef !important;
   }
 }
-
 .marker-container{
   margin: 20px;
+}
+#chart_container
+{
+  position:absolute;
+  width:100%;
+  height:600px;
+}
+#chart{
+  margin: 40px;
+  &.pie.c3 {
+    pointer-events: none;
+    .c3-chart-arc text{
+      display: none;
+    }
+    .chart-title {
+      .header-font();
+      font-size: 15px;
+      font-weight: bold;
+    }
+    .chart-value, .chart-unit {
+      .text-font();
+      font-size: 12px;
+    }
+  }
+}
+
+.bonsai{
+  padding: 10px 10px 0 0;
+  li {
+    >input{
+      margin-right: 5px;
+    }
+    >span{
+      display: inline-block;
+      background: #ccc;
+      color: #fff;
+      padding: 0 6px 0px 6px;
+      margin: 0px 0 0 10px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+  }
 }
