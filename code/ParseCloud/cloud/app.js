@@ -157,7 +157,7 @@ app.get('/getdata', function(req, res) {
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     var indid = req.query.indid;
     if(indid){
-      var query = new Parse.Query("wfp");
+      var query = new Parse.Query("data");
       query.equalTo('indID', indid);
       query.ascending("period");
       query.limit(1000);

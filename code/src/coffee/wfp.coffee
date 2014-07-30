@@ -59,10 +59,6 @@ require ['jquery',
       $this.nextUntil('.group-result').each ()->
         $("a.search-choice-close[data-option-array-index='#{$this.data('option-array-index')}']").trigger 'click'
 
-  # selections
-  $('.chosen-select').chosen
-    no_results_text: "Oops, nothing found!"
-
   # GLOBAL
   # data
   dataDownloadQueue = []
@@ -134,7 +130,18 @@ require ['jquery',
   STATE_PIE = 4
   STATE_RADAR = 5
   STATE_SCATTER = 6
-  CURR_STATE = STATE_NONE
+  CURR_STATE = -1
+
+  # build topics
+  $.getJSON "data/topics.json", (data)->
+    for k in Object.keys(data).sort()
+      group = $("<optgroup label='#{k}'></optgroup>)").appendTo indicator_selector
+      v = data[k]
+      for one in v
+        $("<option value='#{one.indid}'>#{one.name}</option>").appendTo group
+    $('.chosen-select').chosen
+      no_results_text: "Oops, nothing found!"
+    return
   createNavTree = ()->
     $('#chosen_regions').bonsai
       checkboxes: true
@@ -301,6 +308,7 @@ require ['jquery',
           categories:chart_data['categories']
     c3_chart = c3.generate chart_config
     return
+
   updateState STATE_NONE
   # updateState STATE_LINE
   # chart_data =
@@ -358,8 +366,9 @@ require ['jquery',
     dataDownloadQueue = []
     for one in indids
       if not RAW_DATA[one]
+        console.log "https://ocha.parseapp.com/getdata?indid=#{one}"
         download_event = $.getJSON "https://ocha.parseapp.com/getdata?indid=#{one}", (data)->
-          # console.log data
+          console.log data
           RAW_DATA[one] = data
         dataDownloadQueue.push download_event
     updatePeriods indids

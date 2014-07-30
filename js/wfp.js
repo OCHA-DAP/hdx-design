@@ -123,7 +123,7 @@
     STATE_PIE = 4;
     STATE_RADAR = 5;
     STATE_SCATTER = 6;
-    CURR_STATE = STATE_NONE;
+    CURR_STATE = -1;
     createNavTree = function() {
       var one, one_count, _j, _len, _ref;
       $('#chosen_regions').bonsai({
