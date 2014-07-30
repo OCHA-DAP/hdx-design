@@ -41,7 +41,7 @@
   });
 
   require(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'chosen', 'bonsai', 'qubit'], function($, b, m, o, f, d3, c3, chroma) {
-    var COLOR_LEVELS, CURR_STATE, DATA_UNITS, MAP_FILE_LINK, MAP_JSON, MAP_SHAPE_DATA, RAW_DATA, SELECTED_PERIOD, STATE_BAR, STATE_LINE, STATE_MAP, STATE_NONE, STATE_PIE, STATE_RADAR, STATE_SCATTER, addMapFeature, addTextToChart, c3_chart, chart_container, chartable, checked_regions, clearRegions, closeTooltip, color_map, color_scale, createLineChart, createMap, createNavTree, createPieChart, dataDownloadQueue, downloadData, featureClicked, featureLayer, getColor, getFeatureValue, getLegendHTML, getPeriods, getRegions, getStyle, getStyleByValue, getValuesForPath, highlightFeature, i, indicator_selector, indids, map, mapDownloadQueue, mapID, mapLegend, mapPeriods, map_container, onEachFeature, openURL, period_selector, periods, popup, region_selector, regions, resetFeature, topLayer, topPane, unchecked_regions, updateMap, updatePeriods, updateState, _i;
+    var COLOR_LEVELS, CURR_STATE, DATA_STATE, DATA_UNITS, MAP_FILE_LINK, MAP_JSON, MAP_SHAPE_DATA, RAW_DATA, SELECTED_OPTION, SELECTED_PERIOD, STATE_BAR, STATE_LINE, STATE_MAP, STATE_NONE, STATE_PIE, STATE_RADAR, STATE_SCATTER, addMapFeature, addTextToChart, c3_chart, chart_container, chartable, checked_regions, clearRegions, closeTooltip, color_map, color_scale, createBarChart, createLineChart, createMap, createNavTree, createSingleBarChart, createSinglePieChart, dataDownloadQueue, downloadData, featureClicked, featureLayer, getColor, getFeatureValue, getLegendHTML, getPeriods, getRegions, getStyle, getStyleByValue, getValuesForPath, highlightFeature, i, indicator_selector, indids, map, mapDownloadQueue, mapID, mapLegend, mapPeriods, map_container, onEachFeature, openURL, period_selector, periods, popup, region_selector, regions, resetFeature, showOptions, topLayer, topPane, unchecked_regions, updateGraph, updateMap, updatePeriods, updateState, _i;
     $(document).on('click', '.group-result', function() {
       var $this, unselected;
       $this = $(this);
@@ -61,7 +61,9 @@
     RAW_DATA = {};
     DATA_UNITS = 'percent';
     SELECTED_PERIOD = null;
+    SELECTED_OPTION = null;
     c3_chart = null;
+    DATA_STATE = null;
     mapDownloadQueue = [];
     mapID = 'yumiendo.j1majbom';
     featureLayer = null;
@@ -140,6 +142,7 @@
       }
       console.log("update state to " + new_state);
       if (new_state === STATE_NONE) {
+        DATA_STATE = null;
         map_container.hide();
         chart_container.hide();
       } else if (new_state === STATE_MAP) {
@@ -155,7 +158,7 @@
     addTextToChart = function(svg, text, text_class, x, y) {
       svg.append('text').attr('transform', "translate(" + x + ", " + y + ")").attr('class', text_class).attr('text-anchor', 'middle').text(text);
     };
-    createPieChart = function() {
+    createSinglePieChart = function() {
       var chart_config, name, region_data, svg, value;
       region_data = regions[checked_regions[0]];
       name = region_data['name'];
@@ -189,6 +192,96 @@
       addTextToChart(svg, name, 'chart-title', 380, 20);
       addTextToChart(svg, value, 'chart-value', 380, 305);
       addTextToChart(svg, DATA_UNITS, 'chart-unit', 380, 315);
+    };
+    createSingleBarChart = function() {
+      var chart_config, name, region_data, svg, value;
+      region_data = regions[checked_regions[0]];
+      name = region_data['name'];
+      value = region_data['values'][0]['value'];
+      if (c3_chart) {
+        c3_chart.destroy();
+      }
+      $('#chart').removeClass('line').removeClass('pie').addClass('bar');
+      chart_config = {
+        bindto: '#chart',
+        padding: {
+          top: 30,
+          bottom: 20
+        },
+        color: {
+          pattern: ['1ebfb3', 'eee']
+        },
+        data: {
+          columns: [[name, value]],
+          type: 'bar'
+        },
+        bar: {
+          width: {
+            ratio: 0.5
+          }
+        },
+        axis: {
+          y: {
+            max: 100
+          }
+        },
+        legend: {
+          show: false
+        },
+        tooltip: {
+          show: false
+        }
+      };
+      c3_chart = c3.generate(chart_config);
+      svg = d3.select("#chart svg");
+      addTextToChart(svg, name, 'chart-title', 380, 20);
+      addTextToChart(svg, value, 'chart-value', 380, 305);
+      addTextToChart(svg, DATA_UNITS, 'chart-unit', 380, 315);
+    };
+    createBarChart = function() {
+      var chart_config, chart_data_regions, chart_data_values, path, region_data, _j, _len;
+      chart_data_regions = [];
+      chart_data_values = [DATA_UNITS];
+      for (_j = 0, _len = checked_regions.length; _j < _len; _j++) {
+        path = checked_regions[_j];
+        region_data = regions[path];
+        chart_data_values.push(region_data['values'][0]['value']);
+        chart_data_regions.push(region_data['name']);
+      }
+      if (c3_chart) {
+        c3_chart.destroy();
+      }
+      $('#chart').removeClass('line').removeClass('pie').addClass('bar');
+      chart_config = {
+        bindto: '#chart',
+        padding: {
+          top: 30,
+          bottom: 20
+        },
+        color: {
+          pattern: ['1ebfb3', '117be1', 'f2645a', '555555', 'ffd700']
+        },
+        data: {
+          columns: [chart_data_values],
+          type: 'bar'
+        },
+        bar: {
+          width: {
+            ratio: 0.5
+          }
+        },
+        axis: {
+          x: {
+            type: 'category',
+            categories: chart_data_regions
+          },
+          y: {
+            max: 100
+          }
+        }
+      };
+      c3_chart = c3.generate(chart_config);
+      $('line.c3-xgrid-focus').hide();
     };
     createLineChart = function() {
       var chart_config, chart_data, one, one_values, _j, _len;
@@ -270,6 +363,13 @@
         }
       }
       chartable();
+    });
+    $(document).on('click', '#options_container span', function() {
+      var $this, op_text;
+      $this = $(this);
+      $this.addClass('active').siblings().removeClass('active');
+      op_text = $this.text();
+      return updateGraph(op_text);
     });
     openURL = function(url) {
       return window.open(url, '_blank').focus();
@@ -456,6 +556,38 @@
       }
       return result;
     };
+    showOptions = function(ops) {
+      var $graph_options, FIRST_OP, op, op_l, op_u, _j, _len;
+      $graph_options = $('#options_container').empty();
+      FIRST_OP = true;
+      for (_j = 0, _len = ops.length; _j < _len; _j++) {
+        op = ops[_j];
+        op_u = op.toUpperCase();
+        op_l = op.toLowerCase();
+        if (FIRST_OP) {
+          $("<span class='graph_option active " + op_l + "'>" + op_u + "<span>").appendTo($graph_options);
+          FIRST_OP = false;
+        } else {
+          $("<span class='graph_option " + op_l + "'>" + op_u + "<span>").appendTo($graph_options);
+        }
+      }
+    };
+    updateGraph = function(op) {
+      if (op === 'B') {
+        SELECTED_OPTION = op;
+        updateState(STATE_BAR);
+        if (DATA_STATE === '111') {
+          createSingleBarChart();
+        } else {
+          createBarChart();
+        }
+      }
+      if (op === 'M') {
+        SELECTED_OPTION = op;
+        updateState(STATE_MAP);
+        return createMap();
+      }
+    };
     chartable = function() {
       var indids_count, periods_count, regions_count;
       console.log('start chartable');
@@ -469,19 +601,29 @@
           if (regions_count === 0) {
             updateState(STATE_NONE);
           } else if (regions_count > 1) {
-            updateState(STATE_MAP);
-            createMap();
+            if (DATA_STATE !== '11M') {
+              DATA_STATE = '11M';
+              updateState(STATE_MAP);
+              createMap();
+              showOptions(['M', 'P', 'B', 'L']);
+            } else {
+              updateGraph(SELECTED_OPTION);
+            }
           } else {
+            DATA_STATE = '111';
             updateState(STATE_PIE);
-            createPieChart();
+            createSinglePieChart();
+            showOptions(['P', 'B']);
           }
         } else if (periods_count > 1) {
           if (regions_count === 0) {
             updateState(STATE_NONE);
           } else if (regions_count === 1) {
+            DATA_STATE = '1M1';
             updateState(STATE_LINE);
             createLineChart();
           } else if (regions_count > 1) {
+            DATA_STATE = '1MM';
             updateState(STATE_MAP);
             createMap();
           }

@@ -210,6 +210,58 @@ body {
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 12px;
 }
+#chart.bar.c3 .chart-title {
+  font-family: 'Gotham' Arial;
+  font-size: 15px;
+  font-weight: bold;
+}
+#chart.bar.c3 .chart-value,
+#chart.bar.c3 .chart-unit {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 12px;
+}
+#options_container {
+  position: absolute;
+  left: 100px;
+  top: 5px;
+}
+#options_container span {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  opacity: 0.2;
+  margin-right: 10px;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  font-family: 'Gotham' Arial;
+}
+#options_container span:first-child {
+  margin-right: 40px;
+}
+#options_container span.active,
+#options_container span:hover {
+  cursor: pointer;
+  opacity: 1.0;
+}
+#options_container span.b {
+  background: #4d29df;
+}
+#options_container span.l {
+  background: #58e2c2;
+}
+#options_container span.m {
+  background: #000000;
+}
+#options_container span.p {
+  background: #d476ea;
+}
+#options_container span.r {
+  background: #81d135;
+}
+#options_container span.s {
+  background: #f3a536;
+}
 .bonsai {
   padding: 10px 10px 0 0;
 }
