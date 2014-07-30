@@ -68,12 +68,14 @@ require ['jquery',
   dataDownloadQueue = []
   RAW_DATA = {}
   DATA_UNITS = 'percent'
+  SELECTED_PERIOD = null
   c3_chart = null
   # map
   mapDownloadQueue = []
   mapID = 'yumiendo.j1majbom'#'yumiendo.ijchbik8''xyfeng.ijpo6lio'
   featureLayer = null
   mapLegend = null
+  mapPeriods = $('#map_period_selector')
   MAP_SHAPE_DATA = {}
   MAP_JSON =
   "type": "FeatureCollection",
@@ -89,8 +91,6 @@ require ['jquery',
       continuousWorld: false
       noWrap: false
   map.scrollWheelZoom.disable()
-  map.on 'load', ()->
-    console.log '11111'
   # add full screen
   L.control.fullscreen().addTo(map);
   # hide all markers
@@ -99,6 +99,12 @@ require ['jquery',
   # popup layer
   popup = new L.Popup
     autoPan: false
+  # map period selector event
+  $(document).on 'click', '#map_period_selector .btn', (e)->
+    $this = $(this)
+    $this.addClass('active').siblings().removeClass('active')
+    SELECTED_PERIOD = $this.text()
+    updateMap()
 
   # re-order layers
   topPane = map._createPane 'leaflet-top-pane', map.getPanes().mapPane
@@ -114,26 +120,6 @@ require ['jquery',
     color_map.push color_scale(i / parseFloat(COLOR_LEVELS))
 
   # logics
-  createNavTree = ()->
-    $('#chosen_regions').bonsai
-      checkboxes: true
-    for one in $('#chosen_regions li[data-children]')
-      one_count = $(one).data('children')
-      $(one).find('>input').next().before "<span>#{one_count}</span>"
-    return
-  updateState = (new_state)->
-    console.log "update state to #{new_state}"
-    CURR_STATE = new_state
-    if new_state == STATE_NONE
-      map_container.hide()
-      chart_container.hide()
-    else if new_state == STATE_MAP
-      map_container.show()
-      chart_container.hide()
-    else
-      map_container.hide()
-      chart_container.show()
-    return
   indicator_selector = $('#chosen_indicators')
   period_selector = $('#chosen_periods')
   region_selector = $('#chosen_regions')
@@ -147,6 +133,28 @@ require ['jquery',
   STATE_RADAR = 5
   STATE_SCATTER = 6
   CURR_STATE = STATE_NONE
+  createNavTree = ()->
+    $('#chosen_regions').bonsai
+      checkboxes: true
+    for one in $('#chosen_regions li[data-children]')
+      one_count = $(one).data('children')
+      $(one).find('>input').next().before "<span>#{one_count}</span>"
+    return
+  updateState = (new_state)->
+    if CURR_STATE == new_state
+      return false
+    console.log "update state to #{new_state}"
+    if new_state == STATE_NONE
+      map_container.hide()
+      chart_container.hide()
+    else if new_state == STATE_MAP
+      map_container.show()
+      chart_container.hide()
+    else
+      map_container.hide()
+      chart_container.show()
+    CURR_STATE = new_state
+    return true
 
   # charts
   addTextToChart = (svg, text, text_class, x, y)->
@@ -157,8 +165,9 @@ require ['jquery',
       .text text
     return
   createPieChart = ()->
-    name = checked_regions[0]['name']
-    value = checked_regions[0]['value']
+    region_data = regions[checked_regions[0]]
+    name = region_data['name']
+    value = region_data['values'][0]['value']
     if c3_chart
       c3_chart.destroy()
     $('#chart').removeClass 'line'
@@ -192,8 +201,9 @@ require ['jquery',
     chart_data['categories'] = periods.sort()
     chart_data['columns'] = []
     for one in checked_regions
-      one_values = getValuesForPath(one['path'])
-      chart_data['columns'].push [one['name']].concat(one_values)
+      one_values = getValuesForPath one
+      console.log one_values
+      chart_data['columns'].push [regions[one]['name']].concat(one_values)
     # console.log chart_data
     if c3_chart
       c3_chart.destroy()
@@ -245,22 +255,10 @@ require ['jquery',
   $(document).on 'click','#chosen_regions input',()->
     # console.log $('#chosen_regions input:checked').data('value')
     checked_regions = []
-    mapDownloadQueue = []
-    MAP_JSON['features'] = []
     for one in $('#chosen_regions input:checked')
-      one_value = $(one).data('value')
       one_path = $(one).data('path')
-      one_key = $(one).data('key')
-      one_name = $(one).parent().text()
       if one_path
-        checked_regions.push
-          key: one_key
-          path: one_path
-          value: one_value
-          name: one_name
-        map_download_event = addMapFeature one_path, one_value
-        if map_download_event
-          mapDownloadQueue.push map_download_event
+        checked_regions.push one_path
     # console.log checked_regions
     chartable()
     return
@@ -302,7 +300,8 @@ require ['jquery',
     return $("<li class='expanded' data-children='0'><input type='checkbox'/>All Regions</li>").appendTo region_selector
   getRegions = ()->
     updateState STATE_NONE
-    regions = {}
+    # create regions tree structure
+    regions_tree = {}
     for indid in indids
       for one in RAW_DATA[indid]
         one_period = one['period']
@@ -314,76 +313,91 @@ require ['jquery',
         one_admin2_code = one['admin2']
         one_admin2_name = one['admin2_name']
         if one_period in periods
-          if not regions[one_region_code]
-            regions[one_region_code] =
+          if not regions_tree[one_region_code]
+            regions_tree[one_region_code] =
               name: one_region_name
               sub_regions: {}
-          if one_admin1_code != 'NA' and not regions[one_region_code]['sub_regions'][one_admin1_code]
-            regions[one_region_code]['sub_regions'][one_admin1_code] =
+              values: []
+          if one_admin1_code != 'NA' and not regions_tree[one_region_code]['sub_regions'][one_admin1_code]
+            regions_tree[one_region_code]['sub_regions'][one_admin1_code] =
               name: one_admin1_name
               sub_regions: {}
-          if one_admin2_code != 'NA' and not regions[one_region_code]['sub_regions'][one_admin1_code]['sub_regions'][one_admin2_code]
-            regions[one_region_code]['sub_regions'][one_admin1_code]['sub_regions'][one_admin2_code] =
-              name:one_admin2_name
-              value: one_value
+              values: []
+          if one_admin2_code != 'NA'
+            if not regions_tree[one_region_code]['sub_regions'][one_admin1_code]['sub_regions'][one_admin2_code]
+              regions_tree[one_region_code]['sub_regions'][one_admin1_code]['sub_regions'][one_admin2_code] =
+                name:one_admin2_name
+                values:[{
+                  period: one_period
+                  value: one_value
+                  }]
+            else
+              regions_tree[one_region_code]['sub_regions'][one_admin1_code]['sub_regions'][one_admin2_code]['values'].push
+                period: one_period
+                value: one_value
           else if one_admin1_code != 'NA'
-            regions[one_region_code]['sub_regions'][one_admin1_code]['value'] = one_value
-            # console.log regions[one_region_code]['sub_regions'][one_admin1_code]
+            regions_tree[one_region_code]['sub_regions'][one_admin1_code]['values'].push
+              period: one_period
+              value: one_value
           else
-            regions[one_region_code]['value'] = one_value
-    # console.log regions
-    # create nav tree
+            regions_tree[one_region_code]['values'].push
+              period: one_period
+              value: one_value
+    # console.log regions_tree
+    # create nav tree, start to download map shape json and form regions list
+    regions = {}
+    mapDownloadQueue = []
     all_regions = clearRegions()
-    all_regions_list_length = Object.keys(regions).length
+    all_regions_list_length = Object.keys(regions_tree).length
     all_regions.attr('data-children', all_regions_list_length)
     if all_regions_list_length
       all_regions_list = $("<ol></ol>").appendTo all_regions
-      for region_key in Object.keys(regions).sort()
-        one_region_data = regions[region_key]
-        one_region_element = $("<li><input type='checkbox' data-key='#{region_key}' data-path='#{region_key}' data-value='#{one_region_data['value']}'/>#{one_region_data['name']}</li>").appendTo all_regions_list
+      for region_key in Object.keys(regions_tree).sort()
+        one_region_data = regions_tree[region_key]
+        one_region_element = $("<li><input type='checkbox' data-key='#{region_key}' data-path='#{region_key}'/>#{one_region_data['name']}</li>").appendTo all_regions_list
+        map_download_event = addMapFeature region_key, one_region_data['name'], one_region_data['values']
+        if map_download_event
+          mapDownloadQueue.push map_download_event
         all_admin1_list_length = Object.keys(one_region_data['sub_regions']).length
         if all_admin1_list_length
           all_admin1_list = $("<ol></ol>").appendTo $("<li data-children='#{all_admin1_list_length}'><input type='checkbox' data-key=''/>Subregions of #{one_region_data['name']}</li>").appendTo all_regions_list
           for admin1_key in Object.keys(one_region_data['sub_regions']).sort()
             one_admin1_data = one_region_data['sub_regions'][admin1_key]
-            one_admin1_element = $("<li><input type='checkbox' data-key='#{admin1_key}' data-path='#{region_key}/#{admin1_key}' data-value='#{one_admin1_data['value']}'/>#{one_admin1_data['name']}</li>").appendTo all_admin1_list
+            one_admin1_element = $("<li><input type='checkbox' data-key='#{admin1_key}' data-path='#{region_key}/#{admin1_key}'/>#{one_admin1_data['name']}</li>").appendTo all_admin1_list
+            map_download_event = addMapFeature "#{region_key}/#{admin1_key}", one_admin1_data['name'], one_admin1_data['values']
+            if map_download_event
+              mapDownloadQueue.push map_download_event
             all_admin2_list_length = Object.keys(one_admin1_data['sub_regions']).length
             if all_admin2_list_length
               all_admin2_list = $("<ol></ol>").appendTo $("<li data-children='#{all_admin2_list_length}'><input type='checkbox' data-key=''/>Subregions of #{one_admin1_data['name']}</li>").appendTo all_admin1_list
               for admin2_key in Object.keys(one_admin1_data['sub_regions']).sort()
                 one_admin2_data = one_admin1_data['sub_regions'][admin2_key]
-                one_admin2_element = $("<li><input type='checkbox' data-key='#{admin2_key}' data-path='#{region_key}/#{admin1_key}/#{admin2_key}' data-value='#{one_admin2_data['value']}'/>#{one_admin2_data['name']}</li>").appendTo all_admin2_list
+                one_admin2_element = $("<li><input type='checkbox' data-key='#{admin2_key}' data-path='#{region_key}/#{admin1_key}/#{admin2_key}'/>#{one_admin2_data['name']}</li>").appendTo all_admin2_list
+                map_download_event = addMapFeature "##{region_key}/#{admin1_key}/#{admin2_key}", one_admin2_data['name'], one_admin2_data['values']
+                if map_download_event
+                  mapDownloadQueue.push map_download_event
     createNavTree()
+    # after download finished, assembled to a map json
+    $.when.apply($, mapDownloadQueue).done ()->
+      MAP_JSON['features'] = []
+      for one_path in Object.keys(regions).sort()
+        MAP_JSON['features'].push MAP_SHAPE_DATA[one_path]
     return
   getValuesForPath = (path)->
-    keys = path.split('/')
-    the_region = ''
-    the_admin1 = 'NA'
-    the_admin2 = 'NA'
-    if keys.length == 0
-      console.log 'ERROR'
-      return []
-    else if keys.length == 1
-      the_region = keys[0]
-    else if keys.length == 2
-      the_region = keys[0]
-      the_admin1 = keys[1]
-    else if keys.length == 3
-      the_region = keys[0]
-      the_admin1 = keys[1]
-      the_admin2 = keys[2]
+    values = regions[path]['values']
     result = []
     for one_period in periods.sort()
-      FOUND_VALUE = false
-      for one_line in RAW_DATA[indids[0]]
-        if one_line['region'] == the_region and one_line['admin1'] == the_admin1 and one_line['admin2'] == the_admin2 and one_line['period'] == one_period
-          result.push one_line['value'].toFixed(1)
-          FOUND_VALUE = true
+      VALUE_FOUND = false
+      for one in values
+        if one['period'] == one_period
+          VALUE_FOUND = true
+          result.push one['value']
           break
-      if not FOUND_VALUE
+      if not VALUE_FOUND
         result.push null
     return result
   chartable = ()->
+    console.log 'start chartable'
     indids_count = indids.length
     periods_count = periods.length
     regions_count = checked_regions.length
@@ -394,17 +408,10 @@ require ['jquery',
         if regions_count == 0
           updateState STATE_NONE
         else if regions_count > 1
-          updateState STATE_MAP
-          $.when.apply($, mapDownloadQueue).done ()->
-            for one in checked_regions.sort((a,b)->
-                if a['path'] < b['path']
-                  return -1
-                if a['path'] > b['path']
-                  return 1
-                return 0
-              )
-              MAP_JSON['features'].push MAP_SHAPE_DATA[one['path']]
-            displayMap()
+          if updateState(STATE_MAP)
+            createMap()
+          else
+            updateMap()
         else
           updateState STATE_PIE
           createPieChart()
@@ -415,7 +422,10 @@ require ['jquery',
           updateState STATE_LINE
           createLineChart()
         else if regions_count > 1
-          updateState STATE_MAP
+          if updateState(STATE_MAP)
+            createMap()
+          else
+            updateMap()
 
     return
 
@@ -423,12 +433,25 @@ require ['jquery',
   getColor = (v) ->
     index = Math.floor(v / (100 / COLOR_LEVELS))
     color_map[index]
-  getStyle = (feature) ->
+  getFeatureValue = (feature)->
+    for one in feature.properties.values
+      if one['period'] == SELECTED_PERIOD
+        return one['value']
+    return null
+  getStyleByValue = (value)->
     weight: 2
     opacity: 0.4
     color: '#000'
     fillOpacity: 1,
-    fillColor: getColor(feature.properties.value)
+    fillColor: getColor(value)
+  getStyle = (feature) ->
+    value = getFeatureValue feature
+    if feature.properties.path in checked_regions and value
+      return getStyleByValue value
+    return {
+      opacity: 0
+      fillOpacity: 0
+    }
   getLegendHTML = ()->
     labels = []
     label_range = 100 / COLOR_LEVELS
@@ -442,7 +465,14 @@ require ['jquery',
   , 100
   highlightFeature = (e) ->
     layer = e.target
+    console.log layer
     feature = layer.feature
+    if feature.properties.path not in checked_regions
+      # layer.disable()
+      return false
+    # layer.eable()
+    value = getFeatureValue feature
+    console.log value
     countryID = layer.feature.id
     layer.setStyle
       weight: 4
@@ -457,7 +487,7 @@ require ['jquery',
     popup.setLatLng e.latlng
     popup.setContent "
     <div class='marker-container'>
-    <div class='marker-number'>#{feature.properties.value}</div>
+    <div class='marker-number'>#{value}</div>
       <div class='marker-label'>#{feature_name}</div>
     </div>
     "
@@ -479,20 +509,32 @@ require ['jquery',
     openURL("country.html?code=#{code}")
     return
   onEachFeature = (feature, layer) ->
+    console.log '1111'
     layer.on
       mousemove: highlightFeature,
       mouseout: resetFeature,
       click: featureClicked
     return
-  addMapFeature = (path, v) ->
+  addMapFeature = (path, name, v) ->
+    sorted_v = v.sort((a,b)->
+        if a.period > b.period
+          return 1
+        if a.period < b.period
+          return -1
+        return 0
+      )
+    regions[path] =
+      name: name
+      values: sorted_v
     file_path = "#{MAP_FILE_LINK}/#{path}.json"
     if MAP_SHAPE_DATA[path]
       one_feature = MAP_SHAPE_DATA[path]
-      one_feature['properties']['value'] = v
+      one_feature['properties']['values'] = sorted_v
       return null
     else
       return $.getJSON file_path, (map_json)->
-        map_json['properties']['value'] = v
+        map_json['properties']['path'] = path
+        map_json['properties']['values'] = sorted_v
         MAP_SHAPE_DATA[path] = map_json
   resetMap = ()->
     if featureLayer
@@ -500,19 +542,40 @@ require ['jquery',
     if mapLegend
       map.legendControl.removeLegend mapLegend
       mapLegend = null
-  displayMap = ()->
+    mapPeriods.empty()
+  createMap = ()->
+    console.log 'create new map'
     resetMap()
-    if not mapLegend
-      mapLegend = getLegendHTML()
-      map.legendControl.addLegend mapLegend
-    if not featureLayer
-      featureLayer = L.geoJson MAP_JSON,
-        style: getStyle,
-        onEachFeature: onEachFeature
-      .addTo map
-    else
-      featureLayer.addData MAP_JSON
-    window.setTimeout ()->
+    # add period selection button
+    FIRST_BUTTON = true
+    for one_period in periods
+      if FIRST_BUTTON
+        $("<button type='button' class='btn btn-info active'>#{one_period}</button>").appendTo mapPeriods
+        SELECTED_PERIOD = one_period
+        FIRST_BUTTON = false
+      else
+        $("<button type='button' class='btn btn-info'>#{one_period}</button>").appendTo mapPeriods
+    # after download finished, assembled to a map json
+    $.when.apply($, mapDownloadQueue).done ()->
+      if not mapLegend
+        mapLegend = getLegendHTML()
+        map.legendControl.addLegend mapLegend
+      if not featureLayer
+        featureLayer = L.geoJson MAP_JSON,
+          style: getStyle,
+          onEachFeature: onEachFeature
+        .addTo map
+      else
+        featureLayer.addData MAP_JSON
+      window.setTimeout ()->
+        map.fitBounds(featureLayer.getBounds());
+      , 100
+    return
+  updateMap = ()->
+    console.log 'update map'
+    console.log checked_regions
+    $.when.apply($, mapDownloadQueue).done ()->
+      featureLayer.eachLayer (layer)->
+        layer.setStyle getStyle layer.feature
       map.fitBounds(featureLayer.getBounds());
-    , 100
   return
