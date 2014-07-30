@@ -106,6 +106,59 @@
       font-size: 12px;
     }
   }
+  &.bar.c3 {
+    .chart-title {
+      .header-font();
+      font-size: 15px;
+      font-weight: bold;
+    }
+    .chart-value, .chart-unit {
+      .text-font();
+      font-size: 12px;
+    }
+  }
+}
+#options_container{
+  position:absolute;
+  left: 100px;
+  top: 5px;
+  span{
+    display:inline-block;
+    width: 20px;
+    height: 20px;
+    opacity: 0.2;
+    margin-right: 10px;
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+    .header-font();
+    &:first-child{
+      margin-right: 40px;
+    }
+    &.active, &:hover{
+      cursor: pointer;
+      opacity: 1.0;
+    }
+    &.b{
+      background:#4d29df;
+    }
+    &.l{
+      background:#58e2c2;
+    }
+    &.m{
+      background:#000000;
+    }
+    &.p{
+      background:#d476ea;
+    }
+    &.r{
+      background:#81d135;
+    }
+    &.s{
+      background:#f3a536;
+    }
+
+  }
 }
 
 .bonsai{

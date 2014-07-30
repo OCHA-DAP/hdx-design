@@ -69,7 +69,9 @@ require ['jquery',
   RAW_DATA = {}
   DATA_UNITS = 'percent'
   SELECTED_PERIOD = null
+  SELECTED_OPTION = null
   c3_chart = null
+  DATA_STATE = null
   # map
   mapDownloadQueue = []
   mapID = 'yumiendo.j1majbom'#'yumiendo.ijchbik8''xyfeng.ijpo6lio'
@@ -145,6 +147,7 @@ require ['jquery',
       return false
     console.log "update state to #{new_state}"
     if new_state == STATE_NONE
+      DATA_STATE = null
       map_container.hide()
       chart_container.hide()
     else if new_state == STATE_MAP
@@ -164,7 +167,7 @@ require ['jquery',
       .attr 'text-anchor', 'middle'
       .text text
     return
-  createPieChart = ()->
+  createSinglePieChart = ()->
     region_data = regions[checked_regions[0]]
     name = region_data['name']
     value = region_data['values'][0]['value']
@@ -195,6 +198,79 @@ require ['jquery',
     addTextToChart svg, name, 'chart-title', 380, 20
     addTextToChart svg, value, 'chart-value', 380, 305
     addTextToChart svg, DATA_UNITS, 'chart-unit', 380, 315
+    return
+  createSingleBarChart = ()->
+    region_data = regions[checked_regions[0]]
+    name = region_data['name']
+    value = region_data['values'][0]['value']
+    if c3_chart
+      c3_chart.destroy()
+    $('#chart').removeClass 'line'
+    .removeClass 'pie'
+    .addClass 'bar'
+    chart_config =
+      bindto: '#chart'
+      padding:
+        top: 30
+        bottom: 20
+      color:
+        pattern: ['1ebfb3','eee']
+      data:
+        columns: [
+          [name, value]
+        ]
+        type: 'bar'
+      bar:
+        width:
+          ratio: 0.5
+      axis:
+        y:
+          max: 100
+      legend:
+        show: false
+      tooltip:
+        show: false
+    c3_chart = c3.generate chart_config
+    svg = d3.select "#chart svg"
+    addTextToChart svg, name, 'chart-title', 380, 20
+    addTextToChart svg, value, 'chart-value', 380, 305
+    addTextToChart svg, DATA_UNITS, 'chart-unit', 380, 315
+    return
+  createBarChart = ()->
+    chart_data_regions = []
+    chart_data_values = [DATA_UNITS]
+    for path in checked_regions
+      region_data = regions[path]
+      chart_data_values.push region_data['values'][0]['value']
+      chart_data_regions.push region_data['name']
+    if c3_chart
+      c3_chart.destroy()
+    $('#chart').removeClass 'line'
+    .removeClass 'pie'
+    .addClass 'bar'
+    chart_config =
+      bindto: '#chart'
+      padding:
+        top: 30
+        bottom: 20
+      color:
+        pattern: ['1ebfb3','117be1', 'f2645a', '555555','ffd700']
+      data:
+        columns: [
+          chart_data_values
+        ]
+        type: 'bar'
+      bar:
+        width:
+          ratio: 0.5
+      axis:
+        x:
+          type: 'category'
+          categories: chart_data_regions
+        y:
+          max: 100
+    c3_chart = c3.generate chart_config
+    $('line.c3-xgrid-focus').hide();
     return
   createLineChart = ()->
     chart_data = {}
@@ -268,7 +344,12 @@ require ['jquery',
     # console.log checked_regions
     chartable()
     return
-
+  # graph options
+  $(document).on 'click', '#options_container span', ()->
+    $this = $(this)
+    $this.addClass('active').siblings().removeClass('active')
+    op_text = $this.text()
+    updateGraph(op_text)
   # FUNCTIONS
   openURL = (url) ->
     return window.open(url, '_blank').focus()
@@ -396,6 +477,30 @@ require ['jquery',
       if not VALUE_FOUND
         result.push null
     return result
+  showOptions = (ops)->
+    $graph_options = $('#options_container').empty()
+    FIRST_OP = true
+    for op in ops
+      op_u = op.toUpperCase()
+      op_l = op.toLowerCase()
+      if FIRST_OP
+        $("<span class='graph_option active #{op_l}'>#{op_u}<span>").appendTo $graph_options
+        FIRST_OP = false
+      else
+        $("<span class='graph_option #{op_l}'>#{op_u}<span>").appendTo $graph_options
+    return
+  updateGraph = (op)->
+    if op == 'B'
+      SELECTED_OPTION = op
+      updateState STATE_BAR
+      if DATA_STATE == '111'
+        createSingleBarChart()
+      else
+        createBarChart()
+    if op == 'M'
+      SELECTED_OPTION = op
+      updateState STATE_MAP
+      createMap()
   chartable = ()->
     console.log 'start chartable'
     indids_count = indids.length
@@ -408,18 +513,27 @@ require ['jquery',
         if regions_count == 0
           updateState STATE_NONE
         else if regions_count > 1
-          updateState(STATE_MAP)
-          createMap()
+          if DATA_STATE != '11M'
+            DATA_STATE = '11M'
+            updateState(STATE_MAP)
+            createMap()
+            showOptions ['M','P','B','L']
+          else
+            updateGraph SELECTED_OPTION
         else
+          DATA_STATE = '111'
           updateState STATE_PIE
-          createPieChart()
+          createSinglePieChart()
+          showOptions ['P','B']
       else if periods_count > 1
         if regions_count == 0
           updateState STATE_NONE
         else if regions_count == 1
+          DATA_STATE = '1M1'
           updateState STATE_LINE
           createLineChart()
         else if regions_count > 1
+          DATA_STATE = '1MM'
           updateState(STATE_MAP)
           createMap()
     return
