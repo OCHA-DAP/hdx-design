@@ -237,6 +237,7 @@ require ['jquery',
   periods = []
   regions = {}
   checked_regions = []
+  unchecked_regions = []
   indicator_selector.change ()->
     indids = $(this).val()
     if not indids
@@ -255,10 +256,15 @@ require ['jquery',
   $(document).on 'click','#chosen_regions input',()->
     # console.log $('#chosen_regions input:checked').data('value')
     checked_regions = []
+    unchecked_regions = []
     for one in $('#chosen_regions input:checked')
       one_path = $(one).data('path')
       if one_path
         checked_regions.push one_path
+    for one in $('#chosen_regions input:not(:checked)')
+      one_path = $(one).data('path')
+      if one_path
+        unchecked_regions.push one_path
     # console.log checked_regions
     chartable()
     return
@@ -296,7 +302,6 @@ require ['jquery',
     result.sort()
   clearRegions = ()->
     region_selector.empty()
-    resetMap()
     return $("<li class='expanded' data-children='0'><input type='checkbox'/>All Regions</li>").appendTo region_selector
   getRegions = ()->
     updateState STATE_NONE
@@ -377,11 +382,6 @@ require ['jquery',
                 if map_download_event
                   mapDownloadQueue.push map_download_event
     createNavTree()
-    # after download finished, assembled to a map json
-    $.when.apply($, mapDownloadQueue).done ()->
-      MAP_JSON['features'] = []
-      for one_path in Object.keys(regions).sort()
-        MAP_JSON['features'].push MAP_SHAPE_DATA[one_path]
     return
   getValuesForPath = (path)->
     values = regions[path]['values']
@@ -408,10 +408,8 @@ require ['jquery',
         if regions_count == 0
           updateState STATE_NONE
         else if regions_count > 1
-          if updateState(STATE_MAP)
-            createMap()
-          else
-            updateMap()
+          updateState(STATE_MAP)
+          createMap()
         else
           updateState STATE_PIE
           createPieChart()
@@ -422,11 +420,8 @@ require ['jquery',
           updateState STATE_LINE
           createLineChart()
         else if regions_count > 1
-          if updateState(STATE_MAP)
-            createMap()
-          else
-            updateMap()
-
+          updateState(STATE_MAP)
+          createMap()
     return
 
   # map
@@ -465,14 +460,12 @@ require ['jquery',
   , 100
   highlightFeature = (e) ->
     layer = e.target
-    console.log layer
     feature = layer.feature
-    if feature.properties.path not in checked_regions
+    value = getFeatureValue feature
+    if feature.properties.path not in checked_regions or not value
       # layer.disable()
       return false
     # layer.eable()
-    value = getFeatureValue feature
-    console.log value
     countryID = layer.feature.id
     layer.setStyle
       weight: 4
@@ -509,7 +502,6 @@ require ['jquery',
     openURL("country.html?code=#{code}")
     return
   onEachFeature = (feature, layer) ->
-    console.log '1111'
     layer.on
       mousemove: highlightFeature,
       mouseout: resetFeature,
@@ -536,17 +528,10 @@ require ['jquery',
         map_json['properties']['path'] = path
         map_json['properties']['values'] = sorted_v
         MAP_SHAPE_DATA[path] = map_json
-  resetMap = ()->
-    if featureLayer
-      featureLayer.clearLayers()
-    if mapLegend
-      map.legendControl.removeLegend mapLegend
-      mapLegend = null
-    mapPeriods.empty()
   createMap = ()->
     console.log 'create new map'
-    resetMap()
     # add period selection button
+    mapPeriods.empty()
     FIRST_BUTTON = true
     for one_period in periods
       if FIRST_BUTTON
@@ -555,27 +540,29 @@ require ['jquery',
         FIRST_BUTTON = false
       else
         $("<button type='button' class='btn btn-info'>#{one_period}</button>").appendTo mapPeriods
+
     # after download finished, assembled to a map json
     $.when.apply($, mapDownloadQueue).done ()->
-      if not mapLegend
-        mapLegend = getLegendHTML()
-        map.legendControl.addLegend mapLegend
-      if not featureLayer
-        featureLayer = L.geoJson MAP_JSON,
-          style: getStyle,
-          onEachFeature: onEachFeature
-        .addTo map
-      else
-        featureLayer.addData MAP_JSON
-      window.setTimeout ()->
-        map.fitBounds(featureLayer.getBounds());
-      , 100
+      MAP_JSON['features'] = []
+      for one_path in checked_regions.sort()
+        MAP_JSON['features'].push MAP_SHAPE_DATA[one_path]
+      # add legend
+      if mapLegend
+        map.legendControl.removeLegend mapLegend
+      mapLegend = getLegendHTML()
+      map.legendControl.addLegend mapLegend
+      updateMap()
     return
   updateMap = ()->
-    console.log 'update map'
-    console.log checked_regions
-    $.when.apply($, mapDownloadQueue).done ()->
-      featureLayer.eachLayer (layer)->
-        layer.setStyle getStyle layer.feature
+    # add features
+    if featureLayer
+      map.removeLayer featureLayer
+    featureLayer = L.geoJson MAP_JSON,
+      style: getStyle,
+      onEachFeature: onEachFeature
+    .addTo map
+    # zoom to fit
+    window.setTimeout ()->
       map.fitBounds(featureLayer.getBounds());
+    , 100
   return
