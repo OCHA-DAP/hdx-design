@@ -1,5 +1,8 @@
 require ['js/ocha.js'], (ocha)->
 
+  ocha.createPieChart '#pie_chart_1', 'Sample Data', 'percentage', [{'Kenya': 24}]
+  ocha.createPieChart '#pie_chart_m', 'Sample Data', 'percentage', [{'Kenya': 24},{'Columbia': 10},{'Brazil': 4}]
+
   $.getJSON 'data/demo-tree.json', (data)->
     ocha.createNavTree '#the_tree', data, 'Select Country'
 

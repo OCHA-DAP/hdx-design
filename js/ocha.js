@@ -43,7 +43,8 @@
   });
 
   define(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'chosen', 'bonsai', 'qubit', 'typeahead'], function($, b, m, o, f, d3, c3, chroma) {
-    var createList, fetchValues, substringMatcher;
+    var addTextToChart, chart_colors, createList, fetchValues, substringMatcher;
+    chart_colors = ['1ebfb3', '117be1', 'f2645a', '555555', 'ffd700'];
     substringMatcher = function(strs) {
       var findMatches;
       return findMatches = function(q, cb) {
@@ -103,6 +104,9 @@
       }
       return _results;
     };
+    addTextToChart = function(svg, text, text_class, x, y) {
+      svg.append('text').attr('transform', "translate(" + x + ", " + y + ")").attr('class', text_class).attr('text-anchor', 'middle').text(text);
+    };
     return {
       createNavTree: function(element, data, placeholder) {
         var $el, $searchbar, $tree_container, regions;
@@ -147,6 +151,41 @@
           source: substringMatcher(data)
         });
         return $result;
+      },
+      createPieChart: function(element, title, subtitle, data) {
+        var $el, c3_chart, chart_config, k, one, pie_data, pie_width, svg, v, _i, _len;
+        $el = $(element).empty().addClass('pie');
+        pie_width = $el.width();
+        pie_data = [];
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          one = data[_i];
+          k = Object.keys(one)[0];
+          v = one[k];
+          pie_data.push([k, v]);
+        }
+        chart_config = {
+          bindto: element,
+          padding: {
+            top: 40
+          },
+          color: {
+            pattern: chart_colors
+          },
+          data: {
+            columns: pie_data,
+            type: 'pie'
+          }
+        };
+        if (pie_data.length === 1) {
+          console.log('111');
+          chart_config.data.columns.push(['Other', 100 - pie_data[0][1]]);
+          chart_config.color.pattern = [chart_colors[0], 'eee'];
+        }
+        c3_chart = c3.generate(chart_config);
+        svg = d3.select("" + element + " svg");
+        addTextToChart(svg, title, 'chart-title', pie_width / 2, 12);
+        addTextToChart(svg, subtitle, 'chart-subtitle', pie_width / 2, 30);
+        return c3_chart;
       }
     };
   });

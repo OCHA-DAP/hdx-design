@@ -130,6 +130,16 @@ body {
 .c3-tooltip th {
   background-color: #000;
 }
+.chart-title {
+  font-family: 'Gotham' Arial;
+  font-size: 15px;
+  font-weight: bold;
+}
+.chart-value,
+.chart-unit {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 12px;
+}
 .input-dropdown input {
   padding: 5px 20px 5px 20px;
   -webkit-box-shadow: none;

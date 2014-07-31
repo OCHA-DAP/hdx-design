@@ -53,6 +53,9 @@ define ['jquery',
 'qubit',
 'typeahead'
 ], ($, b, m, o, f, d3, c3, chroma)->
+  # Globals
+  chart_colors = ['1ebfb3','117be1', 'f2645a', '555555','ffd700']
+  # FUNCTIONS
   substringMatcher = (strs) ->
     findMatches = (q, cb) ->
       matches = undefined
@@ -98,6 +101,15 @@ define ['jquery',
       array.push one[key]
       if one.children and one.children.length
         fetchValues array, one.children, key
+  addTextToChart = (svg, text, text_class, x, y)->
+    svg.append 'text'
+      .attr 'transform', "translate(#{x}, #{y})"
+      .attr 'class', text_class
+      .attr 'text-anchor', 'middle'
+      .text text
+    return
+
+  # COMPONENTS
   createNavTree: (element, data, placeholder)->
     $el = $(element).addClass('nav-tree')
     # create search head
@@ -132,8 +144,38 @@ define ['jquery',
       expandAll: true
       checkboxes: true
     return
+
   createDropdown: (data, placeholder)->
     $result = $("<div class='input-dropdown'><input type='text' class='typeahead' placeholder='#{placeholder}'></div>")
     $result.children().first().typeahead null,
       source: substringMatcher data
     return $result
+
+  # data = [{k:v},{k:v}...]
+  createPieChart: (element, title, subtitle, data)->
+    $el = $(element).empty().addClass('pie')
+    pie_width = $el.width()
+    pie_data = []
+    for one in data
+      k = Object.keys(one)[0]
+      v = one[k]
+      pie_data.push [k,v]
+    chart_config =
+      bindto: element
+      padding:
+        top: 40
+      color:
+        pattern: chart_colors
+      data:
+        columns: pie_data
+        type: 'pie'
+    if pie_data.length == 1
+      console.log '111'
+      chart_config.data.columns.push ['Other', 100-pie_data[0][1]]
+      chart_config.color.pattern = [chart_colors[0], 'eee']
+    # console.log chart_config
+    c3_chart = c3.generate chart_config
+    svg = d3.select "#{element} svg"
+    addTextToChart svg, title, 'chart-title', pie_width/2, 12
+    addTextToChart svg, subtitle, 'chart-subtitle', pie_width/2, 30
+    return c3_chart
