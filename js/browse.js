@@ -27,7 +27,7 @@
   });
 
   require(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'data/world_json.js', 'data/regional_codes.js', 'data/countries.js'], function($, b, m, o, f, d3, c3, chroma) {
-    var char, closeTooltip, code, column, columns, country, countryLayer, country_id, country_list, feature, featureClicked, first_letter, getStyle, highlightFeature, k, map, mapID, onEachFeature, one_char_box, one_char_labe, one_column, openURL, popup, resetFeature, topLayer, topPane, v, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1;
+    var char, closeTooltip, code, column, columns, country, countryLayer, country_id, country_list, feature, featureClicked, first_letter, getStyle, highlightFeature, item, k, line, map, mapID, onEachFeature, one_char_box, one_char_labe, one_column, openURL, popup, resetFeature, topLayer, topPane, v, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1;
     mapID = 'yumiendo.ijchbik8';
     openURL = function(url) {
       return window.open(url, '_blank').focus();
@@ -132,6 +132,18 @@
     topPane.appendChild(topLayer.getContainer());
     topLayer.setZIndex(7);
     columns = [['A', 'B', 'C'], ['D', 'E', 'F', 'G', 'H'], ['I', 'J', 'K', 'L'], ['M', 'N', 'O', 'P'], ['Q', 'R', 'S', 'T'], ['U', 'V', 'Y', 'Z']];
+    $('#option_map').click(function() {
+      $(this).addClass('selected');
+      $('#option_az').removeClass('selected');
+      $("#map").show();
+      return $("#country_list").hide();
+    });
+    $("#option_az").click(function() {
+      $(this).addClass('selected');
+      $("#option_map").removeClass('selected');
+      $("#map").hide();
+      return $("#country_list").show();
+    });
     country_list = $('#country_list');
     for (_k = 0, _len2 = columns.length; _k < _len2; _k++) {
       column = columns[_k];
@@ -144,15 +156,16 @@
         for (_m = 0, _len4 = _ref1.length; _m < _len4; _m++) {
           country = _ref1[_m];
           if (country.length === 2) {
-            $("<div class='country-item inactive'>" + country[1] + "</div>").appendTo(one_char_box);
+            $("<div class='country-item inactive'><a>" + country[1] + "</a></div>").appendTo(one_char_box);
           } else {
             code = country[0].toLowerCase();
-            $("<div class='country-item' data-code='" + code + "'>" + country[1] + "</div>").appendTo(one_char_box);
+            item = $("<div class='country-item'></div>").appendTo(one_char_box);
+            line = $("<a data-code='" + code + "' data-html='true' data-toggle='tooltip' data-placement='top'>" + country[1] + "</a>").attr('data-title', "<div class='marker-container'><div class='marker-box'><div class='marker-number'>" + country[3] + "</div><div class='marker-label'>indicators</div></div><div class='line-break'></div><div class='marker-box'><div class='marker-number'>" + country[2] + "</div><div class='marker-label'>datasets</div></div></div>").appendTo(item);
           }
         }
       }
     }
-    $('.country-item').on('click', function(e) {
+    $('.country-item:not(inactive) a').tooltip().on('click', function(e) {
       code = $(this).data('code');
       if (code) {
         openURL("country.html?code=" + code);

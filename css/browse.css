@@ -340,19 +340,48 @@ body {
 #title {
   font-size: 16px;
   line-height: 16px;
-  margin: 50px 0 10px 0;
+  margin: 50px 0 15px 0;
+}
+#browse_options {
+  position: absolute;
+  left: 150px;
+  top: 50px;
+  line-height: 16px;
+  font-size: 14px;
+}
+#browse_options span {
+  margin: 0 10px;
+}
+#browse_options a {
+  color: #000;
+  cursor: pointer;
+  margin-top: 1px;
+  display: inline-block;
+}
+#browse_options a:hover,
+#browse_options a.selected {
+  text-decoration: none;
+  color: #007ce0;
+  font-weight: bold;
+}
+#browse_options a#option_map {
+  width: 28px;
+}
+#browse_options a#option_az {
+  width: 100px;
 }
 #map {
   width: 100%;
   height: 580px;
+  margin: 0 0 50px 0;
 }
-#map .marker-container {
+.marker-container {
   position: relative;
   width: 140px;
   height: 75px;
   padding: 0 !important;
 }
-#map .marker-container .line-break {
+.marker-container .line-break {
   position: absolute;
   background: #fff;
   width: 1px;
@@ -360,12 +389,12 @@ body {
   left: 70px;
   top: 12px;
 }
-#map .marker-container .marker-box {
+.marker-container .marker-box {
   width: 70px;
   height: 75px;
   float: left;
 }
-#map .marker-container .marker-box .marker-number {
+.marker-container .marker-box .marker-number {
   font-family: 'Gotham' Arial;
   font-size: 30px;
   line-height: 30px;
@@ -374,7 +403,7 @@ body {
   padding: 0;
   margin: 15px auto 5px auto;
 }
-#map .marker-container .marker-box .marker-label {
+.marker-container .marker-box .marker-label {
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 10px !important;
   line-height: 10px !important;
@@ -385,6 +414,7 @@ body {
 #country_list {
   margin: 0 45px 30px 45px;
   padding: 0;
+  display: none;
 }
 #country_list .col-md-2 {
   width: 170px;
@@ -393,7 +423,7 @@ body {
 }
 #country_list .char-box {
   border-top: 1px solid #007ce0;
-  margin: 38px 0 0 0;
+  margin: 0 0 38px 0;
 }
 #country_list .char-box .char-label {
   font-family: 'Gotham' Arial;
@@ -403,7 +433,7 @@ body {
   font-weight: bold;
   margin: 15px 0 15px 0;
 }
-#country_list .char-box .country-item {
+#country_list .char-box .country-item a {
   color: #000;
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 14px;
@@ -412,12 +442,13 @@ body {
   letter-spacing: 0.2px;
   cursor: pointer;
 }
-#country_list .char-box .country-item:hover {
+#country_list .char-box .country-item a:hover {
   color: #007ce0;
+  text-decoration: none;
 }
-#country_list .char-box .country-item.inactive {
-  color: #999999;
+#country_list .char-box .country-item.inactive a {
+  color: #999999 !important;
 }
-#country_list .char-box .country-item.inactive:hover {
-  color: #999999;
+#country_list .char-box .country-item.inactive a:hover {
+  color: #999999 !important;
 }

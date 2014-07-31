@@ -166,6 +166,17 @@ require ['jquery',
     ['U', 'V', 'Y', 'Z'],
   ]
 
+  $('#option_map').click ()->
+    $(this).addClass 'selected'
+    $('#option_az').removeClass 'selected'
+    $("#map").show()
+    $("#country_list").hide()
+  $("#option_az").click ()->
+    $(this).addClass 'selected'
+    $("#option_map").removeClass 'selected'
+    $("#map").hide()
+    $("#country_list").show()
+
   country_list = $('#country_list')
   for column in columns
     one_column = $('<div class="col-md-2"></div>').appendTo(country_list)
@@ -174,11 +185,12 @@ require ['jquery',
       one_char_labe = $("<div class='char-label'>#{char}</div>").appendTo(one_char_box)
       for country in countries[char]
         if country.length == 2
-          $("<div class='country-item inactive'>#{country[1]}</div>").appendTo(one_char_box)
+          $("<div class='country-item inactive'><a>#{country[1]}</a></div>").appendTo(one_char_box)
         else
           code = country[0].toLowerCase()
-          $("<div class='country-item' data-code='#{code}'>#{country[1]}</div>").appendTo(one_char_box)
-  $('.country-item').on 'click', (e)->
+          item = $("<div class='country-item'></div>").appendTo one_char_box
+          line = $("<a data-code='#{code}' data-html='true' data-toggle='tooltip' data-placement='top'>#{country[1]}</a>").attr('data-title', "<div class='marker-container'><div class='marker-box'><div class='marker-number'>#{country[3]}</div><div class='marker-label'>indicators</div></div><div class='line-break'></div><div class='marker-box'><div class='marker-number'>#{country[2]}</div><div class='marker-label'>datasets</div></div></div>").appendTo item
+  $('.country-item:not(inactive) a').tooltip().on 'click', (e)->
     code = $(this).data('code')
     if code
       openURL("country.html?code=#{code}")

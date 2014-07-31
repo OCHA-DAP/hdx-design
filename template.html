@@ -16,16 +16,35 @@
   </head>
   <body>
     <div class="container">
-      <div id="options" class="row">
-        <div class="col-md-1"></div>
+      <div id="nav_tree_row" class="row">
         <div class="col-md-10">
           <h3>Navigation tree for regions</h3>
           <div id="location_selector">
             <h5>Select Locations</h5>
             <div id="the_tree"></div>
           </div>
+        </div>
+        <div class="col-md-2"></div>
+      </div>
+      <div class="row">
+        <div class="col-md-10">
           <h3>Dropdown filters for search</h3>
-          <div id="dropdown_session"></div>
+        </div>
+      </div>
+      <div class="row no-margin">
+        <div id="dropdown_session">
+          <div id="search_bar_top"></div>
+          <div id="search_bar_content">
+            <div id="filter_container"></div>
+            <div id="date_container">
+              <label>Date Range</label>
+              <input placeholder="Start date" type="text">
+              <input placeholder="End date" type="text">
+            </div>
+          </div>
+          <div id="search_bar_bottom">
+            <div id="search_filter_btn">Filter<span>+</span></div>
+          </div>
         </div>
       </div>
     </div>
