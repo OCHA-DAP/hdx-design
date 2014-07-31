@@ -101,7 +101,7 @@ define ['jquery',
   createNavTree: (element, data, placeholder)->
     $el = $(element).addClass('nav-tree')
     # create search head
-    $searchbar = $("<div class='search-input-group'><input type='text' class='typeahead' placeholder='#{placeholder}'><div class='input-group-btn'></div></div>").appendTo $el
+    $searchbar = $("<div class='search-input-group input-dropdown'><input type='text' class='typeahead' placeholder='#{placeholder}'><div class='input-group-btn'></div></div>").appendTo $el
     regions = []
     fetchValues regions, data, 'name'
     # console.log regions
@@ -132,3 +132,8 @@ define ['jquery',
       expandAll: true
       checkboxes: true
     return
+  createDropdown: (data, placeholder)->
+    $result = $("<div class='input-dropdown'><input type='text' class='typeahead' placeholder='#{placeholder}'></div>")
+    $result.children().first().typeahead null,
+      source: substringMatcher data
+    return $result

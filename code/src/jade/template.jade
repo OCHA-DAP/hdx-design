@@ -16,9 +16,26 @@ html(lang="en")
 
   body
     .container
-      .row#options
-        .col-md-1
+      .row#nav_tree_row
         .col-md-10
+          h3 Navigation tree for regions
           #location_selector
             h5 Select Locations
             #the_tree
+        .col-md-2
+      .row
+        .col-md-10
+          h3 Dropdown filters for search
+      .row.no-margin
+        #dropdown_session
+          #search_bar_top
+          #search_bar_content
+           #filter_container
+           #date_container
+            label Date Range
+            input(placeholder='Start date' type='text')
+            input(placeholder='End date' type='text')
+          #search_bar_bottom
+            #search_filter_btn
+              | Filter
+              span +

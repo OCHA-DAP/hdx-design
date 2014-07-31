@@ -5,7 +5,7 @@
 ::-webkit-scrollbar-track {
     -webkit-box-shadow: none;
     border-radius: 0;
-    background-color: #fff;
+    background-color: #efefef;
 }
 
 ::-webkit-scrollbar {
@@ -204,6 +204,17 @@ body {
 
 // Components
 // typeahead
+.input-dropdown {
+  input {
+    padding: 5px 20px 5px 20px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    outline: none;
+    border: 1px solid #ccc;
+    .border-radius();
+    font-weight: bold;
+  }
+}
 .tt-dropdown-menu {
   position: absolute;
   top: 100%;
@@ -223,6 +234,9 @@ body {
   -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   background-clip: padding-box;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 .tt-suggestion > p {
   display: block;
@@ -239,11 +253,13 @@ body {
   color: #ffffff;
   text-decoration: none;
   outline: 0;
-  background-color: @green;
+  background-color: @blue;
 }
+
+// Navigation Tree
 .mixi-flash () {
 	from {color: #000;background:#fff;}
-	to {color: #fff;background:@green}
+	to {color: #fff;background:@blue}
 }
 @-webkit-keyframes flash-animation {.mixi-flash;}
 @-moz-keyframes flash-animation {.mixi-flash;}
@@ -258,18 +274,12 @@ body {
     input {
       width: 230px;
       height: 35px;
-      padding: 5px 20px 5px 20px;
-      -webkit-box-shadow: none;
-      box-shadow: none;
-      outline: none;
-      border: 1px solid #ccc;
-      .border-radius();
-      .header-font();
-      font-weight: bold;
     }
   }
   .tt-dropdown-menu {
     width: 230px;
+    max-height: 472px;
+    overflow: auto;
   }
   .tree-options {
     margin: 15px 0 0 0;

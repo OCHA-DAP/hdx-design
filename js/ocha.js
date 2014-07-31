@@ -80,7 +80,7 @@
             expand_attr = "class='expanded'";
           }
           if (k === 'children' && one[k].length) {
-            children_count_label = "<span>" + one[k].length + "</span>";
+            children_count_label = "<span>[" + one[k].length + "]</span>";
           }
         }
         $li = $("<li " + expand_attr + "><input type='checkbox' class='" + (one["class"] || ' ') + "' " + attributes + "data-name='" + one.name + "'><label>" + one.name + "</label>" + children_count_label + "</li>").appendTo($ol);
@@ -105,25 +105,48 @@
     };
     return {
       createNavTree: function(element, data, placeholder) {
-        var $el, $searchbar, regions;
+        var $el, $searchbar, $tree_container, regions;
         $el = $(element).addClass('nav-tree');
-        $searchbar = $("<div class='search-input-group'><input type='text' class='typeahead' placeholder='" + placeholder + "'><div class='input-group-btn'></div></div>").appendTo($el);
+        $searchbar = $("<div class='search-input-group input-dropdown'><input type='text' class='typeahead' placeholder='" + placeholder + "'><div class='input-group-btn'></div></div>").appendTo($el);
         regions = [];
         fetchValues(regions, data, 'name');
         $searchbar.children().first().typeahead(null, {
           name: 'regions',
           source: substringMatcher(regions)
         }).on('typeahead:selected', function(event, item) {
-          var $input, region;
+          var $label, offest, region;
           $(this).val("");
           region = item.value;
-          $input = $("" + element + " >ol input[data-name='" + region + "']");
-          return $input.prop('checked', true).triggerHandler('click');
+          $label = $("" + element + " .tree-container >ol input[data-name='" + region + "']").next();
+          offest = $label.offset().top - $("" + element + " .tree-container >ol").offset().top;
+          $("" + element + " .tree-container").scrollTop(offest);
+          return $label.addClass('flash').delay(1200).queue(function() {
+            return $(this).removeClass('flash').dequeue();
+          });
+        }).on('mousedown', function() {
+          return $(this).val("");
         });
-        createList($el, data);
-        $("" + element + " >ol").bonsai({
+        $("<div class='tree-options'><a class='select-all'>Select all</a><span>|</span><a class='clear-all'>Clear all</a></div>").appendTo($el);
+        $tree_container = $("<div class='tree-container'></div>").appendTo($el);
+        $(document).on('click', "" + element + " .tree-options a.select-all", function() {
+          return $("" + element + " .tree-container >ol input").prop('checked', true);
+        });
+        $(document).on('click', "" + element + " .tree-options a.clear-all", function() {
+          return $("" + element + " .tree-container >ol input").prop('checked', false);
+        });
+        createList($tree_container, data);
+        $("" + element + " .tree-container >ol").bonsai({
+          expandAll: true,
           checkboxes: true
         });
+      },
+      createDropdown: function(data, placeholder) {
+        var $result;
+        $result = $("<div class='input-dropdown'><input type='text' class='typeahead' placeholder='" + placeholder + "'></div>");
+        $result.children().first().typeahead(null, {
+          source: substringMatcher(data)
+        });
+        return $result;
       }
     };
   });
