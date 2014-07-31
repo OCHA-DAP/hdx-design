@@ -438,7 +438,7 @@ require ['jquery',
             regions_tree[one_region_code]['values'].push
               period: one_period
               value: one_value
-    # console.log regions_tree
+    console.log regions_tree
     # create nav tree, start to download map shape json and form regions list
     regions = {}
     mapDownloadQueue = []

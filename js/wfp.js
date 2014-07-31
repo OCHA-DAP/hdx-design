@@ -54,9 +54,6 @@
         });
       }
     });
-    $('.chosen-select').chosen({
-      no_results_text: "Oops, nothing found!"
-    });
     dataDownloadQueue = [];
     RAW_DATA = {};
     DATA_UNITS = 'percent';
@@ -124,6 +121,22 @@
     STATE_RADAR = 5;
     STATE_SCATTER = 6;
     CURR_STATE = -1;
+    $.getJSON("data/topics.json", function(data) {
+      var group, k, one, v, _j, _k, _len, _len1, _ref;
+      _ref = Object.keys(data).sort();
+      for (_j = 0, _len = _ref.length; _j < _len; _j++) {
+        k = _ref[_j];
+        group = $("<optgroup label='" + k + "'></optgroup>)").appendTo(indicator_selector);
+        v = data[k];
+        for (_k = 0, _len1 = v.length; _k < _len1; _k++) {
+          one = v[_k];
+          $("<option value='" + one.indid + "'>" + one.name + "</option>").appendTo(group);
+        }
+      }
+      $('.chosen-select').chosen({
+        no_results_text: "Oops, nothing found!"
+      });
+    });
     createNavTree = function() {
       var one, one_count, _j, _len, _ref;
       $('#chosen_regions').bonsai({
@@ -380,7 +393,9 @@
       for (_j = 0, _len = indids.length; _j < _len; _j++) {
         one = indids[_j];
         if (!RAW_DATA[one]) {
+          console.log("https://ocha.parseapp.com/getdata?indid=" + one);
           download_event = $.getJSON("https://ocha.parseapp.com/getdata?indid=" + one, function(data) {
+            console.log(data);
             return RAW_DATA[one] = data;
           });
           dataDownloadQueue.push(download_event);
@@ -486,6 +501,7 @@
           }
         }
       }
+      console.log(regions_tree);
       regions = {};
       mapDownloadQueue = [];
       all_regions = clearRegions();

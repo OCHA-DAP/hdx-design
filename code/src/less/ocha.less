@@ -1,6 +1,24 @@
 // IMPORTS
 @import "../lib/css/retina.less";
 
+// Scroll Bar
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: none;
+    border-radius: 0;
+    background-color: #fff;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+    background-color: @blue;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    background-color: @blue;
+}
+
 // FONTS
 @font-face {
   font-family: 'Gotham';
@@ -27,6 +45,56 @@
 }
 .text-font {
   font-family: 'Source Sans Pro', sans-serif;
+}
+
+.border-radius (@radius: 5px) {
+	-webkit-border-radius: @radius;
+	-moz-border-radius:    @radius;
+	border-radius:         @radius;
+
+	-moz-background-clip:    padding;
+	-webkit-background-clip: padding-box;
+	background-clip:         padding-box;
+}
+
+.border-radiuses (@topright: 0, @bottomright: 0, @bottomleft: 0, @topleft: 0) {
+	-webkit-border-top-right-radius:    @topright;
+	-webkit-border-bottom-right-radius: @bottomright;
+	-webkit-border-bottom-left-radius:  @bottomleft;
+	-webkit-border-top-left-radius:     @topleft;
+
+	-moz-border-radius-topright:        @topright;
+	-moz-border-radius-bottomright:     @bottomright;
+	-moz-border-radius-bottomleft:      @bottomleft;
+	-moz-border-radius-topleft:         @topleft;
+
+	border-top-right-radius:            @topright;
+	border-bottom-right-radius:         @bottomright;
+	border-bottom-left-radius:          @bottomleft;
+	border-top-left-radius:             @topleft;
+
+	-moz-background-clip:    padding;
+	-webkit-background-clip: padding-box;
+	background-clip:         padding-box;
+}
+
+.opacity (@opacity: 0.5) {
+	-webkit-opacity: 	@opacity;
+	-moz-opacity: 		@opacity;
+	opacity: 		@opacity;
+}
+
+.animation (@name, @duration: 300ms, @delay: 0, @ease: ease, @direction: normal) {
+	-webkit-animation: @name @duration @delay @ease @direction;
+	-moz-animation:    @name @duration @delay @ease @direction;
+	-ms-animation:     @name @duration @delay @ease @direction;
+}
+
+.transition (@transition) {
+	-webkit-transition: @transition;
+	-moz-transition:    @transition;
+	-ms-transition:     @transition;
+	-o-transition:      @transition;
 }
 
 // GENERAL
@@ -128,8 +196,133 @@ body {
 
 // C3
 .c3-tooltip{
-  opacity: 1;
+  .opacity(1);
 }
 .c3-tooltip th{
   background-color: #000;
+}
+
+// Components
+// typeahead
+.tt-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  list-style: none;
+  font-size: 14px;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  .border-radius();
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  background-clip: padding-box;
+}
+.tt-suggestion > p {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: normal;
+  line-height: 1.428571429;
+  color: #333333;
+  white-space: nowrap;
+}
+.tt-suggestion > p:hover,
+.tt-suggestion > p:focus,
+.tt-suggestion.tt-cursor p {
+  color: #ffffff;
+  text-decoration: none;
+  outline: 0;
+  background-color: @green;
+}
+.mixi-flash () {
+	from {color: #000;background:#fff;}
+	to {color: #fff;background:@green}
+}
+@-webkit-keyframes flash-animation {.mixi-flash;}
+@-moz-keyframes flash-animation {.mixi-flash;}
+@-ms-keyframes flash-animation {.mixi-flash;}
+@keyframes flash-animation {.mixi-flash;}
+.nav-tree
+{
+  width: 230px;
+  background: #fff;
+  .search-input-group{
+    width: 230px;
+    input {
+      width: 230px;
+      height: 35px;
+      padding: 5px 20px 5px 20px;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+      outline: none;
+      border: 1px solid #ccc;
+      .border-radius();
+      .header-font();
+      font-weight: bold;
+    }
+  }
+  .tt-dropdown-menu {
+    width: 230px;
+  }
+  .tree-options {
+    margin: 15px 0 0 0;
+    .text-font();
+    font-size: 12px;
+    a {
+      color: @blue;
+      cursor: pointer;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+    span {
+      margin: 0 15px;
+      color: @blue;
+    }
+  }
+  .tree-container{
+    margin-top: 10px;
+    height: 430px;
+    overflow: hidden;
+    &:hover{
+      overflow-y: auto;
+    }
+    > ol {
+      padding: 0 0 410px 0;
+      li {
+        padding-left: 18px;
+        .thumb {
+          margin: -1px 0 0 -18px;
+        }
+      }
+      li label{
+        font-size: 14px;
+        line-height: 14px;
+        font-weight: normal !important;
+        &.flash{
+          .animation(flash-animation, 500ms, 200ms, ease-in, alternate);
+        }
+      }
+      li span{
+        font-size: 14px;
+        line-height: 14px;
+        font-weight: normal !important;
+        margin-left: 3px;
+      }
+      li input {
+        margin-right: 10px;
+      }
+      .text-font();
+      .has-children >label, .has-children >span{
+        font-weight: bold !important;
+      }
+    }
+  }
 }

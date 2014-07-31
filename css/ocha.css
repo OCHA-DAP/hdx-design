@@ -1,3 +1,4 @@
+@import "../lib/css/typeahead.css";
 @font-face {
   font-family: 'Gotham';
   src: url('../fonts/Gotham/Gotham-Book.otf');
@@ -113,4 +114,44 @@ body {
 }
 .c3-tooltip th {
   background-color: #000;
+}
+.nav-tree {
+  width: 270px;
+}
+.nav-tree .search-input-group {
+  width: 270px;
+}
+.nav-tree .search-input-group input {
+  width: 270px;
+  height: 35px;
+  padding: 10px;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  outline: none;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Gotham' Arial;
+  font-weight: bold;
+}
+.nav-tree .twitter-typeahead {
+  display: table-cell !important;
+}
+.nav-tree .form-control.typeahead.tt-input {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+.nav-tree .tt-dropdown-menu {
+  width: 300px;
+  background: #fff;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px 0 0 0;
+}
+.nav-tree .tt-dropdown-menu .tt-dataset-regions {
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+.nav-tree .tt-dropdown-menu .tt-dataset-regions div.tt-suggestions:hover {
+  background: #ccc;
 }
