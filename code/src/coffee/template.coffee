@@ -52,14 +52,16 @@ require ['js/ocha.js'], (ocha)->
       key: 'Kenya',
       axes: [
           {axis: "overweight", value: 173636},
-          {axis: "stunted", value: 375632},
+          {axis: "stunted", value: 175632},
           {axis: "wasted", value: 250483},
-          {axis: "underweight", value: 300839},
+          {axis: "underweight", value: 200839},
           {axis: "with fever", value: 312518}
       ]
     }
   ]
   ocha.createRadarChart '#radar_chart', 'Cross-Appeal: Amount Received By', '2012', radar_data, 'USD'
+
+  map_graphc = ocha.createMapGraph 'map'
 
   $.getJSON 'data/demo-tree.json', (data)->
     ocha.createNavTree '#the_tree', data, 'Select Country'

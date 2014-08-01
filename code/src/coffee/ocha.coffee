@@ -59,8 +59,10 @@ define ['jquery',
 'radarchart'
 ], ($, b, m, o, f, d3, c3, chroma)->
   # Globals
-  chart_colors = ['1ebfb3','117be1', 'f2645a', '555555','ffd700']
+  CHART_COLORS = ['1ebfb3','117be1', 'f2645a', '555555','ffd700']
   CHART_CATS_MAX = 30
+  MAP_ID = 'yumiendo.j1majbom'
+  MAP_COLOR_LEVELS = 5
   # FUNCTIONS
   substringMatcher = (strs) ->
     findMatches = (q, cb) ->
@@ -193,13 +195,13 @@ define ['jquery',
       padding:
         top: 40
       color:
-        pattern: chart_colors
+        pattern: CHART_COLORS
       data:
         columns: chart_data
         type: 'pie'
     if chart_data.length == 1
       chart_config.data.columns.push ['Other', 100-chart_data[0][1]]
-      chart_config.color.pattern = [chart_colors[0], 'eee']
+      chart_config.color.pattern = [CHART_COLORS[0], 'eee']
     # console.log chart_config
     c3_chart = c3.generate chart_config
     svg = d3.select "#{element} svg"
@@ -217,7 +219,7 @@ define ['jquery',
       padding:
         top: 40
       color:
-        pattern: chart_colors
+        pattern: CHART_COLORS
       data:
         columns: chart_data.data
         type: 'area'
@@ -250,7 +252,7 @@ define ['jquery',
       padding:
         top: 40
       color:
-        pattern: chart_colors
+        pattern: CHART_COLORS
       data:
         columns: chart_data.data
         type: 'bar'
@@ -297,7 +299,7 @@ define ['jquery',
       padding:
         top: 40
       color:
-        pattern: chart_colors
+        pattern: CHART_COLORS
       data:
         xs: chart_data.keys
         columns: chart_data.data
@@ -337,9 +339,42 @@ define ['jquery',
       radius: 3
       opacityArea: 0.7
       color: (i)->
-        chart_colors[i%chart_colors.length]
-    RadarChart.draw element, data, chart_config
+        CHART_COLORS[i%CHART_COLORS.length]
+    radar_chart = RadarChart.draw element, data, chart_config
     svg = d3.select "#{element} svg"
-    console.log svg
     addChartTitles svg, title, subtitle, chart_width
+    return radar_chart
+
+  createMapGraph: (element)->
+    map = L.mapbox.map element, MAP_ID,
+      center: [20, 0]
+      zoom: 2
+      minZoom: 2
+      maxZoom: 10
+      tileLayer:
+        continuousWorld: false
+        noWrap: false
+    map.scrollWheelZoom.disable()
+    # add full screen
+    # L.control.fullscreen().addTo(map)
+    # hide all markers
+    map.featureLayer.setFilter ->
+      return false
+    # popup layer
+    popup = new L.Popup
+      autoPan: false
+    # re-order layers
+    topPane = map._createPane 'leaflet-top-pane', map.getPanes().mapPane
+    topLayer = L.mapbox.tileLayer MAP_ID
+    topLayer.addTo map
+    topPane.appendChild topLayer.getContainer()
+    topLayer.setZIndex 7
+    # colors
+    color_map = []
+    color_scale = chroma.scale(['#fcbba1','#67000d']).mode('hsl').correctLightness(true).out('hex')
+    for i in [0..MAP_COLOR_LEVELS] by 1
+      color_map.push color_scale(i / parseFloat(MAP_COLOR_LEVELS))
+
+    return
+  addDataToMap: (map, data)->
     return
