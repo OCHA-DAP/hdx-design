@@ -55,6 +55,7 @@ define ['jquery',
 ], ($, b, m, o, f, d3, c3, chroma)->
   # Globals
   chart_colors = ['1ebfb3','117be1', 'f2645a', '555555','ffd700']
+  CHART_CATS_MAX = 30
   # FUNCTIONS
   substringMatcher = (strs) ->
     findMatches = (q, cb) ->
@@ -109,6 +110,28 @@ define ['jquery',
       .text text
     return
 
+  addChartTitles = (svg, title, subtitle, chart_width)->
+    addTextToChart svg, title, 'chart-title', chart_width/2, 12
+    addTextToChart svg, subtitle, 'chart-subtitle', chart_width/2, 30
+    return
+  categoriesData = (data)->
+    result = {cats:[],data:[]}
+    for key, count in Object.keys(data).sort()
+      if count == CHART_CATS_MAX
+        break
+      result.cats.push key
+      if result.data.length == 0
+        for one in data[key]
+          k = Object.keys(one)[0]
+          v = one[k]
+          result.data.push [k, v]
+      else
+        for one, i in data[key]
+          k = Object.keys(one)[0]
+          v = one[k]
+          result.data[i].push v
+    return result
+
   # COMPONENTS
   createNavTree: (element, data, placeholder)->
     $el = $(element).addClass('nav-tree')
@@ -153,13 +176,13 @@ define ['jquery',
 
   # data = [{k:v},{k:v}...]
   createPieChart: (element, title, subtitle, data)->
-    $el = $(element).empty().addClass('pie')
-    pie_width = $el.width()
-    pie_data = []
+    $el = $(element).empty().removeClass().addClass('pie')
+    chart_width = $el.width()
+    chart_data = []
     for one in data
       k = Object.keys(one)[0]
       v = one[k]
-      pie_data.push [k,v]
+      chart_data.push [k,v]
     chart_config =
       bindto: element
       padding:
@@ -167,15 +190,128 @@ define ['jquery',
       color:
         pattern: chart_colors
       data:
-        columns: pie_data
+        columns: chart_data
         type: 'pie'
-    if pie_data.length == 1
-      console.log '111'
-      chart_config.data.columns.push ['Other', 100-pie_data[0][1]]
+    if chart_data.length == 1
+      chart_config.data.columns.push ['Other', 100-chart_data[0][1]]
       chart_config.color.pattern = [chart_colors[0], 'eee']
     # console.log chart_config
     c3_chart = c3.generate chart_config
     svg = d3.select "#{element} svg"
-    addTextToChart svg, title, 'chart-title', pie_width/2, 12
-    addTextToChart svg, subtitle, 'chart-subtitle', pie_width/2, 30
+    addChartTitles svg, title, subtitle, chart_width
     return c3_chart
+
+  # data = { cat_key: [{name: value},{name:value}], cat_key:...]}
+  createLineChart: (element, title, subtitle, data, units)->
+    $el = $(element).empty().removeClass().addClass('line')
+    chart_width = $el.width()
+    chart_data = categoriesData data
+    # console.log chart_data
+    chart_config =
+      bindto: element
+      padding:
+        top: 40
+      color:
+        pattern: chart_colors
+      data:
+        columns: chart_data.data
+        type: 'area'
+      axis:
+        x:
+          type: 'category'
+          categories: chart_data.cats
+        y:
+          label:
+            text: units
+            position: 'outer-middle'
+          tick:
+            format:
+              d3.format(',')
+      grid:
+        y:
+          show: true
+    c3_chart = c3.generate chart_config
+    svg = d3.select "#{element} svg"
+    addChartTitles svg, title, subtitle, chart_width
+    return
+
+  createBarChart: (element, title, subtitle, data, units)->
+    $el = $(element).empty().removeClass().addClass('bar')
+    chart_width = $el.width()
+    chart_data = categoriesData data
+    # console.log chart_data
+    chart_config =
+      bindto: element
+      padding:
+        top: 40
+      color:
+        pattern: chart_colors
+      data:
+        columns: chart_data.data
+        type: 'bar'
+      axis:
+        x:
+          type: 'category'
+          categories: chart_data.cats
+        y:
+          label:
+            text: units
+            position: 'outer-middle'
+          tick:
+            format:
+              d3.format(',')
+      grid:
+        y:
+          show: true
+    c3_chart = c3.generate chart_config
+    svg = d3.select "#{element} svg"
+    addChartTitles svg, title, subtitle, chart_width
+    return
+
+  createScatterPlotChart: (element, title, subtitle, data, unit1, unit2)->
+    $el = $(element).empty().removeClass().addClass('scatter')
+    chart_width = $el.width()
+    chart_data = {'keys':{}, 'labels':[], 'data':[]}
+    for cat_key, cat_value of data
+      # get keys
+      chart_data.keys[cat_key] = "#{cat_key}_x"
+      indid_keys = Object.keys(cat_value)
+      if indid_keys.length != 2
+        console.log 'ERROR, only take 2 indicators'
+        return
+      # get labels
+      if chart_data.labels.length == 0
+        chart_data.labels.push "#{indid_keys[0]} [by #{unit1}]"
+        chart_data.labels.push "#{indid_keys[1]} [by #{unit2}]"
+      chart_data.data.push ["#{cat_key}_x"].concat cat_value[indid_keys[0]]
+      chart_data.data.push ["#{cat_key}"].concat cat_value[indid_keys[1]]
+    # console.log chart_data
+    chart_config =
+      bindto: element
+      padding:
+        top: 40
+      color:
+        pattern: chart_colors
+      data:
+        xs: chart_data.keys
+        columns: chart_data.data
+        type: 'scatter'
+      axis:
+        x:
+          label:
+            text:chart_data.labels[0]
+            position: 'outer-right'
+          tick:
+            format:
+              d3.format(',')
+        y:
+          label:
+            text:chart_data.labels[1]
+            position: 'outer-middle'
+          tick:
+            format:
+              d3.format(',')
+    c3_chart = c3.generate chart_config
+    svg = d3.select "#{element} svg"
+    addChartTitles svg, title, subtitle, chart_width
+    return
