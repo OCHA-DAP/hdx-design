@@ -31,10 +31,10 @@
   font-style: normal;
 }
 .header-font {
-  font-family: 'Gotham' Arial;
+  font-family: 'Gotham' Arial !important;
 }
 .text-font {
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Source Sans Pro', sans-serif !important;
 }
 * {
   margin: 0;
@@ -42,7 +42,7 @@
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Source Sans Pro', sans-serif !important;
   -webkit-font-smoothing: antialiased !important;
 }
 li {
@@ -55,7 +55,7 @@ h4,
 h5,
 h6 {
   font-weight: bold;
-  font-family: 'Gotham' Arial;
+  font-family: 'Gotham' Arial !important;
   letter-spacing: 1.5px;
 }
 body {
@@ -131,14 +131,63 @@ body {
   background-color: #000;
 }
 .chart-title {
-  font-family: 'Gotham' Arial;
+  font-family: 'Gotham' Arial !important;
   font-size: 15px;
   font-weight: bold;
 }
 .chart-value,
 .chart-unit {
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Source Sans Pro', sans-serif !important;
   font-size: 12px;
+}
+.radar.chart {
+  position: relative;
+}
+.radar.chart text {
+  font-family: 'Source Sans Pro', sans-serif !important;
+}
+.radar.chart polygon {
+  stroke: none !important;
+}
+.radar.chart .area {
+  fill-opacity: 0.5;
+}
+.radar.chart .area .circle {
+  fill-opacity: 0.9;
+  stroke: #fff;
+  stroke-opacity: 0.0;
+  stroke-width: 10 !important;
+}
+.radar.chart .legend-item {
+  cursor: pointer;
+}
+.radar.chart .radar-tooltip {
+  position: absolute;
+  background: #000;
+  color: #fff;
+  width: 80px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  padding: auto;
+  cursor: pointer;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+.radar.chart .radar-tooltip:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  top: 40px;
+  left: 34px;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #000;
 }
 .input-dropdown input {
   padding: 5px 20px 5px 20px;
@@ -256,7 +305,7 @@ body {
 }
 .nav-tree .tree-options {
   margin: 15px 0 0 0;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Source Sans Pro', sans-serif !important;
   font-size: 12px;
 }
 .nav-tree .tree-options a {
@@ -280,7 +329,7 @@ body {
 }
 .nav-tree .tree-container > ol {
   padding: 0 0 410px 0;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Source Sans Pro', sans-serif !important;
 }
 .nav-tree .tree-container > ol li {
   padding-left: 18px;

@@ -37,6 +37,30 @@ require ['js/ocha.js'], (ocha)->
     'YEM': {'Disasters': [0,1,1,0,0,0,1,0,1,2,0,0,0,0,0], 'People In Need':[682458,736136,245499,403099,276198, 0, 75632, 0,12518, 0,0,0,0,0,0]}
   ocha.createScatterPlotChart '#scatter_plot_chart', 'Disasters VS People in need', '', people_disaters_data, 'Count', 'Count'
 
+  radar_data = [
+    {
+      key: 'Columbia',
+      axes: [
+        {axis: "overweight", value: 128645},
+        {axis: "stunted", value: 403099},
+        {axis: "wasted", value: 163912},
+        {axis: "underweight", value: 276198},
+        {axis: "with fever", value: 414459}
+      ]
+    },
+    {
+      key: 'Kenya',
+      axes: [
+          {axis: "overweight", value: 173636},
+          {axis: "stunted", value: 375632},
+          {axis: "wasted", value: 250483},
+          {axis: "underweight", value: 300839},
+          {axis: "with fever", value: 312518}
+      ]
+    }
+  ]
+  ocha.createRadarChart '#radar_chart', 'Cross-Appeal: Amount Received By', '2012', radar_data, 'USD'
+
   $.getJSON 'data/demo-tree.json', (data)->
     ocha.createNavTree '#the_tree', data, 'Select Country'
 

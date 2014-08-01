@@ -41,10 +41,10 @@
 
 // MIXINS
 .header-font {
-  font-family: 'Gotham' Arial;
+  font-family: 'Gotham' Arial !important;
 }
 .text-font {
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Source Sans Pro', sans-serif !important;
 }
 
 .border-radius (@radius: 5px) {
@@ -209,6 +209,51 @@ body {
 .chart-value, .chart-unit {
   .text-font();
   font-size: 12px;
+}
+.radar.chart{
+  position: relative;
+  text{
+    .text-font();
+  }
+  polygon {
+    stroke: none !important;
+  }
+  .area {
+    fill-opacity: 0.5;
+    .circle {
+      fill-opacity: 0.9;
+      stroke: #fff;
+      stroke-opacity: 0.0;
+      stroke-width: 10 !important;
+      // stroke: none !important;
+    }
+  }
+  .legend-item {
+    cursor: pointer;
+  }
+  .radar-tooltip{
+    position: absolute;
+    background: #000;
+    color: #fff;
+    width: 80px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    padding: auto;
+    cursor: pointer;
+    .border-radius();
+    &:after {
+      position: absolute;
+      content:"";
+      width:0;
+      height:0;
+      top: 40px;
+      left: 34px;
+      border-left:6px solid transparent;
+      border-right:6px solid transparent;
+      border-top:6px solid #000;
+    }
+  }
 }
 
 // Components

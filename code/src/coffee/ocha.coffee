@@ -11,7 +11,8 @@ requirejs.config({
       chosen: 'lib/chosen.v1.1.min',
       bonsai: 'lib/tree/jquery.bonsai',
       qubit: 'lib/tree/jquery.qubit',
-      typeahead: 'lib/typeahead.jquery'
+      typeahead: 'lib/typeahead.jquery',
+      radarchart: 'lib/radarchart'
   },
   shim: {
     'bootstrap': {
@@ -37,6 +38,9 @@ requirejs.config({
     },
     'typeahead': {
       deps: ['jquery']
+    },
+    'radarchart': {
+      deps: ['d3']
     }
   }
 });
@@ -51,7 +55,8 @@ define ['jquery',
 'chosen',
 'bonsai',
 'qubit',
-'typeahead'
+'typeahead',
+'radarchart'
 ], ($, b, m, o, f, d3, c3, chroma)->
   # Globals
   chart_colors = ['1ebfb3','117be1', 'f2645a', '555555','ffd700']
@@ -176,7 +181,7 @@ define ['jquery',
 
   # data = [{k:v},{k:v}...]
   createPieChart: (element, title, subtitle, data)->
-    $el = $(element).empty().removeClass().addClass('pie')
+    $el = $(element).empty().removeClass().addClass('pie chart')
     chart_width = $el.width()
     chart_data = []
     for one in data
@@ -203,7 +208,7 @@ define ['jquery',
 
   # data = { cat_key: [{name: value},{name:value}], cat_key:...]}
   createLineChart: (element, title, subtitle, data, units)->
-    $el = $(element).empty().removeClass().addClass('line')
+    $el = $(element).empty().removeClass().addClass('line chart')
     chart_width = $el.width()
     chart_data = categoriesData data
     # console.log chart_data
@@ -236,7 +241,7 @@ define ['jquery',
     return
 
   createBarChart: (element, title, subtitle, data, units)->
-    $el = $(element).empty().removeClass().addClass('bar')
+    $el = $(element).empty().removeClass().addClass('bar chart')
     chart_width = $el.width()
     chart_data = categoriesData data
     # console.log chart_data
@@ -266,10 +271,11 @@ define ['jquery',
     c3_chart = c3.generate chart_config
     svg = d3.select "#{element} svg"
     addChartTitles svg, title, subtitle, chart_width
+    $('.c3.bar line.c3-xgrid-focus').hide();
     return
 
   createScatterPlotChart: (element, title, subtitle, data, unit1, unit2)->
-    $el = $(element).empty().removeClass().addClass('scatter')
+    $el = $(element).empty().removeClass().addClass('scatter chart')
     chart_width = $el.width()
     chart_data = {'keys':{}, 'labels':[], 'data':[]}
     for cat_key, cat_value of data
@@ -313,5 +319,27 @@ define ['jquery',
               d3.format(',')
     c3_chart = c3.generate chart_config
     svg = d3.select "#{element} svg"
+    addChartTitles svg, title, subtitle, chart_width
+    return
+
+  createRadarChart: (element, title, subtitle, data, unit)->
+    $el = $(element).empty().removeClass().addClass('radar chart')
+    chart_width = $el.width()
+    chart_height = $el.height()
+    # console.log chart_data
+    chart_config =
+      w: chart_width-120
+      h: chart_height-140
+      ExtraWidthX:120
+      ExtraWidthY:140
+      TranslateX:60
+      TranslateY:75
+      radius: 3
+      opacityArea: 0.7
+      color: (i)->
+        chart_colors[i%chart_colors.length]
+    RadarChart.draw element, data, chart_config
+    svg = d3.select "#{element} svg"
+    console.log svg
     addChartTitles svg, title, subtitle, chart_width
     return

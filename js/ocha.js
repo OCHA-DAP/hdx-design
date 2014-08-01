@@ -12,7 +12,8 @@
       chosen: 'lib/chosen.v1.1.min',
       bonsai: 'lib/tree/jquery.bonsai',
       qubit: 'lib/tree/jquery.qubit',
-      typeahead: 'lib/typeahead.jquery'
+      typeahead: 'lib/typeahead.jquery',
+      radarchart: 'lib/radarchart'
     },
     shim: {
       'bootstrap': {
@@ -38,13 +39,17 @@
       },
       'typeahead': {
         deps: ['jquery']
+      },
+      'radarchart': {
+        deps: ['d3']
       }
     }
   });
 
-  define(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'chosen', 'bonsai', 'qubit', 'typeahead'], function($, b, m, o, f, d3, c3, chroma) {
-    var addTextToChart, chart_colors, createList, fetchValues, substringMatcher;
+  define(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'chosen', 'bonsai', 'qubit', 'typeahead', 'radarchart'], function($, b, m, o, f, d3, c3, chroma) {
+    var CHART_CATS_MAX, addChartTitles, addTextToChart, categoriesData, chart_colors, createList, fetchValues, substringMatcher;
     chart_colors = ['1ebfb3', '117be1', 'f2645a', '555555', 'ffd700'];
+    CHART_CATS_MAX = 30;
     substringMatcher = function(strs) {
       var findMatches;
       return findMatches = function(q, cb) {
@@ -107,6 +112,43 @@
     addTextToChart = function(svg, text, text_class, x, y) {
       svg.append('text').attr('transform', "translate(" + x + ", " + y + ")").attr('class', text_class).attr('text-anchor', 'middle').text(text);
     };
+    addChartTitles = function(svg, title, subtitle, chart_width) {
+      addTextToChart(svg, title, 'chart-title', chart_width / 2, 12);
+      addTextToChart(svg, subtitle, 'chart-subtitle', chart_width / 2, 30);
+    };
+    categoriesData = function(data) {
+      var count, i, k, key, one, result, v, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      result = {
+        cats: [],
+        data: []
+      };
+      _ref = Object.keys(data).sort();
+      for (count = _i = 0, _len = _ref.length; _i < _len; count = ++_i) {
+        key = _ref[count];
+        if (count === CHART_CATS_MAX) {
+          break;
+        }
+        result.cats.push(key);
+        if (result.data.length === 0) {
+          _ref1 = data[key];
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            one = _ref1[_j];
+            k = Object.keys(one)[0];
+            v = one[k];
+            result.data.push([k, v]);
+          }
+        } else {
+          _ref2 = data[key];
+          for (i = _k = 0, _len2 = _ref2.length; _k < _len2; i = ++_k) {
+            one = _ref2[i];
+            k = Object.keys(one)[0];
+            v = one[k];
+            result.data[i].push(v);
+          }
+        }
+      }
+      return result;
+    };
     return {
       createNavTree: function(element, data, placeholder) {
         var $el, $searchbar, $tree_container, regions;
@@ -153,15 +195,15 @@
         return $result;
       },
       createPieChart: function(element, title, subtitle, data) {
-        var $el, c3_chart, chart_config, k, one, pie_data, pie_width, svg, v, _i, _len;
-        $el = $(element).empty().addClass('pie');
-        pie_width = $el.width();
-        pie_data = [];
+        var $el, c3_chart, chart_config, chart_data, chart_width, k, one, svg, v, _i, _len;
+        $el = $(element).empty().removeClass().addClass('pie chart');
+        chart_width = $el.width();
+        chart_data = [];
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           one = data[_i];
           k = Object.keys(one)[0];
           v = one[k];
-          pie_data.push([k, v]);
+          chart_data.push([k, v]);
         }
         chart_config = {
           bindto: element,
@@ -172,20 +214,188 @@
             pattern: chart_colors
           },
           data: {
-            columns: pie_data,
+            columns: chart_data,
             type: 'pie'
           }
         };
-        if (pie_data.length === 1) {
-          console.log('111');
-          chart_config.data.columns.push(['Other', 100 - pie_data[0][1]]);
+        if (chart_data.length === 1) {
+          chart_config.data.columns.push(['Other', 100 - chart_data[0][1]]);
           chart_config.color.pattern = [chart_colors[0], 'eee'];
         }
         c3_chart = c3.generate(chart_config);
         svg = d3.select("" + element + " svg");
-        addTextToChart(svg, title, 'chart-title', pie_width / 2, 12);
-        addTextToChart(svg, subtitle, 'chart-subtitle', pie_width / 2, 30);
+        addChartTitles(svg, title, subtitle, chart_width);
         return c3_chart;
+      },
+      createLineChart: function(element, title, subtitle, data, units) {
+        var $el, c3_chart, chart_config, chart_data, chart_width, svg;
+        $el = $(element).empty().removeClass().addClass('line chart');
+        chart_width = $el.width();
+        chart_data = categoriesData(data);
+        chart_config = {
+          bindto: element,
+          padding: {
+            top: 40
+          },
+          color: {
+            pattern: chart_colors
+          },
+          data: {
+            columns: chart_data.data,
+            type: 'area'
+          },
+          axis: {
+            x: {
+              type: 'category',
+              categories: chart_data.cats
+            },
+            y: {
+              label: {
+                text: units,
+                position: 'outer-middle'
+              },
+              tick: {
+                format: d3.format(',')
+              }
+            }
+          },
+          grid: {
+            y: {
+              show: true
+            }
+          }
+        };
+        c3_chart = c3.generate(chart_config);
+        svg = d3.select("" + element + " svg");
+        addChartTitles(svg, title, subtitle, chart_width);
+      },
+      createBarChart: function(element, title, subtitle, data, units) {
+        var $el, c3_chart, chart_config, chart_data, chart_width, svg;
+        $el = $(element).empty().removeClass().addClass('bar chart');
+        chart_width = $el.width();
+        chart_data = categoriesData(data);
+        chart_config = {
+          bindto: element,
+          padding: {
+            top: 40
+          },
+          color: {
+            pattern: chart_colors
+          },
+          data: {
+            columns: chart_data.data,
+            type: 'bar'
+          },
+          axis: {
+            x: {
+              type: 'category',
+              categories: chart_data.cats
+            },
+            y: {
+              label: {
+                text: units,
+                position: 'outer-middle'
+              },
+              tick: {
+                format: d3.format(',')
+              }
+            }
+          },
+          grid: {
+            y: {
+              show: true
+            }
+          }
+        };
+        c3_chart = c3.generate(chart_config);
+        svg = d3.select("" + element + " svg");
+        addChartTitles(svg, title, subtitle, chart_width);
+        $('.c3.bar line.c3-xgrid-focus').hide();
+      },
+      createScatterPlotChart: function(element, title, subtitle, data, unit1, unit2) {
+        var $el, c3_chart, cat_key, cat_value, chart_config, chart_data, chart_width, indid_keys, svg;
+        $el = $(element).empty().removeClass().addClass('scatter chart');
+        chart_width = $el.width();
+        chart_data = {
+          'keys': {},
+          'labels': [],
+          'data': []
+        };
+        for (cat_key in data) {
+          cat_value = data[cat_key];
+          chart_data.keys[cat_key] = "" + cat_key + "_x";
+          indid_keys = Object.keys(cat_value);
+          if (indid_keys.length !== 2) {
+            console.log('ERROR, only take 2 indicators');
+            return;
+          }
+          if (chart_data.labels.length === 0) {
+            chart_data.labels.push("" + indid_keys[0] + " [by " + unit1 + "]");
+            chart_data.labels.push("" + indid_keys[1] + " [by " + unit2 + "]");
+          }
+          chart_data.data.push(["" + cat_key + "_x"].concat(cat_value[indid_keys[0]]));
+          chart_data.data.push(["" + cat_key].concat(cat_value[indid_keys[1]]));
+        }
+        chart_config = {
+          bindto: element,
+          padding: {
+            top: 40
+          },
+          color: {
+            pattern: chart_colors
+          },
+          data: {
+            xs: chart_data.keys,
+            columns: chart_data.data,
+            type: 'scatter'
+          },
+          axis: {
+            x: {
+              label: {
+                text: chart_data.labels[0],
+                position: 'outer-right'
+              },
+              tick: {
+                format: d3.format(',')
+              }
+            },
+            y: {
+              label: {
+                text: chart_data.labels[1],
+                position: 'outer-middle'
+              },
+              tick: {
+                format: d3.format(',')
+              }
+            }
+          }
+        };
+        c3_chart = c3.generate(chart_config);
+        svg = d3.select("" + element + " svg");
+        addChartTitles(svg, title, subtitle, chart_width);
+      },
+      createRadarChart: function(element, title, subtitle, data, unit) {
+        var $el, chart_config, chart_height, chart_width, svg;
+        $el = $(element).empty().removeClass().addClass('radar chart');
+        chart_width = $el.width();
+        chart_height = $el.height();
+        chart_config = {
+          w: chart_width - 120,
+          h: chart_height - 140,
+          ExtraWidthX: 120,
+          ExtraWidthY: 140,
+          TranslateX: 60,
+          TranslateY: 75,
+          radius: 3,
+          opacityArea: 0.7,
+          color: function(i) {
+            return chart_colors[i % chart_colors.length];
+          }
+        };
+        RadarChart.draw(element, data, chart_config);
+        svg = d3.select("" + element + " svg");
+        console.log(svg);
+        addChartTitles(svg, title, subtitle, chart_width);
       }
     };
   });
