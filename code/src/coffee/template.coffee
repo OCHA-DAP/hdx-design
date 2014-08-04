@@ -1,4 +1,39 @@
 require ['js/ocha.js'], (ocha)->
+  # FUNCTIONS
+  mapDownloadQueue = []
+  MAP_FILE_LINK = 'data/fao/country'
+  MAP_FEATURES =
+    "type": "FeatureCollection",
+    "features": []
+  # data
+  analyzeData = (data)->
+    values = (one.value for one in data)
+    result =
+      min: d3.min(values)
+      max: d3.max(values)
+      mean: d3.mean(values)
+      median: d3.median(values)
+  filterDataByPeriod = (data, period)->
+    result = []
+    for one in data
+      if one.period == period
+        result.push one
+    return result
+  getValuesByRegion = (data, regions)->
+    result = {}
+    for line in data
+      region_path = [line.region,line.admin1,line.admin2].join('/').replace('/NA','')
+      for one in regions
+        if one == region_path
+          result[one] = line.value
+    return result
+  downloadRegionMap = (key, value)->
+    file_path = "#{MAP_FILE_LINK}/#{key}.json"
+    download_event = $.getJSON file_path, (map_json)->
+      map_json['properties']['path'] = key
+      map_json['properties']['value'] = value
+      MAP_FEATURES['features'].push map_json
+    return download_event
 
   ocha.createPieChart '#pie_chart_1', 'Sample Data', 'percentage', [{'Kenya': 24}]
   ocha.createPieChart '#pie_chart_m', 'Sample Data', 'percentage', [{'Kenya': 24},{'Columbia': 10},{'Brazil': 4}]
@@ -61,37 +96,29 @@ require ['js/ocha.js'], (ocha)->
   ]
   ocha.createRadarChart '#radar_chart', 'Cross-Appeal: Amount Received By', '2012', radar_data, 'USD'
 
-  map_graphc = ocha.createMapGraph 'map'
+  map_graph = ocha.createMapGraph 'map'
+  $.getJSON "https://ocha.parseapp.com/getdata?indid=CHD.B.FOS.04.T6", (data)->
+    data_fact = analyzeData data
+    # console.log data_fact
+    data = filterDataByPeriod(data, '2005-2006')
+    data = getValuesByRegion(data, ['TZA/115003','TZA/115004','TZA/115006','TZA/115008','TZA/115009','TZA/48357','TZA/48359','TZA/48362','TZA/48363','TZA/48364','TZA/48365','TZA/48366','TZA/48367','TZA/48368','TZA/48369','TZA/48373','TZA/48375','TZA/48377','TZA/48380,TZA/48381'])
+    MAP_FEATURES['features'] = []
+    for k,v of data
+      map_download_event = downloadRegionMap k, v
+      mapDownloadQueue.push map_download_event
+    $.when.apply($, mapDownloadQueue).done ()->
+      ocha.addDataToMap map_graph, MAP_FEATURES, data_fact.min, data_fact.max, 'Percent'
 
   $.getJSON 'data/demo-tree.json', (data)->
     ocha.createNavTree '#the_tree', data, 'Select Country'
 
+  # dropdown
   $.getJSON 'data/demo-countries.json', (data)->
-    $one_filter_group =$("<div class='filter-group'><label>Location</label></div>").appendTo $('#filter_container')
-    one_dropdown = ocha.createDropdown data, 'Any location'
-    one_dropdown.appendTo $one_filter_group
-    .on 'typeahead:selected', (event, item)->
-      console.log item.value
+    $country_filter = $('#country_filter select')
+    for one in data
+      $("<option value='#{one}'>#{one}</option>").appendTo $country_filter
+    $('.combobox').combobox()
 
-    $one_filter_group =$("<div class='filter-group'><label>Format</label></div>").appendTo $('#filter_container')
-    one_dropdown = ocha.createDropdown ['XSL', 'CSV', 'TXT', 'PDF'], 'Any format'
-    one_dropdown.appendTo $one_filter_group
-
-    $one_filter_group =$("<div class='filter-group'><label>Topic</label></div>").appendTo $('#filter_container')
-    one_dropdown = ocha.createDropdown ['Health', 'Logistics', 'Food', 'Nutrition'], 'Any topic'
-    one_dropdown.appendTo $one_filter_group
-
-    $one_filter_group =$("<div class='filter-group'><label>License</label></div>").appendTo $('#filter_container')
-    one_dropdown = ocha.createDropdown ['License 1', 'License 2', 'License 3', 'Lisense 4'], 'Any license'
-    one_dropdown.appendTo $one_filter_group
-
-    $one_filter_group =$("<div class='filter-group'><label>Organization</label></div>").appendTo $('#filter_container')
-    one_dropdown = ocha.createDropdown ['Organization 1', 'Organization 2', 'Organization 3', 'Organization 4'], 'Any organization'
-    one_dropdown.appendTo $one_filter_group
-
-    $one_filter_group =$("<div class='filter-group'><label>Language</label></div>").appendTo $('#filter_container')
-    one_dropdown = ocha.createDropdown ['Language 1', 'Language 2', 'Language 3', 'Language 4'], 'Any language'
-    one_dropdown.appendTo $one_filter_group
   $("#search_filter_btn").click ()->
     if $("#search_filter_btn span").text() == '+'
       $("#search_bar_content").slideDown 300, ()->

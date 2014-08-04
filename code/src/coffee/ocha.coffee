@@ -9,6 +9,7 @@ requirejs.config({
       d3: 'lib/d3.v3.min',
       c3: 'lib/c3.v0.2.4',
       chosen: 'lib/chosen.v1.1.min',
+      bootstrap_combobox: 'lib/bootstrap-combobox',
       bonsai: 'lib/tree/jquery.bonsai',
       qubit: 'lib/tree/jquery.qubit',
       typeahead: 'lib/typeahead.jquery',
@@ -30,6 +31,9 @@ requirejs.config({
     'chosen': {
       deps: ['bootstrap', 'jquery']
     },
+    'bootstrap-combobox': {
+      deps: ['bootstrap']
+    }
     'qubit': {
       deps: ['jquery']
     },
@@ -53,6 +57,7 @@ define ['jquery',
 'c3',
 'chroma',
 'chosen',
+'bootstrap_combobox',
 'bonsai',
 'qubit',
 'typeahead',
@@ -63,6 +68,11 @@ define ['jquery',
   CHART_CATS_MAX = 30
   MAP_ID = 'yumiendo.j1majbom'
   MAP_COLOR_LEVELS = 5
+  # colors
+  MAP_COLORS = []
+  MAP_COLORS_SCALE = chroma.scale(['#fcbba1','#67000d']).mode('hsl').correctLightness(true).out('hex')
+  for i in [0..MAP_COLOR_LEVELS] by 1
+    MAP_COLORS.push MAP_COLORS_SCALE(i / parseFloat(MAP_COLOR_LEVELS))
   # FUNCTIONS
   substringMatcher = (strs) ->
     findMatches = (q, cb) ->
@@ -139,6 +149,11 @@ define ['jquery',
           result.data[i].push v
     return result
 
+  getColor = (v, range) ->
+    index = Math.floor(v / (range / MAP_COLOR_LEVELS))
+    # console.log v
+    MAP_COLORS[index]
+
   # COMPONENTS
   createNavTree: (element, data, placeholder)->
     $el = $(element).addClass('nav-tree')
@@ -147,9 +162,15 @@ define ['jquery',
     regions = []
     fetchValues regions, data, 'name'
     # console.log regions
-    $searchbar.children().first().typeahead null,
-      name: 'regions'
-      source: substringMatcher regions
+    $searchbar.children().first().typeahead {
+        hint: true
+        highlight: true
+        minLength: 1
+      },
+      {
+        name: 'regions'
+        source: substringMatcher regions
+      },
     .on 'typeahead:selected', (event, item)->
       $(this).val ""
       region = item.value
@@ -176,9 +197,15 @@ define ['jquery',
     return
 
   createDropdown: (data, placeholder)->
-    $result = $("<div class='input-dropdown'><input type='text' class='typeahead' placeholder='#{placeholder}'></div>")
-    $result.children().first().typeahead null,
-      source: substringMatcher data
+    $result = $("<div class='input-dropdown'><input type='text' class='typeahead' placeholder='#{placeholder}'><button class='btn'><span class='caret'></span></span></button></div>")
+    # $result.children().first().typeahead {
+    #   hint: true
+    #   highlight: true
+    #   minLength: 1
+    # },
+    # {
+    #   source: substringMatcher data
+    # }
     return $result
 
   # data = [{k:v},{k:v}...]
@@ -361,20 +388,83 @@ define ['jquery',
     map.featureLayer.setFilter ->
       return false
     # popup layer
-    popup = new L.Popup
+    map.ochaPopup = new L.Popup
       autoPan: false
+    # map pop up close timer
+    map.ochaPopupCloseTimer = window.setTimeout ()->
+      map.closePopup()
+    , 100
     # re-order layers
     topPane = map._createPane 'leaflet-top-pane', map.getPanes().mapPane
     topLayer = L.mapbox.tileLayer MAP_ID
     topLayer.addTo map
     topPane.appendChild topLayer.getContainer()
     topLayer.setZIndex 7
-    # colors
-    color_map = []
-    color_scale = chroma.scale(['#fcbba1','#67000d']).mode('hsl').correctLightness(true).out('hex')
-    for i in [0..MAP_COLOR_LEVELS] by 1
-      color_map.push color_scale(i / parseFloat(MAP_COLOR_LEVELS))
-
-    return
-  addDataToMap: (map, data)->
+    return map
+  addDataToMap: (map, data, min, max, unit)->
+    # add legend
+    if map.ochaLegend
+      map.legendControl.removeLegend map.ochaLegend
+    legendLabels = []
+    legendRange = max - min
+    for i in [0..(MAP_COLOR_LEVELS - 1)]
+      legendFrom = min + i * legendRange / MAP_COLOR_LEVELS
+      legendTo = min + (i+1) * legendRange /MAP_COLOR_LEVELS
+      legendLabels.push "<li><span class='swatch' style='background:#{getColor(legendFrom, legendRange)}'></span>#{legendFrom.toFixed(1)} - #{legendTo.toFixed(1)}</li>"
+    map.ochaLegend = "<span>#{unit}</span><ul>#{legendLabels.join('')}</ul"
+    map.legendControl.addLegend map.ochaLegend
+    if map.ochaLayer
+      map.removeLayer map.ochaLayer
+      map.ochaLayer = null
+    map.ochaLayer = L.geoJson data,
+      style: (feature) ->
+        weight: 2
+        opacity: 0.4
+        color: '#000'
+        fillOpacity: 1,
+        fillColor: getColor(feature.properties.value, legendRange)
+      onEachFeature: (feature, layer) ->
+        layer.on
+          mousemove: (e) ->
+            layer = e.target
+            layer.setStyle
+              weight: 4
+              opacity: 1
+              color: '#007ce0'
+            feature = layer.feature
+            # console.log feature
+            # tooltip
+            feature_name = feature.properties.ADM0_NAME
+            if feature.properties.ADM1_NAME
+              feature_name = feature.properties.ADM1_NAME
+              if feature.properties.ADM2_NAME
+                feature_name = feature.properties.ADM2_NAME
+            map.ochaPopup.setLatLng e.latlng
+            map.ochaPopup.setContent "
+            <div class='marker-container'>
+            <div class='marker-number'>#{feature.properties.value}</div>
+              <div class='marker-label'>#{feature_name}</div>
+            </div>
+            "
+            if !map.ochaPopup._map
+              !map.ochaPopup.openOn map
+            window.clearTimeout map.ochaPopupCloseTimer
+            return
+          mouseout: (e) ->
+            layer = e.target
+            layer.setStyle
+              weight: 2
+              opacity: 0.4
+              color: '#000'
+              fillOpacity: 1,
+              fillColor: getColor(feature.properties.value, legendRange)
+            map.ochaPopupCloseTimer = window.setTimeout ()->
+              map.closePopup()
+            , 100
+            return
+    .addTo map
+    # zoom to fit
+    window.setTimeout ()->
+      map.fitBounds(map.ochaLayer.getBounds());
+    , 300
     return

@@ -193,6 +193,31 @@ body {
     -webkit-transition: fill 200ms;
     transition: fill 200ms;
   }
+
+  .marker-container {
+    position: relative;
+    width: 60px;
+    height: 40px;
+    padding: 0 !important;
+    margin: 20px;
+    .marker-number {
+      .header-font();
+      font-size: 30px;
+      line-height: 30px;
+      font-weight: light;
+      text-align: center;
+      padding: 0 0 5px 0;
+      color: #fff;
+    }
+    .marker-label {
+      .text-font();
+      font-size: 10px !important;
+      line-height: 10px !important;
+      text-transform: uppercase;
+      text-align: center;
+      color: #fff;
+    }
+  }
 }
 
 // C3
@@ -259,14 +284,56 @@ body {
 
 // Components
 // typeahead
+.combobox-container{
+  width: 270px;
+  input{
+    font-weight: bold;
+    padding: 6px 15px;
+    border-color: #ccc;
+    height: 36px;
+  }
+  .typeahead.dropdown-menu{
+    width: 270px;
+    overflow-x: hidden;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    li a{
+      padding: 3px 15px;
+      strong {
+        color: @blue;
+      }
+      &:hover {
+        background: @blue;
+        strong{
+          color: @green;
+        }
+      }
+    }
+  }
+  .input-group-addon.dropdown-toggle{
+    background:#888;
+    border-color: #ccc;
+    .caret {
+      margin-left: 0;
+      border-top: 8px solid #fff;
+      border-right: 6px solid transparent;
+      border-left: 6px solid transparent;
+    }
+  }
+}
+
+// Navigation Tree
 .input-dropdown {
+  width: 270px;
   input {
-    padding: 5px 20px 5px 20px;
+    width: 235px;
+    padding: 7px 15px;
     -webkit-box-shadow: none;
     box-shadow: none;
     outline: none;
     border: 1px solid #ccc;
-    .border-radius();
+    .border-radius(5px);
     font-weight: bold;
   }
 }
@@ -292,15 +359,22 @@ body {
   &::-webkit-scrollbar {
     display: none;
   }
+  //options
+  width: 270px;
+  max-height: 200px;
+  overflow: auto;
 }
 .tt-suggestion > p {
   display: block;
-  padding: 3px 20px;
+  padding: 7px 15px;
   clear: both;
   font-weight: normal;
   line-height: 1.428571429;
   color: #333333;
   white-space: nowrap;
+  strong {
+    color: @blue;
+  }
 }
 .tt-suggestion > p:hover,
 .tt-suggestion > p:focus,
@@ -309,9 +383,11 @@ body {
   text-decoration: none;
   outline: 0;
   background-color: @blue;
+  strong {
+    color: @green;
+  }
 }
 
-// Navigation Tree
 .mixi-flash () {
 	from {color: #000;background:#fff;}
 	to {color: #fff;background:@blue}

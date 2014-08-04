@@ -161,7 +161,7 @@ var RadarChart = {
             .style("fill-opacity", 0.1);
           g.selectAll(z)
             .transition(200)
-            .style("fill-opacity", .7);
+            .style("fill-opacity", cfg.opacityArea);
         })
         .on('mouseout', function() {
           g.selectAll("polygon")
@@ -258,9 +258,9 @@ var RadarChart = {
     key_names.forEach(function(k){
       var class_name = k.replace(/[!\"#$%&'\(\)\*\+,\.\/:;<=>\?\@\[\\\]\^`\{\|\}~]/g, '');
       var legend_item = legends.append('g')
-        .attr('class', 'legend-item ' + class_name)
+        .attr('class', 'radar-legend-item ' + class_name)
         .on('mouseover', function(){
-          d3.selectAll('.legend-item').transition(200).style('fill-opacity', 0.2);
+          d3.selectAll('.radar-legend-item').transition(200).style('fill-opacity', 0.2);
           d3.select(this).transition(200).style("fill-opacity", 1);
           g.selectAll("polygon")
             .transition(200)
@@ -270,10 +270,10 @@ var RadarChart = {
             .style("fill-opacity", cfg.opacityArea);
         })
         .on('mouseout', function(){
-          d3.selectAll('.legend-item').transition(200).style('fill-opacity', 1);
-        g.selectAll("polygon")
-          .transition(200)
-          .style("fill-opacity", cfg.opacityArea);
+          d3.selectAll('.radar-legend-item').transition(200).style('fill-opacity', 1);
+          g.selectAll("polygon")
+            .transition(200)
+            .style("fill-opacity", cfg.opacityArea);
         })
       legend_item.append('rect')
         .attr('width', 10)

@@ -112,15 +112,39 @@ body {
 .leaflet-container .leaflet-bottom.leaflet-right .leaflet-control-attribution.leaflet-control {
   display: none;
 }
-.leaflet-container .leaflet-bar.leaflet-control {
+.leaflet-container.map-selection .leaflet-bar.leaflet-control {
   margin-left: 45px;
 }
-.leaflet-container .leaflet-bar.leaflet-control.leaflet-control-zoom {
+.leaflet-container.map-selection .leaflet-bar.leaflet-control.leaflet-control-zoom {
   margin-top: 30px;
 }
 .leaflet-container path {
   -webkit-transition: fill 200ms;
   transition: fill 200ms;
+}
+.leaflet-container .marker-container {
+  position: relative;
+  width: 60px;
+  height: 40px;
+  padding: 0 !important;
+  margin: 20px;
+}
+.leaflet-container .marker-container .marker-number {
+  font-family: 'Gotham' Arial !important;
+  font-size: 30px;
+  line-height: 30px;
+  font-weight: light;
+  text-align: center;
+  padding: 0 0 5px 0;
+  color: #fff;
+}
+.leaflet-container .marker-container .marker-label {
+  font-family: 'Source Sans Pro', sans-serif !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+  text-transform: uppercase;
+  text-align: center;
+  color: #fff;
 }
 .c3-tooltip {
   -webkit-opacity: 1;
@@ -158,7 +182,7 @@ body {
   stroke-opacity: 0.0;
   stroke-width: 10 !important;
 }
-.radar.chart .legend-item {
+.radar.chart .radar-legend-item {
   cursor: pointer;
 }
 .radar.chart .radar-tooltip {
@@ -189,8 +213,50 @@ body {
   border-right: 6px solid transparent;
   border-top: 6px solid #000;
 }
+.combobox-container {
+  width: 270px;
+}
+.combobox-container input {
+  font-weight: bold;
+  padding: 6px 15px;
+  border-color: #ccc;
+  height: 36px;
+}
+.combobox-container .typeahead.dropdown-menu {
+  width: 270px;
+  overflow-x: hidden;
+}
+.combobox-container .typeahead.dropdown-menu::-webkit-scrollbar {
+  display: none;
+}
+.combobox-container .typeahead.dropdown-menu li a {
+  padding: 3px 15px;
+}
+.combobox-container .typeahead.dropdown-menu li a strong {
+  color: #007ce0;
+}
+.combobox-container .typeahead.dropdown-menu li a:hover {
+  background: #007ce0;
+}
+.combobox-container .typeahead.dropdown-menu li a:hover strong {
+  color: #2cbeb2;
+}
+.combobox-container .input-group-addon.dropdown-toggle {
+  background: #888;
+  border-color: #ccc;
+}
+.combobox-container .input-group-addon.dropdown-toggle .caret {
+  margin-left: 0;
+  border-top: 8px solid #fff;
+  border-right: 6px solid transparent;
+  border-left: 6px solid transparent;
+}
+.input-dropdown {
+  width: 270px;
+}
 .input-dropdown input {
-  padding: 5px 20px 5px 20px;
+  width: 235px;
+  padding: 7px 15px;
   -webkit-box-shadow: none;
   box-shadow: none;
   outline: none;
@@ -226,18 +292,24 @@ body {
   -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   background-clip: padding-box;
+  width: 270px;
+  max-height: 200px;
+  overflow: auto;
 }
 .tt-dropdown-menu::-webkit-scrollbar {
   display: none;
 }
 .tt-suggestion > p {
   display: block;
-  padding: 3px 20px;
+  padding: 7px 15px;
   clear: both;
   font-weight: normal;
   line-height: 1.428571429;
   color: #333333;
   white-space: nowrap;
+}
+.tt-suggestion > p strong {
+  color: #007ce0;
 }
 .tt-suggestion > p:hover,
 .tt-suggestion > p:focus,
@@ -246,6 +318,11 @@ body {
   text-decoration: none;
   outline: 0;
   background-color: #007ce0;
+}
+.tt-suggestion > p:hover strong,
+.tt-suggestion > p:focus strong,
+.tt-suggestion.tt-cursor p strong {
+  color: #2cbeb2;
 }
 @-webkit-keyframes flash-animation {
   from {
@@ -377,6 +454,10 @@ h3 {
 #charts_container h5 {
   margin: 80px 0 40px 0;
 }
+#charts_container .map-graph {
+  width: 870px;
+  height: 550px;
+}
 .chart {
   margin-bottom: 40px;
 }
@@ -394,6 +475,9 @@ h3 {
 #scatter_plot_chart {
   width: 800px;
   height: 400px;
+}
+#dropdown_sample {
+  margin-bottom: 60px;
 }
 #nav_tree_row {
   background: #efefef;
@@ -427,23 +511,9 @@ h3 {
 #search_bar_content label {
   color: #999;
 }
-#search_bar_content .input-dropdown {
-  position: absolute;
-  left: 100px;
-  top: 0;
-  width: 270px;
-}
-#search_bar_content .input-dropdown input {
-  width: 270px;
-}
-#search_bar_content .tt-dropdown-menu {
-  width: 270px;
-  max-height: 200px;
-  overflow: auto;
-}
 #search_bar_content #filter_container {
   width: 820px;
-  height: 200px;
+  height: 218px;
   padding: 30px 0 10px 0;
 }
 #search_bar_content #filter_container .filter-group {
@@ -454,7 +524,16 @@ h3 {
 }
 #search_bar_content #filter_container .filter-group label {
   width: 90px;
-  line-height: 30px;
+  line-height: 36px;
+}
+#search_bar_content #filter_container .filter-group .combobox-container {
+  position: absolute;
+  left: 100px;
+  top: 0;
+  width: 240px;
+}
+#search_bar_content #filter_container .filter-group .combobox-container .typeahead.dropdown-menu {
+  width: 240px;
 }
 #search_bar_content #date_container {
   position: absolute;

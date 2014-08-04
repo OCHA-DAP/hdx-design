@@ -10,6 +10,7 @@
       d3: 'lib/d3.v3.min',
       c3: 'lib/c3.v0.2.4',
       chosen: 'lib/chosen.v1.1.min',
+      bootstrap_combobox: 'lib/bootstrap-combobox',
       bonsai: 'lib/tree/jquery.bonsai',
       qubit: 'lib/tree/jquery.qubit',
       typeahead: 'lib/typeahead.jquery',
@@ -31,6 +32,9 @@
       'chosen': {
         deps: ['bootstrap', 'jquery']
       },
+      'bootstrap-combobox': {
+        deps: ['bootstrap']
+      },
       'qubit': {
         deps: ['jquery']
       },
@@ -46,10 +50,17 @@
     }
   });
 
-  define(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'chosen', 'bonsai', 'qubit', 'typeahead', 'radarchart'], function($, b, m, o, f, d3, c3, chroma) {
-    var CHART_CATS_MAX, addChartTitles, addTextToChart, categoriesData, chart_colors, createList, fetchValues, substringMatcher;
-    chart_colors = ['1ebfb3', '117be1', 'f2645a', '555555', 'ffd700'];
+  define(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'chosen', 'bootstrap_combobox', 'bonsai', 'qubit', 'typeahead', 'radarchart'], function($, b, m, o, f, d3, c3, chroma) {
+    var CHART_CATS_MAX, CHART_COLORS, MAP_COLORS, MAP_COLORS_SCALE, MAP_COLOR_LEVELS, MAP_ID, addChartTitles, addTextToChart, categoriesData, createList, fetchValues, getColor, i, substringMatcher, _i;
+    CHART_COLORS = ['1ebfb3', '117be1', 'f2645a', '555555', 'ffd700'];
     CHART_CATS_MAX = 30;
+    MAP_ID = 'yumiendo.j1majbom';
+    MAP_COLOR_LEVELS = 5;
+    MAP_COLORS = [];
+    MAP_COLORS_SCALE = chroma.scale(['#fcbba1', '#67000d']).mode('hsl').correctLightness(true).out('hex');
+    for (i = _i = 0; _i <= MAP_COLOR_LEVELS; i = _i += 1) {
+      MAP_COLORS.push(MAP_COLORS_SCALE(i / parseFloat(MAP_COLOR_LEVELS)));
+    }
     substringMatcher = function(strs) {
       var findMatches;
       return findMatches = function(q, cb) {
@@ -69,16 +80,16 @@
       };
     };
     createList = function($el, data) {
-      var $li, $ol, attributes, children_count_label, expand_attr, k, keys, one, _i, _j, _len, _len1;
+      var $li, $ol, attributes, children_count_label, expand_attr, k, keys, one, _j, _k, _len, _len1;
       $ol = $("<ol></ol>").appendTo($el);
-      for (_i = 0, _len = data.length; _i < _len; _i++) {
-        one = data[_i];
+      for (_j = 0, _len = data.length; _j < _len; _j++) {
+        one = data[_j];
         expand_attr = "";
         attributes = "";
         children_count_label = "";
         keys = Object.keys(one);
-        for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
-          k = keys[_j];
+        for (_k = 0, _len1 = keys.length; _k < _len1; _k++) {
+          k = keys[_k];
           if (k !== 'name' && k !== 'children' && k !== 'class' && k !== 'expanded') {
             attributes = "" + attributes + "data-" + k + "='" + one[k] + "' ";
           }
@@ -96,10 +107,10 @@
       }
     };
     fetchValues = function(array, data, key) {
-      var one, _i, _len, _results;
+      var one, _j, _len, _results;
       _results = [];
-      for (_i = 0, _len = data.length; _i < _len; _i++) {
-        one = data[_i];
+      for (_j = 0, _len = data.length; _j < _len; _j++) {
+        one = data[_j];
         array.push(one[key]);
         if (one.children && one.children.length) {
           _results.push(fetchValues(array, one.children, key));
@@ -117,13 +128,13 @@
       addTextToChart(svg, subtitle, 'chart-subtitle', chart_width / 2, 30);
     };
     categoriesData = function(data) {
-      var count, i, k, key, one, result, v, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      var count, k, key, one, result, v, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2;
       result = {
         cats: [],
         data: []
       };
       _ref = Object.keys(data).sort();
-      for (count = _i = 0, _len = _ref.length; _i < _len; count = ++_i) {
+      for (count = _j = 0, _len = _ref.length; _j < _len; count = ++_j) {
         key = _ref[count];
         if (count === CHART_CATS_MAX) {
           break;
@@ -131,15 +142,15 @@
         result.cats.push(key);
         if (result.data.length === 0) {
           _ref1 = data[key];
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            one = _ref1[_j];
+          for (_k = 0, _len1 = _ref1.length; _k < _len1; _k++) {
+            one = _ref1[_k];
             k = Object.keys(one)[0];
             v = one[k];
             result.data.push([k, v]);
           }
         } else {
           _ref2 = data[key];
-          for (i = _k = 0, _len2 = _ref2.length; _k < _len2; i = ++_k) {
+          for (i = _l = 0, _len2 = _ref2.length; _l < _len2; i = ++_l) {
             one = _ref2[i];
             k = Object.keys(one)[0];
             v = one[k];
@@ -149,6 +160,11 @@
       }
       return result;
     };
+    getColor = function(v, range) {
+      var index;
+      index = Math.floor(v / (range / MAP_COLOR_LEVELS));
+      return MAP_COLORS[index];
+    };
     return {
       createNavTree: function(element, data, placeholder) {
         var $el, $searchbar, $tree_container, regions;
@@ -156,7 +172,11 @@
         $searchbar = $("<div class='search-input-group input-dropdown'><input type='text' class='typeahead' placeholder='" + placeholder + "'><div class='input-group-btn'></div></div>").appendTo($el);
         regions = [];
         fetchValues(regions, data, 'name');
-        $searchbar.children().first().typeahead(null, {
+        $searchbar.children().first().typeahead({
+          hint: true,
+          highlight: true,
+          minLength: 1
+        }, {
           name: 'regions',
           source: substringMatcher(regions)
         }).on('typeahead:selected', function(event, item) {
@@ -188,19 +208,16 @@
       },
       createDropdown: function(data, placeholder) {
         var $result;
-        $result = $("<div class='input-dropdown'><input type='text' class='typeahead' placeholder='" + placeholder + "'></div>");
-        $result.children().first().typeahead(null, {
-          source: substringMatcher(data)
-        });
+        $result = $("<div class='input-dropdown'><input type='text' class='typeahead' placeholder='" + placeholder + "'><button class='btn'><span class='caret'></span></span></button></div>");
         return $result;
       },
       createPieChart: function(element, title, subtitle, data) {
-        var $el, c3_chart, chart_config, chart_data, chart_width, k, one, svg, v, _i, _len;
+        var $el, c3_chart, chart_config, chart_data, chart_width, k, one, svg, v, _j, _len;
         $el = $(element).empty().removeClass().addClass('pie chart');
         chart_width = $el.width();
         chart_data = [];
-        for (_i = 0, _len = data.length; _i < _len; _i++) {
-          one = data[_i];
+        for (_j = 0, _len = data.length; _j < _len; _j++) {
+          one = data[_j];
           k = Object.keys(one)[0];
           v = one[k];
           chart_data.push([k, v]);
@@ -211,7 +228,7 @@
             top: 40
           },
           color: {
-            pattern: chart_colors
+            pattern: CHART_COLORS
           },
           data: {
             columns: chart_data,
@@ -220,7 +237,7 @@
         };
         if (chart_data.length === 1) {
           chart_config.data.columns.push(['Other', 100 - chart_data[0][1]]);
-          chart_config.color.pattern = [chart_colors[0], 'eee'];
+          chart_config.color.pattern = [CHART_COLORS[0], 'eee'];
         }
         c3_chart = c3.generate(chart_config);
         svg = d3.select("" + element + " svg");
@@ -238,7 +255,7 @@
             top: 40
           },
           color: {
-            pattern: chart_colors
+            pattern: CHART_COLORS
           },
           data: {
             columns: chart_data.data,
@@ -280,7 +297,7 @@
             top: 40
           },
           color: {
-            pattern: chart_colors
+            pattern: CHART_COLORS
           },
           data: {
             columns: chart_data.data,
@@ -342,7 +359,7 @@
             top: 40
           },
           color: {
-            pattern: chart_colors
+            pattern: CHART_COLORS
           },
           data: {
             xs: chart_data.keys,
@@ -375,7 +392,7 @@
         addChartTitles(svg, title, subtitle, chart_width);
       },
       createRadarChart: function(element, title, subtitle, data, unit) {
-        var $el, chart_config, chart_height, chart_width, svg;
+        var $el, chart_config, chart_height, chart_width, radar_chart, svg;
         $el = $(element).empty().removeClass().addClass('radar chart');
         chart_width = $el.width();
         chart_height = $el.height();
@@ -389,13 +406,115 @@
           radius: 3,
           opacityArea: 0.7,
           color: function(i) {
-            return chart_colors[i % chart_colors.length];
+            return CHART_COLORS[i % CHART_COLORS.length];
           }
         };
-        RadarChart.draw(element, data, chart_config);
+        radar_chart = RadarChart.draw(element, data, chart_config);
         svg = d3.select("" + element + " svg");
-        console.log(svg);
         addChartTitles(svg, title, subtitle, chart_width);
+        return radar_chart;
+      },
+      createMapGraph: function(element) {
+        var map, topLayer, topPane;
+        map = L.mapbox.map(element, MAP_ID, {
+          center: [20, 0],
+          zoom: 2,
+          minZoom: 2,
+          maxZoom: 10,
+          tileLayer: {
+            continuousWorld: false,
+            noWrap: false
+          }
+        });
+        map.scrollWheelZoom.disable();
+        map.featureLayer.setFilter(function() {
+          return false;
+        });
+        map.ochaPopup = new L.Popup({
+          autoPan: false
+        });
+        map.ochaPopupCloseTimer = window.setTimeout(function() {
+          return map.closePopup();
+        }, 100);
+        topPane = map._createPane('leaflet-top-pane', map.getPanes().mapPane);
+        topLayer = L.mapbox.tileLayer(MAP_ID);
+        topLayer.addTo(map);
+        topPane.appendChild(topLayer.getContainer());
+        topLayer.setZIndex(7);
+        return map;
+      },
+      addDataToMap: function(map, data, min, max, unit) {
+        var legendFrom, legendLabels, legendRange, legendTo, _j, _ref;
+        if (map.ochaLegend) {
+          map.legendControl.removeLegend(map.ochaLegend);
+        }
+        legendLabels = [];
+        legendRange = max - min;
+        for (i = _j = 0, _ref = MAP_COLOR_LEVELS - 1; 0 <= _ref ? _j <= _ref : _j >= _ref; i = 0 <= _ref ? ++_j : --_j) {
+          legendFrom = min + i * legendRange / MAP_COLOR_LEVELS;
+          legendTo = min + (i + 1) * legendRange / MAP_COLOR_LEVELS;
+          legendLabels.push("<li><span class='swatch' style='background:" + (getColor(legendFrom, legendRange)) + "'></span>" + (legendFrom.toFixed(1)) + " - " + (legendTo.toFixed(1)) + "</li>");
+        }
+        map.ochaLegend = "<span>" + unit + "</span><ul>" + (legendLabels.join('')) + "</ul";
+        map.legendControl.addLegend(map.ochaLegend);
+        if (map.ochaLayer) {
+          map.removeLayer(map.ochaLayer);
+          map.ochaLayer = null;
+        }
+        map.ochaLayer = L.geoJson(data, {
+          style: function(feature) {
+            return {
+              weight: 2,
+              opacity: 0.4,
+              color: '#000',
+              fillOpacity: 1,
+              fillColor: getColor(feature.properties.value, legendRange)
+            };
+          },
+          onEachFeature: function(feature, layer) {
+            return layer.on({
+              mousemove: function(e) {
+                var feature_name;
+                layer = e.target;
+                layer.setStyle({
+                  weight: 4,
+                  opacity: 1,
+                  color: '#007ce0'
+                });
+                feature = layer.feature;
+                feature_name = feature.properties.ADM0_NAME;
+                if (feature.properties.ADM1_NAME) {
+                  feature_name = feature.properties.ADM1_NAME;
+                  if (feature.properties.ADM2_NAME) {
+                    feature_name = feature.properties.ADM2_NAME;
+                  }
+                }
+                map.ochaPopup.setLatLng(e.latlng);
+                map.ochaPopup.setContent("<div class='marker-container'> <div class='marker-number'>" + feature.properties.value + "</div> <div class='marker-label'>" + feature_name + "</div> </div>");
+                if (!map.ochaPopup._map) {
+                  !map.ochaPopup.openOn(map);
+                }
+                window.clearTimeout(map.ochaPopupCloseTimer);
+              },
+              mouseout: function(e) {
+                layer = e.target;
+                layer.setStyle({
+                  weight: 2,
+                  opacity: 0.4,
+                  color: '#000',
+                  fillOpacity: 1,
+                  fillColor: getColor(feature.properties.value, legendRange)
+                });
+                map.ochaPopupCloseTimer = window.setTimeout(function() {
+                  return map.closePopup();
+                }, 100);
+              }
+            });
+          }
+        }).addTo(map);
+        window.setTimeout(function() {
+          return map.fitBounds(map.ochaLayer.getBounds());
+        }, 300);
       }
     };
   });

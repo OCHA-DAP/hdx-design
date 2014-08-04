@@ -10,6 +10,7 @@ html(lang="en")
     link(href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet')
     link(href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.3/leaflet.fullscreen.css' rel='stylesheet')
     link(href='css/lib/chosen/chosen.min.css' rel='stylesheet')
+    link(href='css/lib/bootstrap-combobox.css' rel='stylesheet')
     link(href='css/lib/tree/jquery.bonsai.css' rel='stylesheet')
     link(href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700' rel='stylesheet')
     link(href='css/template.css' rel='stylesheet')
@@ -43,11 +44,109 @@ html(lang="en")
       .row
         .col-md-10
           h3 Dropdown filters for search
+          #dropdown_sample
+            select.combobox.form-control(name='inline')
+              option(value='' selected='selected') Select a State
+              option(value='AK') Alaska
+              option(value='AZ') Arizona
+              option(value='AR') Arkansas
+              option(value='CA') California
+              option(value='CO') Colorado
+              option(value='CT') Connecticut
+              option(value='DE') Delaware
+              option(value='DC') District Of Columbia
+              option(value='FL') Florida
+              option(value='GA') Georgia
+              option(value='HI') Hawaii
+              option(value='ID') Idaho
+              option(value='IL') Illinois
+              option(value='IN') Indiana
+              option(value='IA') Iowa
+              option(value='KS') Kansas
+              option(value='KY') Kentucky
+              option(value='LA') Louisiana
+              option(value='ME') Maine
+              option(value='MD') Maryland
+              option(value='MA') Massachusetts
+              option(value='MI') Michigan
+              option(value='MN') Minnesota
+              option(value='MS') Mississippi
+              option(value='MO') Missouri
+              option(value='MT') Montana
+              option(value='NE') Nebraska
+              option(value='NV') Nevada
+              option(value='NH') New Hampshire
+              option(value='NJ') New Jersey
+              option(value='NM') New Mexico
+              option(value='NY') New York
+              option(value='NC') North Carolina
+              option(value='ND') North Dakota
+              option(value='OH') Ohio
+              option(value='OK') Oklahoma
+              option(value='OR') Oregon
+              option(value='PA') Pennsylvania
+              option(value='RI') Rhode Island
+              option(value='SC') South Carolina
+              option(value='SD') South Dakota
+              option(value='TN') Tennessee
+              option(value='TX') Texas
+              option(value='UT') Utah
+              option(value='VT') Vermont
+              option(value='VA') Virginia
+              option(value='WA') Washington
+              option(value='WV') West Virginia
+              option(value='WI') Wisconsin
+              option(value='WY') Wyoming
+          h5 Example
       .row.no-margin
         #dropdown_session
           #search_bar_top
           #search_bar_content
            #filter_container
+             #country_filter.filter-group
+               label Location
+               select.combobox.form-control(name='inline')
+                 option(value='' selected='selected') Any location
+             #format_filter.filter-group
+               label Format
+               select.combobox.form-control(name='inline')
+                 option(value='' selected='selected') Any format
+                 option(value='XSL') XSL
+                 option(value='CSV') CSV
+                 option(value='TXT') TXT
+                 option(value='PDF') PDF
+             #topic_filter.filter-group
+               label Topic
+               select.combobox.form-control(name='inline')
+                 option(value='' selected='selected') Any topic
+                 option(value='Health') Health
+                 option(value='Logistics') Logistics
+                 option(value='Food') Food
+                 option(value='Nutrition') Nutrition
+             #license_filter.filter-group
+               label License
+               select.combobox.form-control(name='inline')
+                 option(value='' selected='selected') Any license
+                 option(value='License 1') License 1
+                 option(value='License 2') License 2
+                 option(value='License 3') License 3
+                 option(value='License 4') License 4
+             #organization_filter.filter-group
+               label Organization
+               select.combobox.form-control(name='inline')
+                 option(value='' selected='selected') Any organization
+                 option(value='Organization 1') Organization 1
+                 option(value='Organization 2') Organization 2
+                 option(value='Organization 3') Organization 3
+                 option(value='Organization 4') Organization 4
+             #language_filter.filter-group
+               label Language
+               select.combobox.form-control(name='inline')
+                 option(value='' selected='selected') Any language
+                 option(value='Language 1') Language 1
+                 option(value='Language 2') Language 2
+                 option(value='Language 3') Language 3
+                 option(value='Language 4') Language 4
            #date_container
             label Date Range
             input(placeholder='Start date' type='text')

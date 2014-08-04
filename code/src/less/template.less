@@ -45,6 +45,10 @@ h3 {
   height: 400px;
 }
 
+#dropdown_sample{
+  margin-bottom: 60px;
+}
+
 #nav_tree_row{
   background: #efefef;
 }
@@ -75,23 +79,9 @@ h3 {
   label{
     color: #999;
   }
-  .input-dropdown {
-    position: absolute;
-    left: 100px;
-    top: 0;
-    width: 270px;
-    input {
-      width: 270px;
-    }
-  }
-  .tt-dropdown-menu {
-    width: 270px;
-    max-height: 200px;
-    overflow: auto;
-  }
   #filter_container {
     width: 820px;
-    height: 200px;
+    height: 218px;
     padding: 30px 0 10px 0;
     .filter-group{
       position: relative;
@@ -100,7 +90,16 @@ h3 {
       margin: 0 40px 20px 0;
       label{
         width: 90px;
-        line-height: 30px;
+        line-height: 36px;
+      }
+      .combobox-container{
+        position: absolute;
+        left: 100px;
+        top: 0;
+        width: 240px;
+        .typeahead.dropdown-menu{
+          width: 240px;
+        }
       }
     }
   }
