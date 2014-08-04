@@ -13,7 +13,8 @@ requirejs.config({
       bonsai: 'lib/tree/jquery.bonsai',
       qubit: 'lib/tree/jquery.qubit',
       typeahead: 'lib/typeahead.jquery',
-      radarchart: 'lib/radarchart'
+      radarchart: 'lib/radarchart',
+      uislider: 'lib/nouislider.v6.2.0.min'
   },
   shim: {
     'bootstrap': {
@@ -32,7 +33,7 @@ requirejs.config({
       deps: ['bootstrap', 'jquery']
     },
     'bootstrap-combobox': {
-      deps: ['bootstrap']
+      deps: ['bootstrap', 'jquery']
     }
     'qubit': {
       deps: ['jquery']
@@ -45,6 +46,9 @@ requirejs.config({
     },
     'radarchart': {
       deps: ['d3']
+    },
+    'uislider': {
+      deps: ['jquery']
     }
   }
 });
@@ -61,7 +65,8 @@ define ['jquery',
 'bonsai',
 'qubit',
 'typeahead',
-'radarchart'
+'radarchart',
+'uislider'
 ], ($, b, m, o, f, d3, c3, chroma)->
   # Globals
   CHART_COLORS = ['1ebfb3','117be1', 'f2645a', '555555','ffd700']
@@ -186,9 +191,11 @@ define ['jquery',
     # create tree checkboxes
     $tree_container = $("<div class='tree-container'></div>").appendTo $el
     $(document).on 'click', "#{element} .tree-options a.select-all", ()->
-      $("#{element} .tree-container >ol input").prop('checked', true)
+      # $("#{element} .tree-container >ol input").prop('checked', true)
+      $("#{element} .tree-container >ol input").eq(0).prop('checked', true).change()
     $(document).on 'click', "#{element} .tree-options a.clear-all", ()->
-      $("#{element} .tree-container >ol input").prop('checked', false)
+      # $("#{element} .tree-container >ol input").prop('checked', false)
+      $("#{element} .tree-container >ol input").eq(0).prop('checked', false).change()
     createList $tree_container, data
     $("#{element} .tree-container >ol").bonsai
       expandAll: true
@@ -197,14 +204,6 @@ define ['jquery',
 
   createDropdown: (data, placeholder)->
     $result = $("<div class='input-dropdown'><input type='text' class='typeahead' placeholder='#{placeholder}'><button class='btn'><span class='caret'></span></span></button></div>")
-    # $result.children().first().typeahead {
-    #   hint: true
-    #   highlight: true
-    #   minLength: 1
-    # },
-    # {
-    #   source: substringMatcher data
-    # }
     return $result
 
   # data = [{k:v},{k:v}...]
@@ -371,6 +370,27 @@ define ['jquery',
     addChartTitles svg, title, subtitle, chart_width
     return radar_chart
 
+  createSlider: (element, data)->
+    $el = $(element)
+    $el.noUiSlider
+      start: 0
+      step: 1
+      range:
+        'min': 0
+        'max': data.length - 1
+    return $el
+
+  createSliderWithRange: (element, data)->
+    $el = $(element)
+    $el.noUiSlider
+      start: [0, data.length-1]
+      step: 1
+      range:
+        'min': [0]
+        'max': [data.length - 1]
+    return $el
+    return
+
   createMapGraph: (element)->
     map = L.mapbox.map element, MAP_ID,
       center: [20, 0]
@@ -433,7 +453,7 @@ define ['jquery',
             feature = layer.feature
             # console.log feature
             # tooltip
-            feature_name = feature.properties.ADM0_NAME
+            feature_name = feature.properties.name
             if feature.properties.ADM1_NAME
               feature_name = feature.properties.ADM1_NAME
               if feature.properties.ADM2_NAME
@@ -464,6 +484,9 @@ define ['jquery',
     .addTo map
     # zoom to fit
     window.setTimeout ()->
-      map.fitBounds(map.ochaLayer.getBounds());
+      if data.features.length
+        map.fitBounds(map.ochaLayer.getBounds());
+      else
+        map.setView([20, 0], 2)
     , 300
     return

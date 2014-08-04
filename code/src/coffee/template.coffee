@@ -74,27 +74,29 @@ require ['js/ocha.js'], (ocha)->
 
   radar_data = [
     {
-      key: 'Columbia',
+      key: 'Haiti',
       axes: [
-        {axis: "overweight", value: 128645},
-        {axis: "stunted", value: 403099},
-        {axis: "wasted", value: 163912},
-        {axis: "underweight", value: 276198},
-        {axis: "with fever", value: 414459}
+        {axis: "Male Overweight", value: 4.1},
+        {axis: "Female Overweight", value: 3.1},
+        {axis: "Male Stunted", value: 23.4},
+        {axis: "Female Stunted", value: 20.3},
+        {axis: "Male Wasted", value: 5.2},
+        {axis: "Female Wasted", value: 5.6}
       ]
     },
     {
-      key: 'Kenya',
+      key: 'Mexico',
       axes: [
-          {axis: "overweight", value: 173636},
-          {axis: "stunted", value: 175632},
-          {axis: "wasted", value: 250483},
-          {axis: "underweight", value: 200839},
-          {axis: "with fever", value: 312518}
+        {axis: "Male Overweight", value: 9.0},
+        {axis: "Female Overweight", value: 9.0},
+        {axis: "Male Stunted", value: 15.1},
+        {axis: "Female Stunted", value: 12.1},
+        {axis: "Male Wasted", value: 1.8},
+        {axis: "Female Wasted", value: 1.4}
       ]
     }
   ]
-  ocha.createRadarChart '#radar_chart', 'Cross-Appeal: Amount Received By', '2012', radar_data, 'USD'
+  ocha.createRadarChart '#radar_chart', 'Children Aged < 5 years', '2012', radar_data, 'percentage'
 
   map_graph = ocha.createMapGraph 'map'
   $.getJSON "https://ocha.parseapp.com/getdata?indid=CHD.B.FOS.04.T6", (data)->
@@ -108,6 +110,9 @@ require ['js/ocha.js'], (ocha)->
       mapDownloadQueue.push map_download_event
     $.when.apply($, mapDownloadQueue).done ()->
       ocha.addDataToMap map_graph, MAP_FEATURES, data_fact.min, data_fact.max, 'Percent'
+
+  ocha.createSlider '#slider_ui', ['1995','1996','1997','1998','1999']
+  ocha.createSliderWithRange '#slider_range', ['1995','1996','1997','1998','1999','2000','2001','2002','2003','2005']
 
   $.getJSON 'data/demo-tree.json', (data)->
     ocha.createNavTree '#the_tree', data, 'Select Country'

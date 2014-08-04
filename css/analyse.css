@@ -213,6 +213,27 @@ body {
   border-right: 6px solid transparent;
   border-top: 6px solid #000;
 }
+.noUi-target {
+  border: none;
+  background: #efefef;
+  border-radius: 0;
+  height: 10px;
+  margin-top: 12px;
+}
+.noUi-base .noUi-origin {
+  background: #007ce0;
+}
+.noUi-base .noUi-origin:last-child {
+  background: #efefef;
+}
+.noUi-handle {
+  width: 10px;
+  height: 22px !important;
+}
+.noUi-handle:before,
+.noUi-handle:after {
+  height: 10px !important;
+}
 .combobox-container {
   width: 270px;
 }
@@ -487,6 +508,18 @@ body {
 }
 #region_selection h5 {
   margin: 15px auto 10px auto;
+}
+#period_label {
+  width: 840px;
+  font-family: 'Gotham' Arial !important;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 16px;
+  text-align: center;
+}
+#period_selector {
+  width: 660px;
+  margin: 15px 100px 0 100px;
 }
 #graph_container {
   background: #fff;

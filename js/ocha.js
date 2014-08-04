@@ -14,7 +14,8 @@
       bonsai: 'lib/tree/jquery.bonsai',
       qubit: 'lib/tree/jquery.qubit',
       typeahead: 'lib/typeahead.jquery',
-      radarchart: 'lib/radarchart'
+      radarchart: 'lib/radarchart',
+      uislider: 'lib/nouislider.v6.2.0.min'
     },
     shim: {
       'bootstrap': {
@@ -33,7 +34,7 @@
         deps: ['bootstrap', 'jquery']
       },
       'bootstrap-combobox': {
-        deps: ['bootstrap']
+        deps: ['bootstrap', 'jquery']
       },
       'qubit': {
         deps: ['jquery']
@@ -46,11 +47,14 @@
       },
       'radarchart': {
         deps: ['d3']
+      },
+      'uislider': {
+        deps: ['jquery']
       }
     }
   });
 
-  define(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'chosen', 'bootstrap_combobox', 'bonsai', 'qubit', 'typeahead', 'radarchart'], function($, b, m, o, f, d3, c3, chroma) {
+  define(['jquery', 'bootstrap', 'mapbox', 'leaflet_omnivore', 'leaflet_fullscreen', 'd3', 'c3', 'chroma', 'chosen', 'bootstrap_combobox', 'bonsai', 'qubit', 'typeahead', 'radarchart', 'uislider'], function($, b, m, o, f, d3, c3, chroma) {
     var CHART_CATS_MAX, CHART_COLORS, MAP_COLORS, MAP_COLORS_SCALE, MAP_COLOR_LEVELS, MAP_ID, addChartTitles, addTextToChart, categoriesData, createList, fetchValues, getColor, i, substringMatcher, _i;
     CHART_COLORS = ['1ebfb3', '117be1', 'f2645a', '555555', 'ffd700'];
     CHART_CATS_MAX = 30;
@@ -195,10 +199,10 @@
         $("<div class='tree-options'><a class='select-all'>Select all</a><span>|</span><a class='clear-all'>Clear all</a></div>").appendTo($el);
         $tree_container = $("<div class='tree-container'></div>").appendTo($el);
         $(document).on('click', "" + element + " .tree-options a.select-all", function() {
-          return $("" + element + " .tree-container >ol input").prop('checked', true);
+          return $("" + element + " .tree-container >ol input").eq(0).prop('checked', true).change();
         });
         $(document).on('click', "" + element + " .tree-options a.clear-all", function() {
-          return $("" + element + " .tree-container >ol input").prop('checked', false);
+          return $("" + element + " .tree-container >ol input").eq(0).prop('checked', false).change();
         });
         createList($tree_container, data);
         $("" + element + " .tree-container >ol").bonsai({
@@ -414,6 +418,32 @@
         addChartTitles(svg, title, subtitle, chart_width);
         return radar_chart;
       },
+      createSlider: function(element, data) {
+        var $el;
+        $el = $(element);
+        $el.noUiSlider({
+          start: 0,
+          step: 1,
+          range: {
+            'min': 0,
+            'max': data.length - 1
+          }
+        });
+        return $el;
+      },
+      createSliderWithRange: function(element, data) {
+        var $el;
+        $el = $(element);
+        $el.noUiSlider({
+          start: [0, data.length - 1],
+          step: 1,
+          range: {
+            'min': [0],
+            'max': [data.length - 1]
+          }
+        });
+        return $el;
+      },
       createMapGraph: function(element) {
         var map, topLayer, topPane;
         map = L.mapbox.map(element, MAP_ID, {
@@ -482,7 +512,7 @@
                   color: '#007ce0'
                 });
                 feature = layer.feature;
-                feature_name = feature.properties.ADM0_NAME;
+                feature_name = feature.properties.name;
                 if (feature.properties.ADM1_NAME) {
                   feature_name = feature.properties.ADM1_NAME;
                   if (feature.properties.ADM2_NAME) {
@@ -513,7 +543,11 @@
           }
         }).addTo(map);
         window.setTimeout(function() {
-          return map.fitBounds(map.ochaLayer.getBounds());
+          if (data.features.length) {
+            return map.fitBounds(map.ochaLayer.getBounds());
+          } else {
+            return map.setView([20, 0], 2);
+          }
         }, 300);
       }
     };

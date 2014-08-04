@@ -213,6 +213,27 @@ body {
   border-right: 6px solid transparent;
   border-top: 6px solid #000;
 }
+.noUi-target {
+  border: none;
+  background: #efefef;
+  border-radius: 0;
+  height: 10px;
+  margin-top: 12px;
+}
+.noUi-base .noUi-origin {
+  background: #007ce0;
+}
+.noUi-base .noUi-origin:last-child {
+  background: #efefef;
+}
+.noUi-handle {
+  width: 10px;
+  height: 22px !important;
+}
+.noUi-handle:before,
+.noUi-handle:after {
+  height: 10px !important;
+}
 .combobox-container {
   width: 270px;
 }
@@ -477,6 +498,13 @@ h3 {
 }
 #nav_tree_row {
   background: #efefef;
+}
+.noUi-target {
+  width: 600px;
+  margin: 20px;
+}
+#slider_ui {
+  margin-bottom: 60px;
 }
 #location_selector {
   background: #fff;

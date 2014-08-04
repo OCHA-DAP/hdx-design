@@ -1,0 +1,12 @@
+{
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": []
+    },
+    "type": "Feature",
+    "properties": {
+        "name": "Tonga",
+        "alpha-3": "VCT"
+    },
+    "id": "VCT"
+}
