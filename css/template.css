@@ -398,14 +398,14 @@ body {
 }
 .nav-tree .tree-container {
   margin-top: 10px;
-  height: 430px;
+  height: 470px;
   overflow: hidden;
 }
 .nav-tree .tree-container:hover {
   overflow-y: auto;
 }
 .nav-tree .tree-container > ol {
-  padding: 0 0 410px 0;
+  padding: 0 0 450px 0;
   font-family: 'Source Sans Pro', sans-serif !important;
 }
 .nav-tree .tree-container > ol li {
@@ -415,14 +415,10 @@ body {
   margin: -1px 0 0 -18px;
 }
 .nav-tree .tree-container > ol li label {
+  display: inline;
   font-size: 14px;
   line-height: 14px;
   font-weight: normal !important;
-}
-.nav-tree .tree-container > ol li label.flash {
-  -webkit-animation: flash-animation 500ms 200ms ease-in alternate;
-  -moz-animation: flash-animation 500ms 200ms ease-in alternate;
-  -ms-animation: flash-animation 500ms 200ms ease-in alternate;
 }
 .nav-tree .tree-container > ol li span {
   font-size: 14px;

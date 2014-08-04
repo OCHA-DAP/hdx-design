@@ -161,7 +161,6 @@ define ['jquery',
     $searchbar = $("<div class='search-input-group input-dropdown'><input type='text' class='typeahead' placeholder='#{placeholder}'><div class='input-group-btn'></div></div>").appendTo $el
     regions = []
     fetchValues regions, data, 'name'
-    # console.log regions
     $searchbar.children().first().typeahead {
         hint: true
         highlight: true
