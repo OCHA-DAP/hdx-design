@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset=utf-8 />
+  <title>Components</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <!-- jquery -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <!-- purl -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/purl/2.3.1/purl.min.js'></script>
+  <!-- d3 -->
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <!-- c3 -->
+  <script src='https://rawgit.com/masayuki0812/c3/master/c3.js'></script>
+  <link href='https://rawgit.com/masayuki0812/c3/master/c3.css' rel='stylesheet' />
+  <!-- fonts -->
+  <link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'>
+
+  <!-- bootstrap -->
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <!-- <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"> -->
+  <link href="http://maxcdn.bootstrapcdn.com/bootswatch/3.2.0/lumen/bootstrap.min.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/6.2.0/jquery.nouislider.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/6.2.0/jquery.nouislider.css" rel="stylesheet">
+
+  <style>
+  body{
+    /*width: 800px;*/
+    margin: 0px auto;
+    text-align: center;
+    padding-bottom: 300px;
+    font-family: Arial;
+  }
+  h2 {
+    margin-top: 60px;
+    margin-bottom: 0;
+    font-family: 'Oswald', Arial;
+    font-weight: 400;
+    font-size: 18px;
+    /*text-transform: uppercase;*/
+  }
+  h3{
+    font-weight: 300;
+    font-size: 12px;
+    font-family: 'Oswald', Arial;
+    margin:0 0 10px 0;
+    padding:0;
+  }
+  .c3{
+  }
+  .c3.chart {
+  }
+  .c3-tooltip{
+    opacity: 1;
+  }
+  .c3-tooltip th{
+    background-color: #000;
+  }
+  #demo .chart{
+    margin: 0 0 50px 0;
+  }
+  .color-patterns {
+  }
+  .color-pattern {
+    opacity: 0.2;
+    margin: 8px 30px 0px 0px;
+    float: left;
+  }
+  .color-pattern.selected, .color-pattern.hover{
+    opacity: 1;
+  }
+  .color-block {
+    display: inline-block;
+    width: 20px;
+    height: 12px;
+  }
+  .radio-inline {
+    float: left;
+    margin-right: 20px;
+  }
+  .range-label-group {
+    text-align: left;
+  }
+  .range-label-group label{
+    margin: 0 10px 0 10px;
+    display: inline-block;
+  }
+  .range-label {
+    width: 60px;
+    display: inline-block;
+  }
+  .embed-label-group {
+    text-align: left;
+  }
+  .embed-label-group label{
+    margin: 0 10px 0 10px;
+    display: inline-block;
+  }
+  .embed-label {
+    width: 60px;
+    font-size:12px;
+    display: inline-block;
+  }
+  .embed.btn {
+    margin: 0 0 0 40px;
+  }
+  .embed-code {
+    margin: 10px 0 0 0;
+  }
+  .range-slider {
+  }
+  .noUi-target{
+    border: none;
+    background: #efefef;
+    border-radius: 0;
+    height: 10px;
+    margin-top: 12px;
+  }
+  .noUi-base .noUi-origin{
+    background:#eff000;
+  }
+  .noUi-base .noUi-origin:last-child{
+    background:#efefef;
+  }
+  .noUi-handle{
+    width: 10px;
+    height: 22px !important;
+  }
+  .noUi-handle:before, .noUi-handle:after{
+    height: 10px !important;
+  }
+  </style>
+</head>
+
+<body>
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+      <div id="demo">
+        <h2 class='chart_title'>People In Need</h2>
+        <h3 class='chart_subtitle'>UNHCR</h3>
+        <div class="chart"></div>
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label for="chart_title_input" class="col-sm-2 control-label">Title</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="chart_title_input" placeholder="People In Need">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="chart_subtitle_input" class="col-sm-2 control-label">Subtitle</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="chart_subtitle_input" placeholder="UNHCR">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Color</label>
+            <div class="col-sm-10">
+              <div class="color-patterns"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Chart</label>
+            <div class="col-sm-10 chart-display">
+              <div class="radio-inline">
+                <label>
+                  <input type="radio" name="chart-display-options" value="line">Line
+                </label>
+              </div>
+              <div class="radio-inline">
+                <label>
+                  <input type="radio" name="chart-display-options" value="area" checked>Area
+                </label>
+              </div>
+              <div class="radio-inline">
+                <label>
+                  <input type="radio" name="chart-display-options" value="spline">Spline
+                </label>
+              </div>
+              <div class="radio-inline">
+                <label>
+                  <input type="radio" name="chart-display-options" value="area-spline">Area Spline
+                </label>
+              </div>
+              <div class="radio-inline">
+                <label>
+                  <input type="radio" name="chart-display-options" value="bar">Bar
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Range</label>
+            <div class="col-sm-10">
+              <div class="range-label-group">
+                <input class="range-label left form-control" type="text" placeholder="2000">
+                <label>to</label>
+                <input class="range-label right form-control" type="text" placeholder="2013">
+              </div>
+              <div class="range-slider"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Legend</label>
+            <div class="col-sm-10 legend-display">
+              <div class="radio-inline">
+                <label>
+                  <input type="radio" name="legend-display-options" value="show" checked>Show
+                </label>
+              </div>
+              <div class="radio-inline">
+                <label>
+                  <input type="radio" name="legend-display-options" value="hide">Hide
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Y Grids</label>
+            <div class="col-sm-10 y-grids-display">
+              <div class="radio-inline">
+                <label>
+                  <input type="radio" name="y-grids-display-options" value="show" checked>Show
+                </label>
+              </div>
+              <div class="radio-inline">
+                <label>
+                  <input type="radio" name="y-grids-display-options" value="hide">Hide
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Y Tick Format</label>
+            <div class="col-sm-10 y-tick-format">
+              <div class="radio-inline">
+                <label>
+                  <input type="radio" name="y-tick-format-options" value="default">Default
+                </label>
+              </div>
+              <div class="radio-inline">
+                <label>
+                  <input type="radio" name="y-tick-format-options" value="comma" checked>Comma
+                </label>
+              </div>
+              <div class="radio-inline">
+                <label>
+                  <input type="radio" name="y-tick-format-options" value="dollar">Dollar
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Embed</label>
+            <div class="col-sm-10">
+              <div class="embed-label-group">
+                <input class="embed-label width form-control" type="text" placeholder="width" value="600">
+                <label>x</label>
+                <input class="embed-label height form-control" type="text" placeholder="height" value="400">
+                <button type="button" class="embed btn btn-info">Embed</button>
+              </div>
+              <textarea class="embed-code form-control" rows="3"></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="col-md-2"></div>
+  </div>
+  <script>
+    $( "#chart_title_input" ).keyup( function() {
+      $this = $(this);
+      var title = $this.val()||'Title'
+      $('#demo .chart_title').html(title);
+    });
+    $( "#chart_subtitle_input" ).keyup( function() {
+      $this = $(this);
+      var title = $this.val()||'Subtitle'
+      $('#demo .chart_subtitle').html(title);
+    });
+
+    $('body').on('mouseover', '.color-pattern', function(){
+      $this = $(this);
+      $this.addClass('hover');
+    });
+    $('body').on('mouseout', '.color-pattern', function(){
+      $this = $(this);
+      $this.removeClass('hover');
+    });
+    $('body').on('mouseup', '.color-pattern', function(){
+      $this = $(this);
+      if(!$this.hasClass('selected')){
+        colorIndex = $this.data('index');
+        chart_config.color.pattern = colorThemes[colorIndex];
+        var newColor = {};
+        var num_of_colors = colorThemes[colorIndex].length;
+        for(var i=0; i<data_title.length; i++){
+          newColor[data_title[i]] = colorThemes[colorIndex][i%num_of_colors];
+        }
+        chart.data.colors(newColor);
+        $this.addClass('selected').siblings().removeClass('selected');
+      }
+    });
+    $('#demo .chart-display input').on('click', function(){
+      $this = $(this);
+      var type = $this.val();
+      chart_config.data.type = type;
+      if(type === 'bar'){
+        $('line.c3-xgrid-focus').hide();
+      }
+      else{
+        $('line.c3-xgrid-focus').show();
+      }
+      chart.transform(type);
+    });
+    $('#demo .y-grids-display input').on('click', function(){
+      $this = $(this);
+      if($this.val() === 'show'){
+        chart_config.grid.y.show = true;
+        // $('#demo .c3-grid').show();
+      }
+      else{
+        chart_config.grid.y.show = false;
+        // $('#demo .c3-grid').hide();
+      }
+      chart = c3.generate(chart_config);
+    });
+    $('#demo .legend-display input').on('click', function(){
+      $this = $(this);
+      if($this.val() === 'show'){
+        chart.legend.show();
+      }
+      else{
+        chart.legend.hide();
+      }
+    });
+    $('#demo .y-tick-format input').on('click', function(){
+      $this = $(this);
+      if($this.val() === 'default'){
+        chart_config.axis.y.tick = {};
+      }
+      else if($this.val() === 'comma' ){
+        chart_config.axis.y.tick.format = d3.format(",");
+      }
+      else{
+        chart_config.axis.y.tick.format = d3.format("$,");
+      }
+      chart = c3.generate(chart_config);
+    });
+
+    $('#demo .embed.btn').on('click', function(){
+      var width = $('#demo .embed-label.width').val();
+      var height = $('#demo .embed-label.height').val();
+      var chart_type = $('#demo .chart-display input:checked').val();
+      var title = $( "#demo .chart_title" ).html();
+      var subtitle = $( "#demo .chart_subtitle" ).html();
+      var show_legend = $('#demo .legend-display input:checked').val();
+      if(show_legend === 'show'){
+        show_legend = 'true';
+      }
+      else{
+        show_legend = 'false';
+      }
+      var show_y_grid = $('#demo .y-grids-display input:checked').val();
+      if(show_y_grid === 'show'){
+        show_y_grid = 'true';
+      }
+      else{
+        show_y_grid = 'false';
+      }
+      var y_tick_format = $('#demo .y-tick-format input:checked').val();
+      var code = '<iframe src="http://xyfeng.github.io/data-for-frog/embed.html?title='
+        +title+'&subtitle='+subtitle+'&sl='+show_legend+'&syg='+show_y_grid+'&color='
+        +colorIndex+'&type='+chart_type+'&from='+rangeFrom+'&to='+rangeTo+'&ytf='+y_tick_format+'" width="'
+        +width+'" height="'+height+'" marginwidth="0" marginheight="0" scrolling="no" style="border:solid #efefef 1px"></iframe>'
+      $('#demo .embed-code').val(code);
+      $(code).appendTo('body');
+    });
+
+    var colorIndex = 0;
+    var colorThemes = [
+      ['1ebfb3','117be1', 'f2645a', '555555','ffd700'],
+      ['705A6B', 'A68580','D1BA94', '8DD9AA','C9F59F'],
+      ['3FCFC1','F22475', 'F4EB63','A8C078', '7F8183']
+    ];
+
+    for(var i=0; i<colorThemes.length; i++){
+      var one_pattern = colorThemes[i];
+      var color_pattern = $("<div class='color-pattern'></div>").appendTo($("#demo .color-patterns"));
+      color_pattern.data('index', i);
+      for(var j=0; j<one_pattern.length; j++){
+          $('<div class="color-block"></div>').css('background', '#' + one_pattern[j]).appendTo(color_pattern);
+      }
+      if(i == 0){
+        color_pattern.addClass('selected');
+      }
+    }
+
+    var data_set = [
+      [12129572,12116835,10594055,9592795,9568144,8661988,9877703,11390930,10489812,10396538,10549679,10404806,10497957,11699638],
+      [947926,943854,1093755,996428,885249,802174,741291,741110,825043,989169,837445,895284,928226,1168273],
+      [5998501,5096502,4646641,4181701,5426539,6616791,12794268,13740317,14442227,15628057,14697804,15473378,17670368,23925555]
+    ];
+    var data_title = ['Refugees', 'Asylum seekers', 'Internally displaced'];
+    var data_cat, data_all_cat = ['2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013'];
+
+    var rangeFrom, rangeTo;
+    var data = [];
+
+    var getDataFromRange = function(from, to){
+      var result = [];
+      for(var i=0; i<data_set.length; i++){
+        var one = [data_title[i]];
+        for(var j=from; j<to; j++){
+          one.push(data_set[i][j]);
+        }
+        result.push(one);
+      }
+      data_cat = [];
+      for(var j=from; j<to; j++){
+        data_cat.push(data_all_cat[j]);
+      }
+      return result;
+    }
+    rangeFrom = 0;
+    rangeTo = data_set[0].length;
+    var data = getDataFromRange(rangeFrom, rangeTo);
+
+    var range_slider = $('#demo .range-slider').noUiSlider({
+      start: [ 0, data_cat.length ],
+      step: 1,
+      range: {
+        'min': 0,
+        'max': data_cat.length
+      }
+    });
+    $('#demo .range-label.left').attr('placeholder', data_cat[0]).val( data_cat[0] ).on('change',function(){
+      var $this = $(this);
+      var value = $this.val();
+      var from = data_all_cat.indexOf(value);
+      var toValue = $('#demo .range-label.right').val();
+      var to = data_all_cat.indexOf(toValue);
+      if( from>=0 && to>=0 && from < to)
+      {
+        range_slider.val([from, to+1],{ set: true });
+      }
+      else{
+        $this.val('');
+      }
+    });
+    $('#demo .range-label.right').attr('placeholder', data_cat[data_cat.length-1]).val( data_cat[data_cat.length-1] ).on('change',function(){
+      var $this = $(this);
+      var value = $this.val();
+      var to = data_all_cat.indexOf(value);
+      var fromValue = $('#demo .range-label.left').val();
+      var from = data_all_cat.indexOf(fromValue);
+      if( from>=0 && to>=0 && from < to)
+      {
+        range_slider.val([from, to+1],{ set: true });
+      }
+      else{
+        $this.val('');
+      }
+    });
+
+    range_slider.on({
+    	slide: function(){
+        var result = $(this).val();
+        var from = parseInt(result[0]);
+        var to = parseInt(result[1]);
+        $('#demo .range-label.left').val( data_all_cat[from] );
+        $('#demo .range-label.right').val( data_all_cat[to-1] );
+    	},
+    	set: function(){
+        var result = $(this).val();
+        var from = parseInt(result[0]);
+        var to = parseInt(result[1]);
+        data = getDataFromRange(from, to);
+        chart_config.data.columns = data;
+        chart_config.axis.x.categories = data_cat;
+        chart = c3.generate(chart_config);
+        rangeFrom = from;
+        rangeTo = to;
+    	}
+    });
+
+    var chart_config = {
+      bindto: '#demo .chart',
+      color: {
+        pattern: colorThemes[colorIndex]
+      },
+      data: {
+        columns: data,
+        type: 'area'
+      },
+      axis: {
+        x: {
+          type: 'category',
+          tick: {},
+          categories: data_cat
+        },
+        y: {
+          label: {
+            text: '',
+            position: 'outer-top'
+          },
+          tick: {
+            format: d3.format(",")
+          }
+        }
+      },
+      grid: {
+          x: {
+              show: false
+          },
+          y: {
+              show: true
+          }
+      },
+      tooltip: {
+          grouped: true
+      }
+      // zoom:{
+      //   enabled: true
+      // }
+    }
+
+    var chart = c3.generate(chart_config);
+
+    console.log(chart);
+  </script>
+</body>
+
+</html>

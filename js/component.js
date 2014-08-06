@@ -330,17 +330,6 @@
       }
       return $('.combobox').combobox();
     });
-    $("#search_filter_btn").click(function() {
-      if ($("#search_filter_btn span").text() === '+') {
-        return $("#search_bar_content").slideDown(300, function() {
-          return $("#search_filter_btn span").text('-');
-        });
-      } else {
-        return $("#search_bar_content").slideUp(300, function() {
-          return $("#search_filter_btn span").text('+');
-        });
-      }
-    });
   });
 
 }).call(this);

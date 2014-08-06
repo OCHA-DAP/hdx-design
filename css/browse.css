@@ -530,8 +530,9 @@ body {
 }
 .marker-container {
   position: relative;
-  width: 140px;
-  height: 75px;
+  width: 140px !important;
+  height: 75px !important;
+  margin: 0 !important;
   padding: 0 !important;
 }
 .marker-container .line-break {

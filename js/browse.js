@@ -58,7 +58,6 @@
       if (!popup._map) {
         popup.openOn(map);
       }
-      window.clearTimeout(closeTooltip);
     };
     resetFeature = function(e) {
       var layer;
@@ -68,9 +67,6 @@
         fillOpacity: 1.0,
         fillColor: '#f2f2ef'
       });
-      closeTooltip = window.setTimeout(function() {
-        return map.closePopup();
-      }, 100);
     };
     featureClicked = function(e) {
       var code, layer;

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Search Bar</title>
+    <!--js-->
+    <script src="js/lib/require.v1.0.8.js" data-main="js/search.js"></script>
+    <!--style-->
+    <link href="css/lib/c3.css" rel="stylesheet">
+    <link href="css/lib/bootstrap.min.css" rel="stylesheet">
+    <link href="https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css" rel="stylesheet">
+    <link href="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.3/leaflet.fullscreen.css" rel="stylesheet">
+    <link href="css/lib/chosen/chosen.min.css" rel="stylesheet">
+    <link href="css/lib/bootstrap-combobox.css" rel="stylesheet">
+    <link href="css/lib/tree/jquery.bonsai.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/6.2.0/jquery.nouislider.css" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700" rel="stylesheet">
+    <link href="css/search.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row no-margin">
+        <div id="dropdown_session">
+          <div id="search_bar_top"></div>
+          <div id="search_bar_content">
+            <div id="filter_container">
+              <div id="country_filter" class="filter-group">
+                <label>Location</label>
+                <select name="inline" class="combobox form-control">
+                  <option value="" selected="selected">Any location</option>
+                </select>
+              </div>
+              <div id="format_filter" class="filter-group">
+                <label>Format</label>
+                <select name="inline" class="combobox form-control">
+                  <option value="" selected="selected">Any format</option>
+                  <option value="XSL">XSL</option>
+                  <option value="CSV">CSV</option>
+                  <option value="TXT">TXT</option>
+                  <option value="PDF">PDF</option>
+                </select>
+              </div>
+              <div id="topic_filter" class="filter-group">
+                <label>Topic</label>
+                <select name="inline" class="combobox form-control">
+                  <option value="" selected="selected">Any topic</option>
+                  <option value="Health">Health</option>
+                  <option value="Logistics">Logistics</option>
+                  <option value="Food">Food</option>
+                  <option value="Nutrition">Nutrition</option>
+                </select>
+              </div>
+              <div id="license_filter" class="filter-group">
+                <label>License</label>
+                <select name="inline" class="combobox form-control">
+                  <option value="" selected="selected">Any license</option>
+                  <option value="License 1">License 1</option>
+                  <option value="License 2">License 2</option>
+                  <option value="License 3">License 3</option>
+                  <option value="License 4">License 4</option>
+                </select>
+              </div>
+              <div id="organization_filter" class="filter-group">
+                <label>Organization</label>
+                <select name="inline" class="combobox form-control">
+                  <option value="" selected="selected">Any organization</option>
+                  <option value="Organization 1">Organization 1</option>
+                  <option value="Organization 2">Organization 2</option>
+                  <option value="Organization 3">Organization 3</option>
+                  <option value="Organization 4">Organization 4</option>
+                </select>
+              </div>
+              <div id="language_filter" class="filter-group">
+                <label>Language</label>
+                <select name="inline" class="combobox form-control">
+                  <option value="" selected="selected">Any language</option>
+                  <option value="Language 1">Language 1</option>
+                  <option value="Language 2">Language 2</option>
+                  <option value="Language 3">Language 3</option>
+                  <option value="Language 4">Language 4</option>
+                </select>
+              </div>
+            </div>
+            <div id="date_container">
+              <label>Date Range</label>
+              <input placeholder="Start date" type="text">
+              <input placeholder="End date" type="text">
+            </div>
+          </div>
+          <div id="search_bar_bottom">
+            <div id="search_filter_btn">Filter<span>+</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

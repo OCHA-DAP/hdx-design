@@ -1,0 +1,107 @@
+doctype html
+html(lang="en")
+  head
+    title Component
+    //js
+    script(src='js/lib/require.v1.0.8.js' data-main='js/component.js')
+    //style
+    link(href='css/lib/c3.css' rel='stylesheet')
+    link(href='css/lib/bootstrap.min.css' rel='stylesheet')
+    link(href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet')
+    link(href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.3/leaflet.fullscreen.css' rel='stylesheet')
+    link(href='css/lib/chosen/chosen.min.css' rel='stylesheet')
+    link(href='css/lib/bootstrap-combobox.css' rel='stylesheet')
+    link(href='css/lib/tree/jquery.bonsai.css' rel='stylesheet')
+    link(href='https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/6.2.0/jquery.nouislider.css' rel='stylesheet')
+    link(href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700' rel='stylesheet')
+    link(href='css/component.css' rel='stylesheet')
+
+  body
+    .container
+      .row#charts_container
+        .col-md-10
+          h3 Charts
+          //- h5 Pie Chart:
+          //- #pie_chart_1
+          h5 Pie Chart:
+          #pie_chart_m
+          h5 Line Chart:
+          #line_chart
+          h5 Bar Chart:
+          #bar_chart
+          h5 Scatter Plot:
+          #scatter_plot_chart
+          h5 Radar Chart:
+          #radar_chart
+          h5 Map:
+          #map.map-graph
+      .row#sliders
+        .col-md-10
+          h3 Sliders
+          h5 single selection
+          #slider_ui
+          h5 range selection
+          #slider_range
+      .row#nav_tree_row
+        .col-md-10
+          h3 Navigation tree for regions
+          #location_selector
+            h5 Select Locations
+            #the_tree
+        .col-md-2
+      .row
+        .col-md-10
+          h3 Dropdown filters for search
+          #dropdown_sample
+            select.combobox.form-control(name='inline')
+              option(value='' selected='selected') Select a State
+              option(value='AK') Alaska
+              option(value='AZ') Arizona
+              option(value='AR') Arkansas
+              option(value='CA') California
+              option(value='CO') Colorado
+              option(value='CT') Connecticut
+              option(value='DE') Delaware
+              option(value='DC') District Of Columbia
+              option(value='FL') Florida
+              option(value='GA') Georgia
+              option(value='HI') Hawaii
+              option(value='ID') Idaho
+              option(value='IL') Illinois
+              option(value='IN') Indiana
+              option(value='IA') Iowa
+              option(value='KS') Kansas
+              option(value='KY') Kentucky
+              option(value='LA') Louisiana
+              option(value='ME') Maine
+              option(value='MD') Maryland
+              option(value='MA') Massachusetts
+              option(value='MI') Michigan
+              option(value='MN') Minnesota
+              option(value='MS') Mississippi
+              option(value='MO') Missouri
+              option(value='MT') Montana
+              option(value='NE') Nebraska
+              option(value='NV') Nevada
+              option(value='NH') New Hampshire
+              option(value='NJ') New Jersey
+              option(value='NM') New Mexico
+              option(value='NY') New York
+              option(value='NC') North Carolina
+              option(value='ND') North Dakota
+              option(value='OH') Ohio
+              option(value='OK') Oklahoma
+              option(value='OR') Oregon
+              option(value='PA') Pennsylvania
+              option(value='RI') Rhode Island
+              option(value='SC') South Carolina
+              option(value='SD') South Dakota
+              option(value='TN') Tennessee
+              option(value='TX') Texas
+              option(value='UT') Utah
+              option(value='VT') Vermont
+              option(value='VA') Virginia
+              option(value='WA') Washington
+              option(value='WV') West Virginia
+              option(value='WI') Wisconsin
+              option(value='WY') Wyoming

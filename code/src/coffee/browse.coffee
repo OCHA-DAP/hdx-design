@@ -79,7 +79,7 @@ require ['jquery',
     "
     if !popup._map
       popup.openOn map
-    window.clearTimeout closeTooltip
+    # window.clearTimeout closeTooltip
     return
 
   resetFeature = (e) ->
@@ -88,9 +88,9 @@ require ['jquery',
       weigth:0
       fillOpacity: 1.0
       fillColor: '#f2f2ef'
-    closeTooltip = window.setTimeout ()->
-      map.closePopup()
-    , 100
+    # closeTooltip = window.setTimeout ()->
+    #   map.closePopup()
+    # , 100
     return
 
   featureClicked = (e) ->

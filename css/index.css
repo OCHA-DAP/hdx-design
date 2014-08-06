@@ -1,53 +1,7 @@
-* {
-  margin: 0;
-  padding: 0;
-  font-family: 'Roboto' sans-serif;
-  font-weight: 300;
+#menu {
+  margin: 300px 0 0 0;
+  text-align: center;
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: 'Oswald' Arial;
-}
-.link {
-  fill: none;
-  -webkit-transition-duration: 0.4s;
-  -webkit-transition-timing-function: linear;
-}
-.region {
-  cursor: pointer;
-}
-.label {
-  font-family: 'Oswald' Arial;
-  font-weight: 500;
-  font-size: 12px;
-}
-.options {
-  -webkit-transition-duration: 0.4s;
-  -webkit-transition-timing-function: linear;
-}
-.option-text {
-  font-weight: 500;
-  fill: #fff;
-}
-.option-box.P {
-  fill: #d476ea;
-}
-.option-box.L {
-  fill: #58e2c2;
-}
-.option-box.B {
-  fill: #4d29df;
-}
-.option-box.M {
-  fill: #000;
-}
-.option-box.R {
-  fill: #81d135;
-}
-.option-box.S {
-  fill: #f3a536;
+#menu a {
+  padding: 10px 40px;
 }
