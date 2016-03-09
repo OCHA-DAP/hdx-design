@@ -6,6 +6,7 @@ This extension should support CKAN 2.3 (HDX currently runs on 2.3) and above.
 
 <!-- MarkdownTOC depth=3 autolink=true bracket=round -->
 
+- [Related Work](#related-work)
 - [Proposal](#proposal)
 - [Pages](#pages)
     - [Create/Update PowerView](#createupdate-powerview)
@@ -19,6 +20,24 @@ This extension should support CKAN 2.3 (HDX currently runs on 2.3) and above.
     - [Site Maintainer / Sysadmin](#site-maintainer--sysadmin)
 
 <!-- /MarkdownTOC -->
+
+## Related Work
+
+ResourceViews have been part of CKAN core since version 2.3. This work resolved several issues around creating views for resources:
+
+- Allow resources to have more than one view type
+- Allow more than one view per resource
+- Persist predefined view configuration
+- A uniform way to embed previews in other sites with a particular configuration.
+
+(More information about ResourceViews can be found in the [CKAN wiki](https://github.com/ckan/ckan/wiki/Resource-Views).)
+
+During development of ResourceViews, a [use case was suggested](https://github.com/ckan/ckan/pull/1251#issuecomment-36668704) for a more general approach to views; one not tied to a single resource. Issues that would need to be resolved for such an implementation:
+
+- identify and associate data sources with view
+- identifying common fields on which to join separate data sources
+- authorization for creating views from 'un-owned' data sources
+- UI and place within the site hierarchy for view creation, listing and details pages when disassociated with resources
 
 
 ## Proposal
