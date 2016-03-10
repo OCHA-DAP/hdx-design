@@ -103,6 +103,22 @@ Delete a PowerView. User must be authorized to delete PowerViews.
 ##### Parameters: 
 - id (string) id of the view to delete
 
+#### `ckanext_powerview_add_resource`
+
+Add a resource to a PowerView (without having to update the whole PowerView dict).
+
+##### Parameters:
+- view_id (string) id of the PowerView to update
+- resource_id (string) id of the Resource to add
+
+#### `ckanext_powerview_remove_resource`
+
+Remove a resource from a PowerView (without having to update the whole PowerView dict).
+
+##### Parameters:
+- view_id (string) id of the PowerView to update
+- resource_id (string) id of the Resource to add
+
 #### `ckanext_powerview_list_views_for_resource`
 
 List PowerViews associated with a resource.
