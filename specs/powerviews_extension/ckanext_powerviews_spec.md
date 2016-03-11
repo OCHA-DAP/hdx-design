@@ -1,6 +1,6 @@
 # 'Power Views' extension for CKAN
 
-A PowerView provides the data source and extra configuration needed to power a view whose data source is one or more resources. The PowerView model is similar to the existing ResourceView, but can have a many-to-many relationship with Resources.
+Data source and configuration to power a view for one or more resources. The PowerView model is similar to the existing ResourceView, but can have a many-to-many relationship with Resources.
 
 This document proposes an API for creating, updating, showing and deleting PowerViews, as well as listing PowerViews for a resource and visa versa.
 
