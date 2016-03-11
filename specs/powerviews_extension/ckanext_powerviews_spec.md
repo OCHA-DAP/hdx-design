@@ -1,6 +1,8 @@
 # 'Power Views' extension for CKAN
 
-Data source and configuration to power a view for one or more resources. The PowerView model is similar to the existing ResourceView, but can have a many-to-many relationship with Resources.
+Data source and configuration to power a view for one or more resources.
+
+The PowerView model is similar to the existing ResourceView, but can have a many-to-many relationship with Resources.
 
 This document proposes an API for creating, updating, showing and deleting PowerViews, as well as listing PowerViews for a resource and visa versa.
 
@@ -44,7 +46,7 @@ Examples of extensions that could make use of PowerViews are, a single map that 
 
 ### Database tables
 
-Similar to the existing ResourceView model, but the many-to-many relationship with resources is managed by a separate `resource_powerview_association` table.
+Similar to the existing ResourceView model, but the many-to-many relationship with resources is managed by a separate `powerview_resource_association` table.
 
 #### `powerview` table
 ```
@@ -56,7 +58,7 @@ Similar to the existing ResourceView model, but the many-to-many relationship wi
 ```
 
 
-#### `resource_powerview_association` table
+#### `powerview_resource_association` table
 ```
 resource_id text NOT NULL
 powerview_id text NOT NULL
