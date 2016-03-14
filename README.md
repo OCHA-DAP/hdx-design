@@ -1,7 +1,9 @@
 hdx-design
 ==========
 
-All [Code](https://github.com/OCHA-DAP/hdx-design/tree/gh-pages/code) and [Demos](http://ocha-dap.github.io/hdx-design/) are under branch 'gh-pages'
+All [Code](https://github.com/OCHA-DAP/hdx-design/tree/gh-pages/code) and [Demos](http://ocha-dap.github.io/hdx-design/) are under branch 'gh-pages'.
+
+Specification documents are in the [`specs`](specs/) directory.
 
 Most code are written in
 
