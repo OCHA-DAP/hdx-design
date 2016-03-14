@@ -53,8 +53,13 @@ Similar to the existing ResourceView model, but the many-to-many relationship wi
 "id" text PRIMARY KEY
 "title" text
 "description" text  
-"view_type" text NOT NULL  
+"view_type" text NOT NULL -- label of view extension managing view
 "config" text -- (JSON)
+"created_by" text -- user id
+"owner_org" text -- optional organization id
+"private" boolean -- default False
+"created" datetime NOT NULL -- default now
+"updated" datetime NOT NULL
 ```
 
 
@@ -78,6 +83,8 @@ Create a new PowerView. User must be authorized to create PowerViews.
 - view_type (string) type of view
 - resources (list of resource ids) resource ids available for this view
 - config (JSON string) options necessary to recreate a view state (optional)
+- owner_org (string) id of the owning organization (optional)
+- private (boolean) determines if view is publicly accessible (optional, defaults to False)
 
 #### `ckanext_powerview_update`
 
